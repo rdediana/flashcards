@@ -1,0 +1,5284 @@
+{
+  "deck": {
+    "id": "ccnp-encor-350-401-v1.2",
+    "title": "CCNP ENCOR 350-401 Flashcards",
+    "version": "0.1",
+    "source": "Cisco ENCOR v1.2 Blueprint",
+    "description": "Flashcards aligned to the Cisco ENCOR 350-401 exam blueprint."
+  },
+  "cards": [
+    {
+      "id": "qos-001",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "MQC interpretation",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "mqc",
+        "class-map",
+        "policy-map"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In MQC, what is the difference between a class-map and a policy-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A class-map identifies traffic. A policy-map applies actions to that traffic, such as marking, policing, shaping, queueing, or dropping."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any VOICE\n match dscp ef\n!\npolicy-map WAN-QOS\n class VOICE\n  priority percent 10"
+        }
+      ]
+    },
+    {
+      "id": "qos-002",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Policing vs shaping",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "policing",
+        "shaping",
+        "token-bucket"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the key operational difference between policing and shaping?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "Policing",
+            "Shaping"
+          ],
+          "rows": [
+            [
+              "Behavior",
+              "Drops or remarks excess traffic",
+              "Buffers excess traffic"
+            ],
+            [
+              "Direction",
+              "Ingress or egress",
+              "Usually egress"
+            ],
+            [
+              "Effect",
+              "Can be harsh",
+              "Smooths traffic rate"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ospf-001",
+      "blueprint": "3.2.b",
+      "domain": "Infrastructure",
+      "topic": "Layer 3",
+      "subtopic": "OSPF network types",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ospf",
+        "network-types",
+        "broadcast",
+        "point-to-point"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does OSPF network type matter?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "OSPF network type affects neighbor discovery, DR/BDR election behavior, adjacency formation, and how LSAs are flooded across the segment."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "For ENCOR, be able to compare broadcast and point-to-point behavior."
+        }
+      ]
+    },
+    {
+      "id": "ospf-002",
+      "blueprint": "3.2.b",
+      "domain": "Infrastructure",
+      "topic": "Layer 3",
+      "subtopic": "Passive interface",
+      "type": "troubleshooting",
+      "difficulty": "easy",
+      "tags": [
+        "ospf",
+        "passive-interface",
+        "adjacency"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What happens when an OSPF-enabled interface is configured as passive?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The network is still advertised into OSPF, but the router does not send or receive OSPF hellos on that interface, so no neighbor adjacency forms there."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "router ospf 1\n passive-interface GigabitEthernet0/1"
+        }
+      ]
+    },
+    {
+      "id": "bgp-001",
+      "blueprint": "3.2.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 3",
+      "subtopic": "eBGP neighbors",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "bgp",
+        "ebgp",
+        "neighbor",
+        "tcp-179"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What must be true for directly connected eBGP neighbors to form?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The routers must have IP reachability to each other, correct neighbor statements, matching remote AS values, and TCP/179 connectivity."
+        }
+      ]
+    },
+    {
+      "id": "bgp-002",
+      "blueprint": "3.2.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 3",
+      "subtopic": "Best path selection",
+      "type": "sequence",
+      "difficulty": "hard",
+      "tags": [
+        "bgp",
+        "best-path",
+        "weight",
+        "local-preference",
+        "as-path"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Name three early BGP best-path attributes in Cisco path selection order."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Highest weight",
+            "Highest local preference",
+            "Locally originated route",
+            "Shortest AS path"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-003",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS models",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "intserv",
+        "diffserv",
+        "best-effort",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare the three QoS models: Best-Effort, IntServ, and DiffServ."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Model",
+            "Mechanism",
+            "Scalability"
+          ],
+          "rows": [
+            [
+              "Best-Effort",
+              "No QoS, FIFO",
+              "Highly scalable"
+            ],
+            [
+              "IntServ",
+              "Per-flow reservation via RSVP",
+              "Poor at scale"
+            ],
+            [
+              "DiffServ",
+              "Per-hop behaviors based on markings",
+              "Highly scalable"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "DiffServ is the model used in nearly all modern enterprise QoS designs."
+        }
+      ]
+    },
+    {
+      "id": "qos-004",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Classification vs marking",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "classification",
+        "marking",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between classification and marking?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Classification identifies and groups traffic (using ACLs, NBAR, DSCP, etc.) so QoS policy can act on it. Marking writes a value (DSCP, CoS, MPLS EXP) into the packet/frame so downstream devices can trust it without re-classifying."
+        }
+      ]
+    },
+    {
+      "id": "qos-005",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DSCP values",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "dscp",
+        "ef",
+        "af",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What DSCP values are commonly used for voice, video, and signaling?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Traffic",
+            "DSCP",
+            "Decimal"
+          ],
+          "rows": [
+            [
+              "Voice (RTP)",
+              "EF",
+              "46"
+            ],
+            [
+              "Voice/Video signaling",
+              "CS3",
+              "24"
+            ],
+            [
+              "Interactive video",
+              "AF41",
+              "34"
+            ],
+            [
+              "Broadcast video",
+              "CS5",
+              "40"
+            ],
+            [
+              "Network control",
+              "CS6",
+              "48"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-006",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Layer 2 marking",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "cos",
+        "802.1p",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Where is the CoS (802.1p) field located, and how many bits is it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "CoS is a 3-bit field in the 802.1Q VLAN tag (PCP bits). It allows 8 priority values (0–7) and is only present on tagged Ethernet frames, so it is lost on access ports or when frames cross a Layer 3 boundary."
+        }
+      ]
+    },
+    {
+      "id": "qos-007",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust boundary",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "trust-boundary",
+        "marking",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a QoS trust boundary and where should it be placed?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The trust boundary is the point in the network where QoS markings from external devices are accepted as valid. It should be placed as close to the source as possible — typically the access switch port — and ideally only trust markings from known endpoints like Cisco IP phones via CDP/LLDP."
+        }
+      ]
+    },
+    {
+      "id": "qos-008",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "MQC structure",
+      "type": "sequence",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "mqc",
+        "service-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "List the three MQC steps required to apply QoS to an interface."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Define a class-map to match traffic",
+            "Define a policy-map that references the class-map and applies actions",
+            "Apply the policy-map to an interface with service-policy input|output"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-009",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Policing vs shaping",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "policing",
+        "shaping",
+        "token-bucket",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does the token bucket represent in a policer?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The token bucket models the allowed burst. Tokens are added at the configured rate (CIR) and consumed by transmitted bytes. If enough tokens exist, traffic conforms; if not, traffic exceeds (and is dropped or remarked). Bucket depth (Bc) defines the maximum burst tolerated."
+        }
+      ]
+    },
+    {
+      "id": "qos-010",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Single-rate vs dual-rate policer",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "policer",
+        "srtcm",
+        "trtcm",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare single-rate three-color (srTCM) and two-rate three-color (trTCM) policers."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "srTCM (RFC 2697)",
+            "trTCM (RFC 2698)"
+          ],
+          "rows": [
+            [
+              "Rates",
+              "CIR only",
+              "CIR and PIR"
+            ],
+            [
+              "Buckets",
+              "Bc and Be",
+              "Bc and Be (PIR-based)"
+            ],
+            [
+              "Colors",
+              "Conform/Exceed/Violate",
+              "Conform/Exceed/Violate"
+            ],
+            [
+              "Use case",
+              "Burst tolerance over CIR",
+              "Two distinct rate tiers"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-011",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Shaping configuration",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "shaping",
+        "policy-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show how to shape all traffic in a class to 10 Mbps."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN-OUT\n class class-default\n  shape average 10000000\n!\ninterface GigabitEthernet0/0/0\n service-policy output WAN-OUT"
+        },
+        {
+          "type": "text",
+          "text": "shape average uses CIR only; shape peak allows bursting above CIR up to PIR."
+        }
+      ]
+    },
+    {
+      "id": "qos-012",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "LLQ",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "llq",
+        "priority",
+        "voice",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Low Latency Queuing (LLQ) and why is it used for voice?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "LLQ is CBWFQ plus a strict-priority queue. The priority queue is serviced first to guarantee low delay/jitter for voice, but is policed at its configured rate to prevent starving other queues."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN-OUT\n class VOICE\n  priority percent 10\n class class-default\n  fair-queue"
+        }
+      ]
+    },
+    {
+      "id": "qos-013",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "CBWFQ",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "cbwfq",
+        "bandwidth",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does CBWFQ allocate bandwidth between user-defined classes?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Each class gets a guaranteed minimum bandwidth (using bandwidth, bandwidth percent, or bandwidth remaining percent). During congestion, classes share the link proportionally; during non-congestion, any class can exceed its share."
+        }
+      ]
+    },
+    {
+      "id": "qos-014",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Congestion avoidance",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "wred",
+        "tail-drop",
+        "tcp-sync",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What problem does WRED solve compared to tail drop?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Tail drop discards all arriving packets once a queue is full, causing TCP global synchronization where many flows back off and ramp up together. WRED probabilistically drops packets before the queue is full, based on IP precedence/DSCP, to throttle TCP senders earlier and avoid synchronized behavior."
+        }
+      ]
+    },
+    {
+      "id": "qos-015",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Class-map matching",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "class-map",
+        "match-any",
+        "match-all",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between match-any and match-all in a class-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "match-all (default) requires every match statement to be true (logical AND). match-any requires only one match statement to be true (logical OR)."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any VOICE\n match dscp ef\n match dscp cs5"
+        }
+      ]
+    },
+    {
+      "id": "qos-016",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "NBAR2",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "nbar",
+        "classification",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does NBAR2 provide for QoS classification?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "NBAR2 is a deep packet inspection engine that identifies applications by signatures, not just port numbers. It enables protocol-based classification (e.g., match protocol webex-meeting) and is the basis for application-aware QoS in Cisco SD-WAN and traditional MQC."
+        }
+      ]
+    },
+    {
+      "id": "qos-017",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "show",
+        "verification",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows live QoS policy statistics on an interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show policy-map interface GigabitEthernet0/0/0"
+        },
+        {
+          "type": "text",
+          "text": "Displays per-class match counts, offered/drop rates, queue depth, and policer/shaper conform/exceed bytes."
+        }
+      ]
+    },
+    {
+      "id": "qos-018",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust on Cisco IP phone",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "trust",
+        "ip-phone",
+        "cdp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A Cisco IP phone is connected to an access switch with a PC behind it. How should the trust boundary be configured?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Trust the markings coming from the IP phone (extended via CDP/LLDP), but have the phone re-mark or zero out CoS/DSCP values from the attached PC. This pushes the trust boundary to the phone, not the untrusted PC."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/5\n switchport mode access\n switchport voice vlan 110\n auto qos voip cisco-phone"
+        }
+      ]
+    },
+    {
+      "id": "qos-019",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Hierarchical QoS",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "hqos",
+        "nested-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a common use case for hierarchical (nested) QoS policy-maps?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Shape an aggregate to a sub-line rate (e.g., a 10 Mbps subscribed rate on a Gig interface), then apply a child policy that does CBWFQ/LLQ inside that shaped rate. This is essential on WAN/MPLS handoffs where the physical and logical rates differ."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map CHILD\n class VOICE\n  priority percent 10\n class class-default\n  fair-queue\n!\npolicy-map PARENT\n class class-default\n  shape average 10000000\n  service-policy CHILD"
+        }
+      ]
+    },
+    {
+      "id": "qos-020",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DSCP-to-CoS mapping",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "dscp",
+        "cos",
+        "mapping",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why can DSCP values be lost or remapped at a Layer 2 trunk boundary?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "CoS lives in the 802.1Q tag and DSCP lives in the IP header. On a switch with a CoS-based queueing model, DSCP is mapped to CoS using DSCP-to-CoS tables. Because CoS is only 3 bits vs 6 bits of DSCP, multiple DSCP values map to the same CoS, so granularity can be lost. Untagged frames lose CoS entirely."
+        }
+      ]
+    },
+    {
+      "id": "qos-021",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking command",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "set-dscp",
+        "policy-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Write a policy-map that classifies HTTP traffic and marks it AF21."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any WEB\n match protocol http\n!\npolicy-map MARK-IN\n class WEB\n  set dscp af21\n!\ninterface GigabitEthernet0/1\n service-policy input MARK-IN"
+        }
+      ]
+    },
+    {
+      "id": "qos-022",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Priority queue policing",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "llq",
+        "priority",
+        "policer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does the LLQ priority queue have an implicit policer?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Without a built-in rate limiter, a priority class could starve all other queues during congestion. The implicit policer drops priority traffic that exceeds the configured rate when the link is congested, protecting non-priority classes while still giving voice strict-priority service."
+        }
+      ]
+    },
+    {
+      "id": "qos-023",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Tx-ring",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "tx-ring",
+        "queueing",
+        "hardware",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why must the tx-ring be small for software queueing (CBWFQ/LLQ) to be effective?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Software queues only engage when the hardware tx-ring is full (interface congested). If the tx-ring is too large, packets bypass software queues and QoS scheduling has no effect. A small tx-ring forces congestion back into the IOS software queues where MQC policy is applied."
+        }
+      ]
+    },
+    {
+      "id": "qos-024",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Troubleshooting drops",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "drops",
+        "troubleshooting",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Voice users complain of choppy audio across a WAN link. show policy-map interface shows drops in the priority class. What are likely causes?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Priority bandwidth is set too low for actual call volume",
+            "Voice traffic is not being marked correctly (not matching class-map)",
+            "Shaper parent rate is below the contracted CIR causing buffer/policer drops",
+            "Tx-ring too large, so QoS isn't engaging",
+            "Provider is re-marking or policing on ingress to the SP cloud"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-025",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AutoQoS",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "autoqos",
+        "voip",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does AutoQoS do?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AutoQoS generates a Cisco-recommended baseline QoS configuration (class-maps, policy-maps, trust settings, and queueing) with a single command. It is a starting point for VoIP and enterprise traffic and can be customized after generation."
+        }
+      ]
+    },
+    {
+      "id": "qos-026",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Per-hop behavior",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "phb",
+        "diffserv",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Define Per-Hop Behavior (PHB) in DiffServ."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A PHB is the externally observable forwarding treatment a DiffServ-compliant node applies to a packet based on its DSCP value. Standard PHBs include Default (DF), Class Selector (CS), Assured Forwarding (AF), and Expedited Forwarding (EF)."
+        }
+      ]
+    },
+    {
+      "id": "qos-027",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AF drop precedence",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "af",
+        "drop-precedence",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In Assured Forwarding (e.g., AF31, AF32, AF33), what does the second digit mean?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The first digit is the AF class (queue/bandwidth), and the second digit is the drop precedence within the class. Higher second digit = higher drop probability under congestion. So AF33 is dropped before AF31 in the same queue."
+        }
+      ]
+    },
+    {
+      "id": "qos-028",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Policer actions",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "policer",
+        "remark",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Configure a policer that conforms at 5 Mbps and remarks exceeding traffic to DSCP AF11."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map LIMIT-WEB\n class WEB\n  police 5000000\n   conform-action transmit\n   exceed-action set-dscp-transmit af11"
+        }
+      ]
+    },
+    {
+      "id": "qos-029",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Direction of policy",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "ingress",
+        "egress",
+        "service-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which QoS actions are valid on ingress vs egress?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Action",
+            "Ingress",
+            "Egress"
+          ],
+          "rows": [
+            [
+              "Classification",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Marking",
+              "Yes (preferred)",
+              "Yes"
+            ],
+            [
+              "Policing",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Shaping",
+              "No",
+              "Yes"
+            ],
+            [
+              "Queueing (CBWFQ/LLQ)",
+              "No",
+              "Yes"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-030",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Return traffic markings",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "dscp",
+        "asymmetric",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why might DSCP appear correctly on outbound voice but show as 0 on the return path?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Markings are not automatically symmetric. The remote site or service provider may not honor or re-mark DSCP, ingress ACLs/policies on intermediate devices may zero markings, or the trust boundary on the return path may not extend to the source. Verify with show policy-map interface and packet captures on both directions."
+        }
+      ]
+    },
+    {
+      "id": "qos-031",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth vs priority",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "bandwidth",
+        "priority",
+        "cbwfq",
+        "llq",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between the bandwidth and priority commands in a policy-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "bandwidth",
+            "priority"
+          ],
+          "rows": [
+            [
+              "Queue type",
+              "CBWFQ (weighted fair)",
+              "Strict-priority (LLQ)"
+            ],
+            [
+              "Guarantee",
+              "Minimum during congestion",
+              "Serviced first up to rate"
+            ],
+            [
+              "Delay",
+              "Variable",
+              "Low/predictable"
+            ],
+            [
+              "Built-in policer",
+              "No",
+              "Yes (during congestion)"
+            ],
+            [
+              "Use case",
+              "Data classes",
+              "Voice/realtime"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-032",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Interpreting policy-map output",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "show",
+        "interpretation",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does this output tell you?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Class-map: VOICE (match-any)\n  500000 packets, 96000000 bytes\n  5 minute offered rate 800000 bps, drop rate 12000 bps\n  Match: dscp ef\n  Queueing\n    Strict Priority\n    Output Queue: Conversation 264\n    Bandwidth 10 (%)\n    Bandwidth 1000 (kbps) Burst 25000 (Bytes)\n    (pkts matched/bytes matched) 500000/96000000\n    (total drops/bytes drops) 600/115200"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VOICE is a strict-priority (LLQ) class matching DSCP EF, configured for 10% (1 Mbps). Offered rate is 800 kbps — under the limit — but there are 600 drops, suggesting micro-bursts above 1 Mbps that hit the implicit priority policer. Consider increasing the priority bandwidth or burst, or verify that other classes aren't forcing congestion."
+        }
+      ]
+    },
+    {
+      "id": "qos-033",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Jitter",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "jitter",
+        "voice",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Define jitter and explain why it matters for voice traffic."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Jitter is the variation in delay between successive packets. Voice codecs expect packets to arrive at fixed intervals (e.g., every 20 ms). High jitter forces the receiver's de-jitter buffer to grow, increasing latency, or to drop late packets, causing audio gaps."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Targets for VoIP: <150 ms one-way delay, <30 ms jitter, <1% loss."
+        }
+      ]
+    },
+    {
+      "id": "qos-034",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Latency types",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "latency",
+        "delay",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the four components of end-to-end network delay?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Processing delay — time to examine the packet header and make a forwarding decision",
+            "Queueing delay — time waiting in an interface queue (variable, controllable by QoS)",
+            "Serialization delay — time to clock bits onto the wire (depends on link speed)",
+            "Propagation delay — time for the signal to travel the medium (distance/speed of light)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-035",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "MPLS EXP",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "mpls",
+        "exp",
+        "tc",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the MPLS EXP field and how does it relate to DSCP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The MPLS EXP (now called Traffic Class) is a 3-bit field in the MPLS label header used by MPLS LSRs for QoS treatment. Because it is only 3 bits, DSCP values must be mapped (often via Class Selector or Pipe/Short-Pipe/Uniform tunneling models) when packets enter the MPLS domain."
+        }
+      ]
+    },
+    {
+      "id": "qos-036",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DiffServ tunneling models",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "mpls",
+        "tunneling",
+        "uniform",
+        "pipe",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare the Uniform, Pipe, and Short-Pipe DiffServ tunneling models in MPLS."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Model",
+            "Egress IP DSCP",
+            "Egress treatment"
+          ],
+          "rows": [
+            [
+              "Uniform",
+              "Copied from MPLS EXP at PE",
+              "Based on EXP (provider can change)"
+            ],
+            [
+              "Pipe",
+              "Original DSCP preserved",
+              "Based on EXP on PE-CE link"
+            ],
+            [
+              "Short-Pipe",
+              "Original DSCP preserved",
+              "Based on customer DSCP on egress"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-037",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Class-based marking",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "set",
+        "cos",
+        "dscp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What policy-map actions are used to mark CoS, DSCP, and IP precedence?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map MARK\n class VOICE\n  set dscp ef\n  set cos 5\n  set precedence 5"
+        },
+        {
+          "type": "text",
+          "text": "set dscp writes 6 bits in the IP header DS field; set cos writes 3 bits in the 802.1Q tag; set precedence writes the legacy 3-bit IP precedence."
+        }
+      ]
+    },
+    {
+      "id": "qos-038",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Class-default",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "class-default",
+        "policy-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is class-default in a policy-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "class-default is an implicit catch-all class that matches any traffic not matched by user-defined classes. By default it has no guaranteed bandwidth and is FIFO, but you can apply fair-queue, bandwidth, shape, or WRED to it."
+        }
+      ]
+    },
+    {
+      "id": "qos-039",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth remaining percent",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "bandwidth",
+        "remaining",
+        "cbwfq",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When should you use bandwidth remaining percent instead of bandwidth percent?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Use bandwidth remaining percent when LLQ priority queues are present. The priority queue's bandwidth is subtracted first, and bandwidth remaining percent allocates the leftover capacity proportionally — preventing oversubscription errors and adapting if the priority class size changes."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN\n class VOICE\n  priority percent 10\n class BUSINESS\n  bandwidth remaining percent 60\n class class-default\n  bandwidth remaining percent 40"
+        }
+      ]
+    },
+    {
+      "id": "qos-040",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust dscp on switch",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "trust",
+        "mls-qos",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you configure a Catalyst switch port to trust the incoming DSCP value?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/10\n switchport mode access\n auto qos trust dscp"
+        },
+        {
+          "type": "text",
+          "text": "On older platforms, mls qos trust dscp under the interface; on newer IOS-XE switches, MQC service-policies replace the legacy mls qos commands."
+        }
+      ]
+    },
+    {
+      "id": "qos-041",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Conditional trust",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "conditional-trust",
+        "cdp",
+        "ip-phone",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is conditional trust on a Catalyst access port?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Conditional trust extends the trust boundary only when a specific device (e.g., Cisco IP phone) is detected via CDP/LLDP. If the phone is unplugged or replaced by a non-trusted device, the port automatically reverts to untrusted, preventing PCs from sending self-marked priority traffic."
+        }
+      ]
+    },
+    {
+      "id": "qos-042",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Switch egress queues",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "1p7q",
+        "egress-queue",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does a 1P7Q3T egress queue structure mean on a Catalyst switch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "1P7Q3T = 1 strict-priority queue + 7 normal queues, each with 3 WRED drop thresholds. Priority is serviced first; the other queues are scheduled by weight. The 3 thresholds let WRED drop lower-priority DSCP values from a queue earlier than higher-priority values."
+        }
+      ]
+    },
+    {
+      "id": "qos-043",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "RFC 4594",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "rfc-4594",
+        "12-class",
+        "model",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is RFC 4594 and why is it relevant?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "RFC 4594 is the IETF guideline for DiffServ service classes, defining a standardized 12-class model (e.g., VoIP=EF, Broadcast Video=CS5, Multimedia Conferencing=AF4x, Network Control=CS6). Cisco's Enterprise QoS designs are based on it."
+        }
+      ]
+    },
+    {
+      "id": "qos-044",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust untagged frames",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "untagged",
+        "cos",
+        "trust",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An access port is set to trust CoS, but voice frames consistently show CoS 0 in queueing stats. What's happening?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Access ports send untagged frames, so there is no 802.1Q tag and no CoS field to trust. Either trust DSCP instead, or use a voice VLAN so the phone sends 802.1Q-tagged frames carrying a valid CoS value."
+        }
+      ]
+    },
+    {
+      "id": "qos-045",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Compression and fragmentation",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "lfi",
+        "crtp",
+        "wan",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are link fragmentation and interleaving (LFI) used on slow WAN links?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "On slow links (<768 kbps), serialization of a large data packet can introduce excessive delay/jitter for voice. LFI fragments large packets and interleaves voice packets between the fragments, reducing serialization delay and protecting voice quality."
+        }
+      ]
+    },
+    {
+      "id": "qos-046",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show class-map",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "show",
+        "class-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which commands display class-map and policy-map definitions on a router?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show class-map\nshow class-map VOICE\nshow policy-map\nshow policy-map WAN-OUT"
+        },
+        {
+          "type": "text",
+          "text": "These show configured definitions only. Use show policy-map interface to see live counters and runtime behavior."
+        }
+      ]
+    },
+    {
+      "id": "qos-047",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking inside vs outside",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "marking",
+        "encapsulation",
+        "tunnel",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When traffic enters a GRE or IPsec tunnel, what happens to DSCP markings?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Cisco IOS by default copies the inner IP DSCP value to the outer (tunnel) IP header so transit devices honor QoS. With IPsec, qos pre-classify can also be enabled so QoS policies see the original (pre-encryption) classification fields."
+        }
+      ]
+    },
+    {
+      "id": "qos-048",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "qos pre-classify",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "pre-classify",
+        "ipsec",
+        "tunnel",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does qos pre-classify do, and where is it configured?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "qos pre-classify allows a QoS service-policy on a tunnel/crypto interface to classify based on the original (pre-encryption/encapsulation) packet header, instead of just the post-encryption outer header. It is configured under the tunnel or crypto map."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel0\n qos pre-classify"
+        }
+      ]
+    },
+    {
+      "id": "qos-049",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "WRR vs SRR",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "wrr",
+        "srr",
+        "scheduler",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between WRR and SRR scheduling on Catalyst switches?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "WRR",
+            "SRR"
+          ],
+          "rows": [
+            [
+              "Servicing",
+              "Bursty per round",
+              "Smooth, evenly spaced"
+            ],
+            [
+              "Modes",
+              "Weighted only",
+              "Shaped or Shared"
+            ],
+            [
+              "Use case",
+              "Older platforms",
+              "Modern Catalyst"
+            ],
+            [
+              "Priority queue",
+              "Optional",
+              "Optional with expedite"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-050",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Drop probability",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "wred",
+        "min-threshold",
+        "max-threshold",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do WRED min-threshold, max-threshold, and mark probability denominator (MPD) interact?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Below min-threshold no packets are dropped. Between min and max, drop probability rises linearly up to 1/MPD at max-threshold. Above max-threshold all packets are dropped (tail drop)."
+        }
+      ]
+    },
+    {
+      "id": "qos-051",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Voice bearer vs signaling",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "ef",
+        "cs3",
+        "voice",
+        "signaling",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are voice bearer and voice signaling marked with different DSCP values?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Voice bearer (RTP) is delay-sensitive and gets EF (DSCP 46) for strict-priority queueing. Signaling (SIP, SCCP, H.323) tolerates more delay but must be reliable, so it gets CS3 (DSCP 24) in a guaranteed-bandwidth class. Mixing them in EF would waste priority bandwidth."
+        }
+      ]
+    },
+    {
+      "id": "qos-052",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Explicit Congestion Notification",
+      "type": "definition",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "ecn",
+        "wred",
+        "tcp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is ECN and how does it relate to WRED?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Explicit Congestion Notification (ECN) uses 2 bits in the IP DS field to signal congestion to ECN-capable endpoints instead of dropping packets. With WRED ECN enabled, the router sets the CE (Congestion Experienced) bit instead of dropping when the flow supports ECN, allowing TCP to slow down without retransmission."
+        }
+      ]
+    },
+    {
+      "id": "qos-053",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Two-rate policer",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "police",
+        "trtcm",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Configure a two-rate three-color policer with CIR 5 Mbps and PIR 10 Mbps."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map TWO-RATE\n class DATA\n  police cir 5000000 pir 10000000\n   conform-action transmit\n   exceed-action set-dscp-transmit af11\n   violate-action drop"
+        }
+      ]
+    },
+    {
+      "id": "qos-054",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Hardware vs software queueing",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "hardware",
+        "software",
+        "asic",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between hardware queueing on a switch and software queueing on a router?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "Switch (hardware)",
+            "Router (software)"
+          ],
+          "rows": [
+            [
+              "Where",
+              "ASIC ingress/egress queues",
+              "IOS process / tx-ring"
+            ],
+            [
+              "Configuration",
+              "Queue templates / MQC",
+              "MQC service-policies"
+            ],
+            [
+              "Engages",
+              "Always (line-rate)",
+              "Only when tx-ring full"
+            ],
+            [
+              "Flexibility",
+              "Less flexible",
+              "Highly flexible"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-055",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Re-marking on the WAN edge",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "remark",
+        "wan-edge",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Your SP supports only 4 classes (Real-time, Critical, Business, Best-Effort). Your enterprise uses an 8-class model. What QoS strategy is required at the WAN edge?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Apply a class-based marking policy on the egress WAN interface that maps the 8 internal DSCP values into the 4 SP-supported values. For example: EF→EF, CS6/CS5/AF4→AF31, AF2/AF3→AF21, default→default. The internal markings stay intact within the enterprise; only the WAN handoff is collapsed."
+        }
+      ]
+    },
+    {
+      "id": "qos-056",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show queueing",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "show",
+        "queueing",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows the queueing strategy and queue depth on a router interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show queueing interface GigabitEthernet0/0/0\nshow interfaces GigabitEthernet0/0/0"
+        },
+        {
+          "type": "text",
+          "text": "show interfaces lists the active queueing strategy (FIFO, fair-queue, CBWFQ) and current queue size; show queueing gives more detail per class."
+        }
+      ]
+    },
+    {
+      "id": "qos-057",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Color blind vs color aware",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "policer",
+        "color-aware",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between a color-blind and a color-aware policer?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A color-blind policer assumes all incoming traffic is green and assigns colors based purely on rate vs CIR/PIR. A color-aware policer respects existing markings — already-marked yellow/red packets cannot be promoted to green even if tokens are available. Color-aware is used when enforcing pre-existing SLA markings."
+        }
+      ]
+    },
+    {
+      "id": "qos-058",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS in SD-WAN",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "sd-wan",
+        "app-aware",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does Cisco Catalyst SD-WAN implement QoS differently from traditional MQC?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "SD-WAN uses centralized policy from vManage. Traffic is matched by application (via SD-AVC/NBAR) into forwarding classes, then mapped to per-tunnel/per-transport queues with built-in shapers. App-aware routing chooses transports based on SLA (loss/latency/jitter) and steers classes onto the best path dynamically — a capability not native to MQC."
+        }
+      ]
+    },
+    {
+      "id": "qos-059",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth oversubscription error",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "bandwidth",
+        "oversubscription",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Applying a policy-map fails with 'I/O memory or bandwidth not available'. What does this mean?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "By default, the sum of bandwidth statements in CBWFQ classes (plus priority) cannot exceed 75% of interface bandwidth — the rest is reserved for overhead and routing protocols. Either reduce class allocations, use bandwidth remaining percent, or change max-reserved-bandwidth on the interface."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet0/0\n max-reserved-bandwidth 90"
+        }
+      ]
+    },
+    {
+      "id": "qos-060",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match access-group",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "class-map",
+        "acl",
+        "match",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show how to classify SSH traffic into a class using an ACL."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ip access-list extended SSH-TRAFFIC\n permit tcp any any eq 22\n!\nclass-map match-all MGMT\n match access-group name SSH-TRAFFIC\n!\npolicy-map MARK-IN\n class MGMT\n  set dscp cs2"
+        }
+      ]
+    },
+    {
+      "id": "qos-061",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Interpreting drops vs no buffers",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "show-interfaces",
+        "drops",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On show interfaces, what's the difference between 'output drops', 'output buffer failures', and 'queue drops' from a QoS perspective?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Counter",
+            "Meaning"
+          ],
+          "rows": [
+            [
+              "Output drops",
+              "Packets discarded due to congestion (most often QoS/queue full)"
+            ],
+            [
+              "Output buffer failures",
+              "No system buffer available — usually a memory/sizing issue, not pure QoS"
+            ],
+            [
+              "Total output drops (per class)",
+              "From show policy-map interface — exact QoS-level drops per class"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Always correlate show interfaces drops with show policy-map interface to attribute drops to a specific class."
+        }
+      ]
+    },
+    {
+      "id": "qos-062",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Voice QoS scenario",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "scenario",
+        "voice",
+        "wan",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A 50 Mbps WAN link must support 30 concurrent G.711 calls (~80 kbps each w/ overhead) plus business data. Design a QoS policy outline."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Calculate voice bandwidth: 30 calls × ~80 kbps ≈ 2.4 Mbps; allocate ~5% (2.5 Mbps) priority for headroom",
+            "Mark voice EF, signaling CS3, business AF31, scavenger CS1 at the access edge",
+            "On WAN egress: priority percent 5 for VOICE, bandwidth remaining percent for SIGNALING/BUSINESS/class-default",
+            "Add WRED in data classes to prevent TCP synchronization",
+            "Apply parent shaper if the contracted CIR is below physical link rate (e.g., 50 Mbps logical on a 1G port)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-063",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "ToS byte structure",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "tos",
+        "ds-field",
+        "ecn",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How is the IPv4 ToS byte structured in the DiffServ era?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Bits",
+            "Field",
+            "Use"
+          ],
+          "rows": [
+            [
+              "0–5",
+              "DSCP",
+              "DiffServ Code Point (64 values)"
+            ],
+            [
+              "6–7",
+              "ECN",
+              "Explicit Congestion Notification"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "The legacy IP Precedence used only the top 3 bits, which is why Class Selector DSCP values (CS0–CS7) align with old precedence values."
+        }
+      ]
+    },
+    {
+      "id": "qos-064",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "IPv6 traffic class",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "ipv6",
+        "traffic-class",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Where does QoS marking live in an IPv6 packet?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "IPv6 has an 8-bit Traffic Class field in the fixed header, equivalent to the IPv4 ToS byte: 6 bits DSCP + 2 bits ECN. The same DSCP values (EF, AFxx, CSx) apply identically to IPv6 traffic."
+        }
+      ]
+    },
+    {
+      "id": "qos-065",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Class Selector compatibility",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "cs",
+        "ip-precedence",
+        "compatibility",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why do Class Selector DSCP values exist (CS1–CS7)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Class Selector code points provide backward compatibility with legacy IP Precedence. CSx maps to IP Precedence value x (e.g., CS5 = precedence 5 = DSCP 40). This lets old IP-Precedence-aware devices interoperate with DiffServ-aware devices using equivalent treatments."
+        }
+      ]
+    },
+    {
+      "id": "qos-066",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS group",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "qos-group",
+        "internal",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a qos-group and when is it used?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "qos-group is an internal-only marker (not on the wire) used to carry classification context across IOS subsystems. You set qos-group on ingress, then match qos-group on egress, allowing classification logic to be shared between input and output policies without altering DSCP or CoS."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map IN\n class VOICE\n  set qos-group 5\n!\nclass-map match-any QG5\n match qos-group 5\n!\npolicy-map OUT\n class QG5\n  priority percent 10"
+        }
+      ]
+    },
+    {
+      "id": "qos-067",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match input-interface",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "class-map",
+        "match",
+        "interface",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you classify traffic based on the source ingress interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-all FROM-DC\n match input-interface GigabitEthernet0/1\n!\npolicy-map WAN-OUT\n class FROM-DC\n  bandwidth percent 30"
+        },
+        {
+          "type": "text",
+          "text": "Useful when traffic from a specific VLAN/segment must receive different egress treatment without re-marking."
+        }
+      ]
+    },
+    {
+      "id": "qos-068",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Burst sizing",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "bc",
+        "be",
+        "burst",
+        "policer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are Bc and Be in a policer, and what is a typical Bc default?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Bc (committed burst) is the maximum number of bytes that can be sent in a burst at the CIR; Be (excess burst) is additional burst capacity beyond Bc. Cisco's default Bc when not specified is CIR/32 or 1500 bytes (whichever is greater). Too small a Bc causes excessive drops on bursty TCP traffic."
+        }
+      ]
+    },
+    {
+      "id": "qos-069",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Shaping bursts",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "shape",
+        "tc",
+        "bc",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does the shaper compute Tc and why does it matter for voice?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Tc (time interval) = Bc / CIR. The shaper releases Bc bits every Tc. A larger Tc means longer pauses between bursts, increasing jitter for real-time traffic. For voice, target Tc of 10 ms by tuning Bc (Bc = CIR × 0.01)."
+        }
+      ]
+    },
+    {
+      "id": "qos-070",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "MTU vs serialization",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "serialization",
+        "mtu",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Calculate the serialization delay for a 1500-byte packet on a 1.544 Mbps T1 link."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Serialization = (1500 × 8) / 1,544,000 ≈ 7.77 ms. This is significant for voice (target <10 ms one-hop), and is why LFI is recommended on links below ~768 kbps."
+        }
+      ]
+    },
+    {
+      "id": "qos-071",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "RTP header compression",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "crtp",
+        "compression",
+        "voice",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does cRTP (Compressed RTP) do and where is it appropriate?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "cRTP compresses the 40-byte IP/UDP/RTP header down to ~2–4 bytes per voice packet on a per-hop basis. It dramatically reduces voice bandwidth on low-speed WAN links but adds CPU cost, so it's used on slow point-to-point links — not on high-speed or multipoint topologies."
+        }
+      ]
+    },
+    {
+      "id": "qos-072",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show auto qos",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "autoqos",
+        "show",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows the QoS configuration AutoQoS generated on a switch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show auto qos\nshow auto qos interface GigabitEthernet1/0/5\nshow run | begin policy-map"
+        }
+      ]
+    },
+    {
+      "id": "qos-073",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marked but not queued",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "marking",
+        "queueing",
+        "troubleshooting",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "DSCP EF is being correctly set on ingress, but voice still suffers jitter on egress. Where is the likely gap?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Marking alone doesn't change forwarding. Without an egress service-policy that classifies on DSCP EF and places the traffic into a priority/LLQ queue, EF traffic competes equally with everything else. Apply an output policy-map with priority for class VOICE on the congested egress interface."
+        }
+      ]
+    },
+    {
+      "id": "qos-074",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match on input VLAN",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "match",
+        "vlan",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How can you classify traffic based on a specific VLAN ID?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-all VLAN20\n match vlan 20\n!\npolicy-map MARK\n class VLAN20\n  set dscp af21"
+        }
+      ]
+    },
+    {
+      "id": "qos-075",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Egress queueing scope",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "egress",
+        "queue",
+        "scope",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are queueing actions only valid on egress, not ingress?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Queueing manages contention for an outgoing interface's bandwidth. Ingress traffic doesn't experience that contention until it reaches an egress port, so queue scheduling decisions logically belong at egress. Ingress can still classify, mark, and police."
+        }
+      ]
+    },
+    {
+      "id": "qos-076",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS in fabric / SD-Access",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "sda",
+        "vxlan",
+        "fabric",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How is QoS marking preserved across an SD-Access fabric?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "SD-Access uses VXLAN encapsulation. The original packet's DSCP is copied into the outer (underlay) IP header so underlay devices can still queue based on DSCP. The original DSCP is retained in the inner header and decapsulated at the egress fabric edge."
+        }
+      ]
+    },
+    {
+      "id": "qos-077",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Service-policy direction",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "service-policy",
+        "input",
+        "output",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show how to apply the same policy-map at both ingress and egress."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet0/0/0\n service-policy input EDGE-IN\n service-policy output WAN-OUT"
+        },
+        {
+          "type": "text",
+          "text": "Each direction has its own policy. You cannot apply the same policy-map twice in the same direction on one interface."
+        }
+      ]
+    },
+    {
+      "id": "qos-078",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Traffic profiling",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "profiling",
+        "design",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is traffic profiling an essential first step before designing QoS?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "You can't allocate bandwidth, set priority, or size queues without knowing what applications run, their volumes, and tolerance for loss/jitter/delay. Tools like NetFlow, NBAR2, and Catalyst Center use profiling data to drive accurate class definitions and bandwidth percentages."
+        }
+      ]
+    },
+    {
+      "id": "qos-079",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust device cisco-phone",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "trust",
+        "cisco-phone",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Configure conditional trust for a Cisco IP phone using AutoQoS."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/10\n switchport mode access\n switchport access vlan 10\n switchport voice vlan 110\n auto qos voip cisco-phone"
+        },
+        {
+          "type": "text",
+          "text": "AutoQoS adds class-maps, policy-maps, and conditional trust based on CDP detection of the phone."
+        }
+      ]
+    },
+    {
+      "id": "qos-080",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue starvation",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "starvation",
+        "llq",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Users report that bulk file transfers stall whenever a video conference is active. What is happening and how do you fix it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Video may be in a priority queue with too high a rate, starving non-priority classes. Either move video into a CBWFQ class with bandwidth (not priority), reduce the priority allocation, or use bandwidth remaining percent for fairness in the remaining classes."
+        }
+      ]
+    },
+    {
+      "id": "qos-081",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Multiple priority queues",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "llq",
+        "multi-level-priority",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Can a policy-map have more than one priority class, and why would you want that?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Yes — IOS supports multi-level priority (priority level 1, priority level 2). Voice goes to level 1 (serviced first), interactive video to level 2. Both bypass CBWFQ scheduling, but level 1 is always serviced before level 2, ensuring voice protection even when video is bursty."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN-OUT\n class VOICE\n  priority level 1 percent 10\n class VIDEO\n  priority level 2 percent 25"
+        }
+      ]
+    },
+    {
+      "id": "qos-082",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show platform QoS",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "show-platform",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On a Catalyst 9000 series switch, which command exposes hardware queue statistics for an interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show platform hardware fed switch active qos queue stats interface GigabitEthernet1/0/1"
+        },
+        {
+          "type": "text",
+          "text": "Useful when show policy-map interface lacks visibility into ASIC-level queue depths and drops."
+        }
+      ]
+    },
+    {
+      "id": "qos-083",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Priority percent vs priority kbps",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "priority",
+        "percent",
+        "kbps",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare priority percent X with priority X (kbps) in a policy-map."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Form",
+            "Behavior"
+          ],
+          "rows": [
+            [
+              "priority X (kbps)",
+              "Fixed absolute rate; doesn't scale with interface speed"
+            ],
+            [
+              "priority percent X",
+              "Scales with interface bandwidth; same policy reusable on different links"
+            ],
+            [
+              "priority remaining percent X",
+              "Percent of bandwidth left after other priority/bandwidth classes"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-084",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Output drops on Gi interface",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "show-interfaces",
+        "drops",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does this snippet indicate?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "GigabitEthernet0/0/0 is up, line protocol is up\n  Total output drops: 142039\n  Queueing strategy: Class-based queueing\n  Output queue: 0/1000/142039 (size/max total/drops)"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The interface is congested and class-based queueing is dropping packets. Use show policy-map interface Gi0/0/0 to see which class(es) are dropping and whether to increase bandwidth, adjust shaping, or add WRED to data classes."
+        }
+      ]
+    },
+    {
+      "id": "qos-085",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking ACL match limits",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "acl",
+        "marking",
+        "limits",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A class-map matches an ACL with thousands of entries and CPU rises. What's the issue?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "On platforms that classify in software, large ACLs cause linear CPU lookups per packet. Reduce by summarizing the ACL, using DSCP-based matching after the first hop, leveraging NBAR/protocol matching, or matching on object groups so the ACL is hardware-accelerated."
+        }
+      ]
+    },
+    {
+      "id": "qos-086",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "WAN edge handoff",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "wan",
+        "handoff",
+        "scenario",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Your provider gives a 100 Mbps Ethernet handoff but contracts 30 Mbps CIR. You see provider drops at random. What QoS technique fixes this?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Apply an egress shaper at 30 Mbps so the customer router never bursts above the contracted CIR. Without shaping, the 100 Mbps physical link will burst into the SP, which then polices and drops. Inside the shaper, attach a child policy with LLQ/CBWFQ to prioritize voice/critical traffic within the 30 Mbps."
+        }
+      ]
+    },
+    {
+      "id": "qos-087",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Per-VLAN QoS",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "per-vlan",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is per-VLAN MQC (VLAN-based QoS) on a Catalyst switch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Per-VLAN QoS allows a service-policy to be applied to an SVI or trunk and treat each VLAN independently. It's used when policy must differ per VLAN over a shared trunk — for example, shaping a guest VLAN to 50 Mbps while leaving the corporate VLAN unrestricted on the same physical port."
+        }
+      ]
+    },
+    {
+      "id": "qos-088",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Egress vs ingress policing use case",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "policing",
+        "ingress",
+        "egress",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When would you police on ingress vs egress?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Direction",
+            "Typical use"
+          ],
+          "rows": [
+            [
+              "Ingress",
+              "Drop attack/scavenger traffic early; rate-limit untrusted flows before they consume backplane"
+            ],
+            [
+              "Egress",
+              "Enforce subscriber/SLA contracts going to a WAN/SP; rate-limit per-class within a shaped parent"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-089",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking persistence",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "marking",
+        "persistence",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is DSCP preferred over CoS for end-to-end QoS?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DSCP rides in the IP header, surviving every routed hop and across L2 boundaries (untagged ports, different VLANs). CoS exists only inside an 802.1Q tag and is lost the moment the frame is untagged or routed. DSCP also offers 64 values vs CoS's 8."
+        }
+      ]
+    },
+    {
+      "id": "qos-090",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "ip nbar protocol-discovery",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "nbar",
+        "protocol-discovery",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you turn on NBAR protocol discovery on an interface to baseline traffic?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet0/0/0\n ip nbar protocol-discovery\n!\nshow ip nbar protocol-discovery"
+        },
+        {
+          "type": "text",
+          "text": "Provides per-protocol byte/packet counts and bit rates — invaluable for sizing CBWFQ classes during QoS design."
+        }
+      ]
+    },
+    {
+      "id": "qos-091",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Scavenger class",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "scavenger",
+        "cs1",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the scavenger class in Cisco's enterprise QoS model?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A class for traffic that is below best-effort — peer-to-peer, bulk backups, or suspected abuse. Marked CS1 (DSCP 8). It receives less than default during congestion and is dropped first. Used to protect business traffic from non-business workloads."
+        }
+      ]
+    },
+    {
+      "id": "qos-092",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS misconfiguration impact",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "misconfiguration",
+        "control-plane",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "After applying an aggressive policer on a WAN interface, OSPF neighbors flap. What happened and how do you prevent it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The policer is dropping OSPF hellos along with data. Routing protocol traffic uses CS6 (DSCP 48) by default. Always include a class for control plane (match dscp cs6 cs7) and protect it with guaranteed bandwidth or transmit/no-drop action — never police it down indiscriminately."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any CONTROL\n match dscp cs6\n match dscp cs7\n!\npolicy-map WAN-OUT\n class CONTROL\n  bandwidth percent 5"
+        }
+      ]
+    },
+    {
+      "id": "qos-093",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DSCP decimal mapping",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "dscp",
+        "decimal",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Match these DSCP names to their decimal values: EF, AF31, AF41, CS3, CS6, default."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "DSCP",
+            "Decimal",
+            "Binary"
+          ],
+          "rows": [
+            [
+              "default (DF)",
+              "0",
+              "000000"
+            ],
+            [
+              "CS3",
+              "24",
+              "011000"
+            ],
+            [
+              "AF31",
+              "26",
+              "011010"
+            ],
+            [
+              "AF41",
+              "34",
+              "100010"
+            ],
+            [
+              "EF",
+              "46",
+              "101110"
+            ],
+            [
+              "CS6",
+              "48",
+              "110000"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-094",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AF naming",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "af",
+        "naming",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Decode the AF naming scheme: what does AFxy mean?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "x = AF class (1–4), determining queue/bandwidth treatment. y = drop precedence (1–3) within that class — higher y = more likely to drop under congestion. Formula: DSCP = 8x + 2y. Example: AF31 = (8×3) + (2×1) = 26."
+        }
+      ]
+    },
+    {
+      "id": "qos-095",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Output service-policy on subinterface",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "subinterface",
+        "shape",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why must shaping be applied on the subinterface (or with HQoS) for Frame Relay/MPLS subinterface designs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Each subinterface represents a separate logical PVC/circuit, often with its own CIR. The physical interface speed isn't the relevant rate. Apply shape to the subinterface (or HQoS parent) at the subscribed rate, then attach a child policy with LLQ/CBWFQ inside that shape."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet0/0/0.100\n encapsulation dot1Q 100\n service-policy output PARENT-SHAPE-20M"
+        }
+      ]
+    },
+    {
+      "id": "qos-096",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "match protocol vs match dscp",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "match-protocol",
+        "match-dscp",
+        "nbar",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When should match protocol (NBAR) be used vs match dscp?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Match",
+            "Where",
+            "Why"
+          ],
+          "rows": [
+            [
+              "protocol (NBAR)",
+              "Edge/access (first hop)",
+              "Identify apps without prior markings"
+            ],
+            [
+              "dscp",
+              "Distribution/core/WAN",
+              "Trust upstream markings; faster, hardware-friendly"
+            ],
+            [
+              "access-group",
+              "Specialized cases",
+              "Match arbitrary ACL criteria"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Classify deeply once at the edge, mark, then trust DSCP everywhere else."
+        }
+      ]
+    },
+    {
+      "id": "qos-097",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "RSVP overview",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "rsvp",
+        "intserv",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is RSVP and why isn't it used end-to-end in modern enterprise QoS?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "RSVP (Resource Reservation Protocol) is the IntServ signaling protocol that reserves bandwidth per flow along the path. Every router must hold per-flow state, which doesn't scale. Modern designs use DiffServ (per-hop, no state) for scalability. RSVP still appears in MPLS-TE for tunnel signaling."
+        }
+      ]
+    },
+    {
+      "id": "qos-098",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Auto QoS trust types",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "autoqos",
+        "trust",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What's the difference between auto qos voip cisco-phone, auto qos voip cisco-softphone, and auto qos voip trust?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Command",
+            "Trust behavior"
+          ],
+          "rows": [
+            [
+              "cisco-phone",
+              "Conditional trust via CDP — only trusts when phone is detected"
+            ],
+            [
+              "cisco-softphone",
+              "Untrusted; classifies by ACLs/DSCP set by softphone app"
+            ],
+            [
+              "trust",
+              "Unconditional trust on uplink/trunk to other QoS-aware devices"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-099",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth percent reference",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "bandwidth-percent",
+        "reference",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When you configure bandwidth percent 30 inside a child policy nested under a shape average 20000000, 30% of what?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "30% of the parent shaper rate (20 Mbps), not the physical interface rate. So this class gets a guaranteed 6 Mbps. This is why HQoS shaping is critical when the contracted rate differs from the link speed."
+        }
+      ]
+    },
+    {
+      "id": "qos-100",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Three-color terminology",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "policer",
+        "color",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What do the three colors green, yellow, and red mean in a three-color policer?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Color",
+            "Meaning",
+            "Typical action"
+          ],
+          "rows": [
+            [
+              "Green (conform)",
+              "Within CIR/Bc",
+              "Transmit"
+            ],
+            [
+              "Yellow (exceed)",
+              "Above Bc but within Be / between CIR and PIR",
+              "Remark or transmit"
+            ],
+            [
+              "Red (violate)",
+              "Above Be / above PIR",
+              "Drop"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-101",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "show mls qos",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "mls-qos",
+        "legacy",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On older Catalyst platforms, which command verifies that MLS QoS is enabled globally?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show mls qos\nshow mls qos interface GigabitEthernet1/0/1\nshow mls qos maps dscp-cos"
+        },
+        {
+          "type": "text",
+          "text": "Catalyst 9000 / IOS-XE platforms use full MQC instead of mls qos commands."
+        }
+      ]
+    },
+    {
+      "id": "qos-102",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Voice + video on shared link",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "voice",
+        "video",
+        "scenario",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On a 100 Mbps WAN: 30 voice calls (~3 Mbps), 10 HD video sessions (~40 Mbps), business data, and best-effort. Outline a QoS class structure."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "VOICE (EF) — priority level 1 percent 5 (5 Mbps)",
+            "VIDEO (AF41) — priority level 2 percent 45 (45 Mbps)",
+            "SIGNALING (CS3) — bandwidth remaining percent 5",
+            "BUSINESS (AF21) — bandwidth remaining percent 50",
+            "SCAVENGER (CS1) — bandwidth remaining percent 5",
+            "class-default — bandwidth remaining percent 40 + WRED"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Multi-level priority keeps voice safe even when video bursts."
+        }
+      ]
+    },
+    {
+      "id": "qos-103",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Service-policy type",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "service-policy",
+        "type",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does the type qualifier in policy-map type ... do?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It defines the policy's purpose. Common types: type qos (default — traditional QoS), type queueing (queueing-only on platforms with separate queueing pipeline), type control subscriber (BNG/access), type inspect (firewall). The type determines which class-map types and actions are valid."
+        }
+      ]
+    },
+    {
+      "id": "qos-104",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Catalyst 9000 two-policy model",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "cat9k",
+        "queueing",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On Catalyst 9000 switches, what is the two-level egress policy model?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Egress requires a parent type queueing policy that maps DSCP/CoS into ASIC queues, plus an optional non-queueing policy for marking/policing. The queueing policy implements priority/bandwidth/shape; the non-queueing policy handles set/police actions. Both are applied with service-policy output."
+        }
+      ]
+    },
+    {
+      "id": "qos-105",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match not",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "class-map",
+        "match-not",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you classify all traffic that is NOT DSCP EF?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-all NOT-VOICE\n match not dscp ef"
+        },
+        {
+          "type": "text",
+          "text": "match not inverts a single match condition. Useful for catch-all classes that exclude a specific marking."
+        }
+      ]
+    },
+    {
+      "id": "qos-106",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Nested class-maps",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "class-map",
+        "nesting",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Can class-maps reference other class-maps? Why use this?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Yes — match class-map nests one class-map inside another. It's used to combine match-any and match-all logic, e.g., to express '(DSCP EF OR CS5) AND in VLAN 10'. The outer class-map enforces match-all over an inner match-any class-map."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any RT-DSCP\n match dscp ef\n match dscp cs5\n!\nclass-map match-all VLAN10-RT\n match class-map RT-DSCP\n match vlan 10"
+        }
+      ]
+    },
+    {
+      "id": "qos-107",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue limit",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "queue-limit",
+        "buffer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does queue-limit do inside a policy-map class?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN\n class BULK\n  bandwidth remaining percent 20\n  queue-limit 256 packets"
+        },
+        {
+          "type": "text",
+          "text": "Sets the maximum number of packets buffered in that class before tail drop. Larger queues = more buffering and latency; smaller queues = earlier drops, lower delay. Tune carefully for bulk vs interactive."
+        }
+      ]
+    },
+    {
+      "id": "qos-108",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bufferbloat",
+      "type": "definition",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "bufferbloat",
+        "latency",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is bufferbloat?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Bufferbloat is excessive latency/jitter caused by oversized buffers along a path. Large buffers fill up before any drops occur, so TCP doesn't slow down and packets sit in queues for hundreds of milliseconds. Mitigated with smaller queue limits, AQM (WRED, CoDel), or proper QoS classification."
+        }
+      ]
+    },
+    {
+      "id": "qos-109",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Random-detect dscp-based",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "wred",
+        "random-detect",
+        "dscp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Configure DSCP-based WRED in a class so AF13 drops more aggressively than AF11."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN\n class DATA\n  bandwidth remaining percent 40\n  random-detect dscp-based\n  random-detect dscp af11 32 40 10\n  random-detect dscp af13 16 40 10"
+        },
+        {
+          "type": "text",
+          "text": "Format: random-detect dscp <value> <min-thresh> <max-thresh> <mark-prob-denominator>. AF13's lower min-threshold causes earlier drops than AF11."
+        }
+      ]
+    },
+    {
+      "id": "qos-110",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust extending PCs",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "trust",
+        "pc",
+        "marking",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A user remarks all their traffic to EF on their laptop to get priority. The access port trusts DSCP. What's wrong, and how do you fix it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Trusting DSCP on an end-user port lets users self-promote traffic. Either disable trust on user ports (re-mark to default at the edge), use conditional trust limited to Cisco IP phones, or apply an ingress policer that re-marks anything above CS5 down to default."
+        }
+      ]
+    },
+    {
+      "id": "qos-111",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Auto QoS classify",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "autoqos",
+        "classify",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is auto qos classify and when is it appropriate?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "auto qos classify treats the port as untrusted and uses NBAR/heuristics to classify traffic and remark it according to Cisco's recommended values. Used on ports facing endpoints that don't mark correctly, like generic PCs or IoT devices. auto qos voip alternatively assumes voice and trusts as configured."
+        }
+      ]
+    },
+    {
+      "id": "qos-112",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show policy-map summary",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "show",
+        "policy-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What can you infer from this output?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Class-map: BUSINESS (match-all)\n  Match: dscp af21\n  Queueing\n   queue limit 64 packets\n   (queue depth/total drops/no-buffer drops) 64/45123/0\n   (pkts output/bytes output) 1234567/789012345\n   bandwidth remaining 50% (4500 kbps)"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "BUSINESS class is congested — queue is full (64/64) and 45,123 tail drops have occurred. The class has 50% remaining bandwidth ≈ 4.5 Mbps. Consider increasing queue-limit, enabling WRED, or raising bandwidth allocation."
+        }
+      ]
+    },
+    {
+      "id": "qos-113",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS and CoPP relationship",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "copp",
+        "control-plane",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does CoPP differ from data-plane QoS, even though both use MQC?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "CoPP (Control Plane Policing) uses MQC syntax but applies to the control plane rather than an interface. It rate-limits packets punted to the route processor (e.g., BGP, SSH, ICMP) to protect the CPU from DoS. Data-plane QoS prioritizes/drops in the forwarding path."
+        }
+      ]
+    },
+    {
+      "id": "qos-114",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Priority bandwidth borrowing",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "priority",
+        "borrowing",
+        "llq",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Can the LLQ priority queue use more than its configured rate?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Yes — the implicit policer only engages during congestion. If the link is uncongested, the priority queue can transmit above its configured rate. As soon as congestion appears, the policer drops traffic above the configured priority bandwidth, protecting other classes."
+        }
+      ]
+    },
+    {
+      "id": "qos-115",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Service-policy on tunnel",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "tunnel",
+        "service-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show how to apply an output service-policy to a GRE tunnel and ensure underlying physical interface honors it."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel1\n ip address 10.0.0.1 255.255.255.0\n tunnel source GigabitEthernet0/0\n tunnel destination 198.51.100.2\n service-policy output WAN-OUT\n qos pre-classify"
+        },
+        {
+          "type": "text",
+          "text": "Without qos pre-classify, classification on the tunnel sees the post-encap header. With it, the policy can match the original inner DSCP/ACL fields."
+        }
+      ]
+    },
+    {
+      "id": "qos-116",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Per-flow vs per-class",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "wfq",
+        "cbwfq",
+        "fairness",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare per-flow fairness (WFQ/fair-queue) and per-class fairness (CBWFQ)."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "WFQ (per-flow)",
+            "CBWFQ (per-class)"
+          ],
+          "rows": [
+            [
+              "Granularity",
+              "Each flow (5-tuple)",
+              "Administratively defined classes"
+            ],
+            [
+              "Fairness",
+              "Automatic between flows",
+              "Admin-controlled per class"
+            ],
+            [
+              "Predictability",
+              "Hard to size",
+              "Predictable bandwidth"
+            ],
+            [
+              "Use case",
+              "Default for low-speed links",
+              "Enterprise WAN with mixed traffic"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-117",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth statement reference",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "bandwidth",
+        "interface",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why might you set the bandwidth command on an interface even when it doesn't change line speed?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "QoS percent calculations, EIGRP/OSPF metrics, and SNMP utilization graphs all reference the bandwidth value. On a sub-rate WAN handoff (e.g., 50 Mbps logical on a 1 Gbps port), set bandwidth 50000 so QoS percentages and routing metrics reflect reality."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet0/0/0\n bandwidth 50000"
+        }
+      ]
+    },
+    {
+      "id": "qos-118",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "ATM/Ethernet overhead",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "overhead",
+        "shape",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does the SP often see more traffic than your shaper suggests it should send?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "By default, IOS shapers measure Layer 3 bytes only. The SP measures including Layer 2 overhead (Ethernet header, preamble, IFG, sometimes ATM cell overhead). Use shape average <rate> account user-defined <overhead> to include L2 framing in the calculation, preventing SP-side policing."
+        }
+      ]
+    },
+    {
+      "id": "qos-119",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Catalyst Center QoS workflow",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "catalyst-center",
+        "dna-center",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does Cisco Catalyst Center simplify QoS deployment?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Catalyst Center provides an Application Policy workflow: select a site, choose a queueing profile (e.g., 4/8/12-class), and identify business-relevant vs business-irrelevant applications. The controller pushes consistent MQC class-maps, policy-maps, and service-policies to all switches/routers in the site, aligned with RFC 4594."
+        }
+      ]
+    },
+    {
+      "id": "qos-120",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Priority queue hidden policer",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "priority",
+        "policer",
+        "drops",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "show policy-map interface shows the VOICE class with offered rate well below its priority bandwidth, but with steady drops. What likely explains it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Microbursts. The 30-second offered rate average masks short bursts that exceed the priority cap during congestion. The implicit priority policer measures over a much shorter window. Either increase the priority bandwidth, raise the burst (priority percent X burst <bytes>), or investigate codec/aggregation behavior causing bursts."
+        }
+      ]
+    },
+    {
+      "id": "qos-121",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DSCP mutation",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "dscp-mutation",
+        "remark",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is DSCP mutation and where is it useful?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DSCP mutation is a table-driven remarking that translates incoming DSCP values into different outgoing DSCP values at a domain boundary. Useful between QoS domains with different marking schemes (e.g., enterprise EF=46 vs partner EF=44), without writing a class for each value."
+        }
+      ]
+    },
+    {
+      "id": "qos-122",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "End-to-end design summary",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "design",
+        "summary",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the four classic stages of an enterprise QoS design?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Classify and mark at the network edge (closest to the source)",
+            "Establish and enforce trust boundaries",
+            "Apply queueing, policing, shaping, and congestion avoidance where congestion occurs (typically WAN)",
+            "Verify, monitor, and tune using show policy-map, NetFlow, and assurance tools"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Classify once, mark close to the source, trust everywhere else, queue where it congests."
+        }
+      ]
+    },
+    {
+      "id": "qos-123",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust CoS on trunk",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "trust",
+        "cos",
+        "trunk",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you configure a switch trunk port to trust incoming CoS values?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/24\n switchport mode trunk\n auto qos trust cos"
+        },
+        {
+          "type": "text",
+          "text": "Use trust cos when the upstream device is QoS-aware and tags frames properly. Use trust dscp on routed/L3 interfaces or when CoS isn't available."
+        }
+      ]
+    },
+    {
+      "id": "qos-124",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking impact on routing",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "cs6",
+        "routing",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are routing protocol packets marked CS6 (DSCP 48)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "CS6 corresponds to the legacy 'Internetwork Control' precedence. It ensures OSPF, EIGRP, BGP, and IS-IS hellos and updates are placed in a high-priority class so adjacencies and routing don't collapse during congestion. CS7 is reserved for very high-priority network control."
+        }
+      ]
+    },
+    {
+      "id": "qos-125",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Cos-to-dscp map",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "cos-to-dscp",
+        "map",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does a switch use a CoS-to-DSCP map and what's the default?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "When a switch trusts CoS but later forwards out a routed/L3 interface, it must derive a DSCP from the 3-bit CoS. The default map is CoS x → DSCP 8x (CoS 5 → DSCP 40, not 46). For voice this is wrong, so customize the map: mls qos map cos-dscp 0 8 16 24 32 46 48 56."
+        }
+      ]
+    },
+    {
+      "id": "qos-126",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust state per port",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "trust-state",
+        "switch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the possible QoS trust states for a switch port?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "State",
+            "Behavior"
+          ],
+          "rows": [
+            [
+              "untrusted (default)",
+              "Incoming CoS/DSCP overwritten to 0"
+            ],
+            [
+              "trust cos",
+              "Use CoS from 802.1Q tag"
+            ],
+            [
+              "trust dscp",
+              "Use DSCP from IP header"
+            ],
+            [
+              "trust ip-precedence",
+              "Use legacy 3-bit precedence"
+            ],
+            [
+              "conditional trust",
+              "Trust only when expected device (phone) detected"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-127",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Egress shape with overhead",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "shape",
+        "overhead",
+        "account",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Configure an egress shaper at 20 Mbps that includes 24 bytes of Layer 2 overhead in its rate calculation."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map WAN-PARENT\n class class-default\n  shape average 20000000 account user-defined 24"
+        },
+        {
+          "type": "text",
+          "text": "account user-defined adjusts shaping math so the customer router and SP measure the same effective rate."
+        }
+      ]
+    },
+    {
+      "id": "qos-128",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match dscp vs match precedence",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "match",
+        "dscp",
+        "precedence",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What's the difference between match dscp and match precedence in a class-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Match",
+            "Bits read",
+            "Granularity"
+          ],
+          "rows": [
+            [
+              "match precedence",
+              "Top 3 bits of ToS",
+              "8 values (0–7)"
+            ],
+            [
+              "match dscp",
+              "Top 6 bits of ToS",
+              "64 values"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Use match dscp for modern designs; match precedence remains for legacy interop."
+        }
+      ]
+    },
+    {
+      "id": "qos-129",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Voice MOS",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "mos",
+        "voice",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is MOS and what range indicates acceptable voice quality?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "MOS (Mean Opinion Score) rates voice quality from 1 (bad) to 5 (excellent). Toll-quality is ~4.0; acceptable enterprise VoIP is 3.5–4.5. MOS is impacted by codec, loss, jitter, and one-way delay — all of which QoS aims to control."
+        }
+      ]
+    },
+    {
+      "id": "qos-130",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Codec bandwidth",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "codec",
+        "g711",
+        "g729",
+        "voice",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Approximate per-call bandwidth for G.711 and G.729 over Ethernet (with IP/UDP/RTP headers, 20 ms samples)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Codec",
+            "Payload",
+            "With IP/UDP/RTP + Ethernet"
+          ],
+          "rows": [
+            [
+              "G.711",
+              "64 kbps",
+              "~87 kbps"
+            ],
+            [
+              "G.729",
+              "8 kbps",
+              "~31 kbps"
+            ],
+            [
+              "G.722",
+              "64 kbps",
+              "~87 kbps"
+            ],
+            [
+              "Opus (typical wideband)",
+              "~32 kbps",
+              "~55 kbps"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-131",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking ip header",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "marking",
+        "set-ip-dscp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What's the difference between set dscp and set ip dscp in a policy-map?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "set ip dscp marks only IPv4 packets. set dscp (no 'ip') marks both IPv4 and IPv6, and is the modern preferred form. Mixing them can cause IPv6 traffic to remain unmarked if you only used set ip dscp."
+        }
+      ]
+    },
+    {
+      "id": "qos-132",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Output drops on switch",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "switch",
+        "buffer",
+        "drops",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A 1 Gbps switch port dropping output packets even though average utilization is only 200 Mbps. What's likely happening?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Microbursts — short transient spikes that overflow ASIC buffers. The 5-minute average looks fine, but instantaneous queue depth maxes out. Mitigate with deeper egress buffers, per-queue buffer tuning, or QoS that protects priority traffic during bursts."
+        }
+      ]
+    },
+    {
+      "id": "qos-133",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth in EIGRP",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "bandwidth",
+        "eigrp",
+        "metric",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does the bandwidth statement on an interface affect QoS and EIGRP simultaneously?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "QoS percent allocations are calculated against the bandwidth value. EIGRP uses the same value in its composite metric. So changing bandwidth to model a sub-rate WAN circuit also alters EIGRP path selection — verify routing impact when adjusting it for QoS purposes."
+        }
+      ]
+    },
+    {
+      "id": "qos-134",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Hierarchical priority",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "hqos",
+        "priority",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In an HQoS design, where should the priority class live — parent or child policy?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "In the child policy. The parent shaper sets the aggregate rate; inside the shaped pipe, the child policy schedules among classes with priority/bandwidth statements. Putting priority in the parent doesn't make sense — there's nothing else at that level to compete with."
+        }
+      ]
+    },
+    {
+      "id": "qos-135",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue depth interpretation",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "queue-depth",
+        "show",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does this snippet imply about the class state?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Class-map: VOICE (match-all)\n  Match: dscp ef\n  priority 10% (1000 kbps)\n  (queue depth/total drops/no-buffer drops) 0/0/0\n  (pkts output/bytes output) 1500000/240000000"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Voice class is healthy: queue depth 0 (no backlog), zero drops, traffic flowing. Strict-priority is working correctly and the policer hasn't engaged. No action required."
+        }
+      ]
+    },
+    {
+      "id": "qos-136",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Default queueing on Ethernet",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "fifo",
+        "default",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the default queueing strategy on a Gigabit Ethernet router interface with no service-policy?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "FIFO (first-in, first-out). On high-speed interfaces (>2 Mbps), Cisco IOS defaults to FIFO since congestion is rare. Lower-speed serial interfaces traditionally defaulted to WFQ. Apply MQC service-policy to override."
+        }
+      ]
+    },
+    {
+      "id": "qos-137",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Trust DSCP with voice VLAN",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "voice-vlan",
+        "trust",
+        "scenario",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Access port has a voice VLAN. Phone marks RTP as DSCP EF and CoS 5. PC behind it marks Skype calls as DSCP EF too. How do you protect the QoS model?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Use conditional trust on the phone (auto qos voip cisco-phone) so the phone's CDP presence extends trust. The phone is configured to clear CoS/DSCP from frames coming from the attached PC port, so PC self-marking is overwritten before reaching the switch. Phone-originated EF is still honored."
+        }
+      ]
+    },
+    {
+      "id": "qos-138",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Class precedence matching",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "class-map",
+        "order",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "If a packet matches multiple classes in a policy-map, which class processes it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The first matching class in the order they appear in the policy-map. Once matched, subsequent classes are skipped. Order matters — place more specific classes (e.g., VOICE) before general ones (e.g., BUSINESS) and class-default at the end."
+        }
+      ]
+    },
+    {
+      "id": "qos-139",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Marking before encryption",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "ipsec",
+        "marking",
+        "encryption",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Does IPsec encryption hide DSCP markings from transit devices?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "No. By default, IPsec copies the inner ToS byte to the outer (tunnel-mode) IP header so transit routers can still queue based on DSCP. The payload is encrypted, but the outer DSCP remains visible. ESP transport mode preserves the original IP header (with DSCP) outright."
+        }
+      ]
+    },
+    {
+      "id": "qos-140",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth percent total",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "bandwidth-percent",
+        "75-percent",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does Cisco IOS reject a CBWFQ policy where bandwidth percent statements sum to 80%?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "By default, max-reserved-bandwidth is 75%. The remaining 25% is reserved for routing protocols, Layer 2 keepalives, and overhead. Either reduce class allocations to ≤75%, raise max-reserved-bandwidth, or switch to bandwidth remaining percent."
+        }
+      ]
+    },
+    {
+      "id": "qos-141",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match cos",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "match-cos",
+        "class-map",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you classify traffic with CoS 5 on a switch trunk port?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-any VOICE-COS\n match cos 5\n!\npolicy-map TRUNK-IN\n class VOICE-COS\n  set dscp ef"
+        },
+        {
+          "type": "text",
+          "text": "match cos works only on tagged 802.1Q frames; on untagged access ports use match dscp or match access-group."
+        }
+      ]
+    },
+    {
+      "id": "qos-142",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Default class-default behavior",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "class-default",
+        "fifo",
+        "fair-queue",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is fair-queue often added to class-default in CBWFQ designs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Without fair-queue, class-default is a single FIFO, so a few aggressive flows can starve others. Adding fair-queue applies WFQ within the class, giving each flow equitable access to the leftover bandwidth — important because most traffic ends up in class-default."
+        }
+      ]
+    },
+    {
+      "id": "qos-143",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Show service-policy",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "show",
+        "service-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What's the difference between show policy-map and show policy-map interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Command",
+            "Output"
+          ],
+          "rows": [
+            [
+              "show policy-map [name]",
+              "Static configuration of policy-map(s)"
+            ],
+            [
+              "show policy-map interface <intf>",
+              "Live counters: matches, drops, queue depth, policer/shaper conform/exceed bytes per class"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-144",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "VoIP one-way delay budget",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "voip",
+        "delay-budget",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the ITU-T G.114 recommended one-way delay budget for voice?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "One-way delay",
+            "Quality"
+          ],
+          "rows": [
+            [
+              "0–150 ms",
+              "Acceptable for most users"
+            ],
+            [
+              "150–400 ms",
+              "Acceptable but noticeable"
+            ],
+            [
+              ">400 ms",
+              "Generally unacceptable"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-145",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Egress vs ingress shaping",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "shaping",
+        "ingress",
+        "egress",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is shaping typically egress-only?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Shaping buffers excess traffic to smooth bursts. You can only buffer outbound traffic — inbound packets have already been received and consumed link bandwidth. Ingress 'shaping' makes no sense; ingress contention is handled with policing instead."
+        }
+      ]
+    },
+    {
+      "id": "qos-146",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "DSCP propagation across L3",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "dscp",
+        "propagation",
+        "routing",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Does DSCP survive a routed hop through a Layer 3 device?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Yes — DSCP lives in the IP header and is preserved across all routed hops by default. Each hop can independently re-mark or honor it via QoS policy, but routing alone does not modify DSCP."
+        }
+      ]
+    },
+    {
+      "id": "qos-147",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Dual-policy egress",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "egress",
+        "two-policy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On Catalyst 9000 series, why might you apply two egress policies — one type queueing and one regular?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The hardware separates queueing actions (priority, bandwidth, queue-buffers, queue-limit) from non-queueing actions (set, police). The type queueing policy programs ASIC queues, while the non-queueing policy handles marking/policing. Both apply to the same egress interface."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/24\n service-policy output PARENT-SHAPE\n service-policy type queueing output Q-POLICY"
+        }
+      ]
+    },
+    {
+      "id": "qos-148",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Match input vlan inner",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "qinq",
+        "inner-vlan",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In a Q-in-Q (802.1ad) environment, how do you classify on the inner customer VLAN?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "class-map match-all CUSTOMER-VOICE\n match vlan inner 100"
+        },
+        {
+          "type": "text",
+          "text": "match vlan refers to the outer (service provider) tag; match vlan inner refers to the customer-side tag carried inside Q-in-Q encapsulation."
+        }
+      ]
+    },
+    {
+      "id": "qos-149",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Catalyst Center vs CLI QoS",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "catalyst-center",
+        "cli",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare Catalyst Center QoS deployment vs traditional CLI MQC."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "CLI MQC",
+            "Catalyst Center"
+          ],
+          "rows": [
+            [
+              "Granularity",
+              "Per-device, per-interface",
+              "Site-wide application policy"
+            ],
+            [
+              "Consistency",
+              "Operator discipline required",
+              "Templated, RFC 4594-aligned"
+            ],
+            [
+              "Application set",
+              "Manually defined",
+              "Cisco-curated, auto-updated"
+            ],
+            [
+              "Verification",
+              "show policy-map",
+              "Assurance dashboards + show commands"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-150",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Microbursts on 10G uplinks",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "qos",
+        "microburst",
+        "buffer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "10 Gbps uplink shows tail drops at low average utilization. Application: storage replication and incast TCP. Where do you start?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Confirm with show platform hardware fed ... qos queue stats — look for queue depth peaks",
+            "Increase egress buffer allocation for the affected queue",
+            "Mark storage traffic to a separate class with WRED/ECN",
+            "Enable ECN end-to-end so TCP backs off without drops",
+            "Consider DCB/PFC if storage is FCoE/RoCE-class traffic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-151",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AutoQoS srnd4",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "qos",
+        "autoqos",
+        "srnd4",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is AutoQoS-SRND4 and how does it differ from earlier AutoQoS VoIP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AutoQoS-SRND4 generates a richer 8/10-class baseline aligned to Cisco's Smart Routing Network Design v4 — adding classes for video conferencing, streaming, transactional data, scavenger, and more. Earlier auto qos voip only addressed voice/signaling. SRND4 is closer to RFC 4594."
+        }
+      ]
+    },
+    {
+      "id": "qos-152",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "QoS verification checklist",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "qos",
+        "verification",
+        "checklist",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a quick verification checklist after deploying a QoS policy on a WAN router?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "show run interface — confirm service-policy applied in correct direction",
+            "show policy-map interface — verify class matches and counters incrementing",
+            "show interfaces — check for total output drops trend",
+            "Generate test traffic with known DSCP and confirm it lands in the right class",
+            "Compare priority class drops to offered rate; tune burst/bandwidth as needed",
+            "Validate routing protocol class isn't dropping (CS6/CS7)"
+          ]
+        }
+      ]
+    }
+  ]
+}

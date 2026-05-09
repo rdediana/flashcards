@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flashcard Admin</title>
+    <link rel="stylesheet" href="/shared/styles.css">
+    <link rel="stylesheet" href="./admin.css">
+  </head>
+  <body>
+    <div class="app-shell admin-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Flashcard Admin</p>
+          <h1>Deck Import</h1>
+          <p class="deck-meta">Paste LLM card JSON, choose a target deck, and import new cards into the local deck files.</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="secondary-button admin-link" href="/shared/index.html">Open Reviewer</a>
+        </div>
+      </header>
+
+      <main class="admin-grid">
+        <section class="panel admin-panel">
+          <div class="panel-heading admin-heading">
+            <div>
+              <p class="panel-label">Target</p>
+              <h2>Choose Deck</h2>
+            </div>
+          </div>
+
+          <div class="admin-form-stack">
+            <div class="segmented-control" role="group" aria-label="Import mode">
+              <button type="button" class="mode-button is-active" data-import-mode="existing">Existing</button>
+              <button type="button" class="mode-button" data-import-mode="new">New Deck</button>
+            </div>
+
+            <div id="existingDeckFields">
+              <label>
+                Deck
+                <select id="deckSelect"></select>
+              </label>
+              <label class="check-row">
+                <input id="replaceDuplicates" type="checkbox">
+                Replace cards with matching IDs
+              </label>
+            </div>
+
+            <div id="newDeckFields" hidden>
+              <label>
+                Deck title
+                <input id="newDeckTitle" type="text" placeholder="CCNP QoS Deep Dive">
+              </label>
+              <label>
+                Deck id
+                <input id="newDeckId" type="text" placeholder="ccnp-qos-deep-dive">
+              </label>
+              <label>
+                Subject
+                <input id="newDeckSubject" type="text" placeholder="CCNP">
+              </label>
+              <label>
+                Source
+                <input id="newDeckSource" type="text" placeholder="Admin import">
+              </label>
+              <label>
+                Tags
+                <input id="newDeckTags" type="text" placeholder="ccnp, qos, encor">
+              </label>
+              <label>
+                Description
+                <textarea id="newDeckDescription" rows="4" placeholder="Short deck description"></textarea>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel admin-panel import-panel">
+          <div class="panel-heading admin-heading">
+            <div>
+              <p class="panel-label">Import</p>
+              <h2>Paste Card JSON</h2>
+            </div>
+            <button class="primary-button" id="importButton" type="button">Import Cards</button>
+          </div>
+
+          <label class="json-label">
+            JSON
+            <textarea id="cardsJson" class="json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
+          </label>
+
+          <div class="import-summary" id="importSummary" aria-live="polite">
+            <p>Waiting for JSON.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>
