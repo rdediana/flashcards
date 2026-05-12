@@ -4,7 +4,7 @@ A static, mobile-friendly flashcard viewer with a local admin tool for importing
 
 ## Features
 
-- Static flashcard viewer that runs on GitHub Pages.
+- Static flashcard viewer.
 - Local-only admin interface for deck imports and card edits.
 - JSON files as the source of truth for decks and cards.
 - Browser `localStorage` progress tracking by deck and card ID.
