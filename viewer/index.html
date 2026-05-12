@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flashcards</title>
+    <link rel="stylesheet" href="./styles.css?v=title-cleanup">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Interactive Review</p>
+          <h1 id="deckTitle">Flashcards</h1>
+          <p class="deck-meta" id="deckMeta">Loading deck...</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="primary-button" id="startSessionButton" type="button">Start Session</button>
+          <button class="secondary-button" id="resumeSessionButton" type="button" hidden>Resume Session</button>
+          <button class="secondary-button danger-button" id="endSessionButton" type="button" hidden>End Session</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="overview-panel is-compact" aria-label="Session overview">
+          <div class="selected-deck-line">
+            <p class="panel-label">Selected Deck</p>
+            <h2 id="selectedDeck">Loading</h2>
+          </div>
+          <div class="metric-grid overview-metrics">
+            <article class="metric-card">
+              <span>Reviewed</span>
+              <strong id="reviewedMetric">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Accuracy</span>
+              <strong id="accuracyMetric">0%</strong>
+            </article>
+            <article class="metric-card">
+              <span>Due Focus</span>
+              <strong id="weakMetric">0</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="home-dashboard" id="homeDashboard" aria-label="Deck and session overview">
+          <section class="panel home-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Session Overview</p>
+                <h2>Study Home</h2>
+              </div>
+            </div>
+            <div class="home-content">
+              <div class="metric-grid home-metrics">
+                <article class="metric-card">
+                  <span>Sessions</span>
+                  <strong id="totalSessionsMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Total Reviewed</span>
+                  <strong id="totalReviewedMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Overall Accuracy</span>
+                  <strong id="overallAccuracyMetric">0%</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Last Reviewed</span>
+                  <strong id="lastReviewedMetric">None</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Last Count</span>
+                  <strong id="lastCountMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Last Accuracy</span>
+                  <strong id="lastAccuracyMetric">0%</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Flagged</span>
+                  <strong id="flaggedMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Weak Cards</span>
+                  <strong id="homeWeakMetric">0</strong>
+                </article>
+              </div>
+              <section class="home-placeholder">
+                <h3>Session Notes</h3>
+                <p>Future deck insights, study consistency, and topic trends will appear here.</p>
+              </section>
+            </div>
+          </section>
+
+          <section class="panel home-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">History</p>
+                <h2>Recent Sessions</h2>
+              </div>
+            </div>
+            <div class="session-history-list" id="sessionHistoryList"></div>
+          </section>
+        </section>
+
+        <div class="focus-mobile-dock" id="focusMobileDock" hidden>
+          <div class="focus-status-box" id="focusStatusBox">Loading deck...</div>
+          <nav class="focus-bottom-nav" aria-label="Focus mode views">
+            <button class="view-button is-active" type="button" data-view="main">Main</button>
+            <button class="view-button" type="button" data-view="filters">Filters</button>
+            <button class="view-button" type="button" data-view="review">Cards</button>
+            <button class="view-button" type="button" data-view="progress">Stats</button>
+          </nav>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel focus-main-panel" id="focusMainPanel" aria-live="polite" hidden>
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Focus Mode</p>
+                <h2>Main</h2>
+              </div>
+            </div>
+            <div class="focus-main-content">
+              <div class="selected-deck-line">
+                <p class="panel-label">Selected Deck</p>
+                <h2 id="focusDeckTitle">Loading</h2>
+              </div>
+              <div class="metric-grid compact focus-main-metrics">
+                <article class="metric-card">
+                  <span>Filtered</span>
+                  <strong id="focusFilteredMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Reviewed</span>
+                  <strong id="focusReviewedMetric">0</strong>
+                </article>
+                <article class="metric-card">
+                  <span>Accuracy</span>
+                  <strong id="focusAccuracyMetric">0%</strong>
+                </article>
+              </div>
+              <div class="focus-main-actions">
+                <button class="primary-button" id="focusResumeButton" type="button">Cards</button>
+                <button class="chip-button" id="focusShuffleButton" type="button" aria-pressed="false">Shuffle Off</button>
+                <button class="secondary-button" id="exitFocusButton" type="button">Exit Focus Mode</button>
+              </div>
+              <section class="focus-placeholder">
+                <h3>Focus Dashboard</h3>
+                <p>Future review insights will appear here.</p>
+              </section>
+            </div>
+          </section>
+
+          <details class="panel filter-panel" id="filterPanel" open>
+            <summary class="filter-summary">
+              <span>
+                <span class="panel-label">Review Source</span>
+                <strong>Session Filters</strong>
+              </span>
+              <span class="filter-count" id="filterCount">0 cards</span>
+            </summary>
+
+            <label>
+              Search
+              <input id="searchInput" type="search" placeholder="OSPF, QoS, dscp...">
+            </label>
+
+            <label>
+              Domain
+              <select id="domainFilter"></select>
+            </label>
+
+            <label>
+              Topic
+              <select id="topicFilter"></select>
+            </label>
+
+            <label>
+              Subtopic
+              <select id="subtopicFilter"></select>
+            </label>
+
+            <label>
+              Difficulty
+              <select id="difficultyFilter"></select>
+            </label>
+
+            <label>
+              Type
+              <select id="typeFilter"></select>
+            </label>
+
+            <label>
+              Tag
+              <select id="tagFilter"></select>
+            </label>
+
+            <label>
+              Viewed
+              <select id="viewedFilter">
+                <option value="">All</option>
+                <option value="viewed">Viewed</option>
+                <option value="not-viewed">Not Viewed</option>
+              </select>
+            </label>
+
+            <div class="segmented-control" role="group" aria-label="Session mode">
+              <button type="button" class="mode-button is-active" data-mode="all">All</button>
+              <button type="button" class="mode-button" data-mode="weak">Weak</button>
+              <button type="button" class="mode-button" data-mode="marked">Marked</button>
+            </div>
+
+            <div class="filter-footer">
+              <button class="primary-button" id="collapseFiltersButton" type="button">Review Cards</button>
+            </div>
+          </details>
+
+          <section class="panel card-panel" aria-live="polite">
+            <div class="panel-heading card-heading">
+              <div>
+                <p class="panel-label">Flashcard</p>
+                <h2 id="cardTitle">Loading card</h2>
+              </div>
+              <div class="card-tools">
+                <button class="chip-button focus-toggle-button" id="focusModeButton" type="button" aria-pressed="false">Focus Mode</button>
+              </div>
+            </div>
+
+            <div class="card-breadcrumb" id="cardBreadcrumb"></div>
+
+            <article class="flashcard">
+              <div class="card-face" id="questionFace" role="button" tabindex="0" aria-label="Reveal answer">
+                <div class="question-status-line">
+                  <p class="face-label">Question</p>
+                  <span id="cardPosition">0 / 0</span>
+                </div>
+                <div id="frontContent" class="block-stack"></div>
+              </div>
+
+              <div class="card-face answer-face is-hidden" id="answerFace" role="button" tabindex="0" aria-label="Go to next question">
+                <p class="face-label">Answer</p>
+                <div id="backContent" class="block-stack"></div>
+              </div>
+            </article>
+
+            <div class="action-bar is-hidden" id="actionBar">
+              <button class="score-button incorrect" id="incorrectButton" type="button" aria-label="Mark incorrect" title="Incorrect">
+                <span class="button-icon icon-x" aria-hidden="true"></span>
+                <span class="visually-hidden">Incorrect</span>
+              </button>
+              <button class="score-button skip" id="skipButton" type="button" aria-label="Skip card" title="Skip">
+                <span class="button-icon icon-skip" aria-hidden="true"></span>
+                <span class="visually-hidden">Skip</span>
+              </button>
+              <button class="score-button correct" id="correctButton" type="button" aria-label="Mark correct" title="Correct">
+                <span class="button-icon icon-check" aria-hidden="true"></span>
+                <span class="visually-hidden">Correct</span>
+              </button>
+            </div>
+
+            <div class="nav-row">
+              <button class="secondary-button nav-button" id="prevButton" type="button" aria-label="Previous card" title="Previous">&lt;</button>
+              <button class="secondary-button nav-button flag-nav-button" id="markButton" type="button" aria-pressed="false" title="Mark for review">Flag</button>
+              <button class="secondary-button nav-button" id="nextButton" type="button" aria-label="Next card" title="Next">&gt;</button>
+            </div>
+
+            <div class="card-meta-compact">
+              <span id="difficultyMeta">Medium</span>
+              <span id="typeMeta">Concept</span>
+              <button class="meta-toggle-button" id="toggleTagsButton" type="button" aria-expanded="false" title="Show card tags">+</button>
+            </div>
+
+            <div class="card-meta-row" id="cardMeta" hidden></div>
+          </section>
+
+          <aside class="panel result-panel">
+            <div class="panel-heading">
+              <p class="panel-label">Study Stats</p>
+              <h2>Stats</h2>
+            </div>
+
+            <div class="metric-grid compact">
+              <article class="metric-card">
+                <span>Reviewed</span>
+                <strong id="statsReviewedMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Accuracy</span>
+                <strong id="statsAccuracyMetric">0%</strong>
+              </article>
+              <article class="metric-card">
+                <span>Correct</span>
+                <strong id="correctMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Incorrect</span>
+                <strong id="incorrectMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Skipped</span>
+                <strong id="skippedMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Due Focus</span>
+                <strong id="statsWeakMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Flagged</span>
+                <strong id="statsFlaggedMetric">0</strong>
+              </article>
+            </div>
+
+            <section class="progress-controls">
+              <h3>Progress Controls</h3>
+              <div class="control-row">
+                <button class="secondary-button" id="exportProgressButton" type="button">Export</button>
+                <label class="secondary-button import-button">
+                  Import
+                  <input id="importProgressInput" type="file" accept="application/json,.json">
+                </label>
+                <button class="secondary-button danger-button" id="resetProgressButton" type="button">Reset</button>
+              </div>
+            </section>
+
+            <section class="weak-box">
+              <h3>Weak Areas</h3>
+              <div id="weakList" class="weak-list"></div>
+            </section>
+
+            <section class="session-box" id="sessionBox">
+              <h3>Session Summary</h3>
+              <p>Finish the session to record this review run.</p>
+            </section>
+          </aside>
+
+          <section class="panel summary-panel" id="summaryPanel" aria-live="polite" hidden>
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Card Set</p>
+                <h2>Summary</h2>
+              </div>
+            </div>
+            <div class="summary-content" id="summaryContent">
+              <p>Complete a filtered card set to see a summary.</p>
+            </div>
+            <div class="summary-actions">
+              <button class="primary-button" id="reviewAgainButton" type="button">Review Again</button>
+            </div>
+          </section>
+        </div>
+
+      </main>
+    </div>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state">
+        <p>No cards match the current filters.</p>
+        <button class="secondary-button" type="button" data-reset-filters>Reset Filters</button>
+      </div>
+    </template>
+
+    <script src="./app.js?v=title-cleanup"></script>
+  </body>
+</html>

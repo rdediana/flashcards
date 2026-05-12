@@ -4,94 +4,300 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Flashcard Admin</title>
-    <link rel="stylesheet" href="/shared/styles.css">
+    <link rel="stylesheet" href="/viewer/styles.css">
     <link rel="stylesheet" href="./admin.css">
   </head>
   <body>
     <div class="app-shell admin-shell">
-      <header class="topbar">
+      <header class="topbar admin-topbar">
         <div>
           <p class="eyebrow">Flashcard Admin</p>
-          <h1>Deck Import</h1>
-          <p class="deck-meta">Paste LLM card JSON, choose a target deck, and import new cards into the local deck files.</p>
+          <h1>Admin Tools</h1>
+          <p class="deck-meta" id="currentDeckLine">Current Deck: Loading...</p>
         </div>
         <div class="topbar-actions">
-          <a class="secondary-button admin-link" href="/shared/index.html">Open Reviewer</a>
+          <a class="secondary-button admin-link" href="/viewer/index.html">Open Reviewer</a>
         </div>
       </header>
 
-      <main class="admin-grid">
-        <section class="panel admin-panel">
-          <div class="panel-heading admin-heading">
-            <div>
-              <p class="panel-label">Target</p>
-              <h2>Choose Deck</h2>
-            </div>
+      <div class="mobile-tool-picker">
+        <label for="mobileToolSelect">Menu</label>
+        <select id="mobileToolSelect" aria-label="Admin tool menu">
+          <option value="dashboard">Dashboard</option>
+          <option value="decks">Decks</option>
+          <option value="card-editor">Card Editor</option>
+          <option value="import-export">Import / Export</option>
+          <option value="validate">Validate</option>
+          <option value="settings">Settings</option>
+        </select>
+      </div>
+
+      <main class="admin-layout">
+        <aside class="admin-nav-panel" aria-label="Admin tools">
+          <div class="admin-nav-heading">
+            <strong>Flashcard Admin</strong>
+            <span id="navDeckName">Current Deck</span>
           </div>
+          <nav class="admin-tool-nav">
+            <button type="button" data-tool="dashboard" class="admin-nav-button is-active">Dashboard</button>
+            <button type="button" data-tool="decks" class="admin-nav-button">Decks</button>
+            <button type="button" data-tool="card-editor" class="admin-nav-button">Card Editor</button>
+            <button type="button" data-tool="import-export" class="admin-nav-button">Import / Export</button>
+            <button type="button" data-tool="validate" class="admin-nav-button">Validate</button>
+            <button type="button" data-tool="settings" class="admin-nav-button">Settings</button>
+          </nav>
+        </aside>
 
-          <div class="admin-form-stack">
-            <div class="segmented-control" role="group" aria-label="Import mode">
-              <button type="button" class="mode-button is-active" data-import-mode="existing">Existing</button>
-              <button type="button" class="mode-button" data-import-mode="new">New Deck</button>
+        <section class="active-tool-area">
+          <section class="tool-view is-active" data-tool-view="dashboard">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Dashboard</p>
+                <h2>Deck Overview</h2>
+              </div>
             </div>
 
-            <div id="existingDeckFields">
-              <label>
-                Deck
-                <select id="deckSelect"></select>
-              </label>
-              <label class="check-row">
-                <input id="replaceDuplicates" type="checkbox">
-                Replace cards with matching IDs
-              </label>
+            <div class="dashboard-grid">
+              <article class="metric-card">
+                <span>Current deck</span>
+                <strong id="dashboardDeckName">Loading</strong>
+              </article>
+              <article class="metric-card">
+                <span>Total cards</span>
+                <strong id="totalCardsMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Export readiness</span>
+                <strong id="readinessMetric">Checking</strong>
+              </article>
             </div>
 
-            <div id="newDeckFields" hidden>
-              <label>
-                Deck title
-                <input id="newDeckTitle" type="text" placeholder="CCNP QoS Deep Dive">
-              </label>
-              <label>
-                Deck id
-                <input id="newDeckId" type="text" placeholder="ccnp-qos-deep-dive">
-              </label>
-              <label>
-                Subject
-                <input id="newDeckSubject" type="text" placeholder="CCNP">
-              </label>
-              <label>
-                Source
-                <input id="newDeckSource" type="text" placeholder="Admin import">
-              </label>
-              <label>
-                Tags
-                <input id="newDeckTags" type="text" placeholder="ccnp, qos, encor">
-              </label>
-              <label>
-                Description
-                <textarea id="newDeckDescription" rows="4" placeholder="Short deck description"></textarea>
-              </label>
+            <div class="admin-section-grid">
+              <article class="panel admin-tool-card">
+                <h3>Card Types</h3>
+                <div id="cardTypesList" class="stat-list"></div>
+              </article>
+              <article class="panel admin-tool-card">
+                <h3>Difficulty Breakdown</h3>
+                <div id="difficultyList" class="stat-list"></div>
+              </article>
+              <article class="panel admin-tool-card">
+                <h3>Tags</h3>
+                <div id="tagsList" class="tag-cloud"></div>
+              </article>
+              <article class="panel admin-tool-card">
+                <h3>Missing Fields</h3>
+                <div id="missingFieldsList" class="issue-list"></div>
+              </article>
+              <article class="panel admin-tool-card">
+                <h3>Duplicate IDs</h3>
+                <div id="duplicateIdsList" class="issue-list"></div>
+              </article>
+              <article class="panel admin-tool-card">
+                <h3>Admin Readiness</h3>
+                <p id="readinessDetail">Loading deck checks.</p>
+              </article>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="panel admin-panel import-panel">
-          <div class="panel-heading admin-heading">
-            <div>
-              <p class="panel-label">Import</p>
-              <h2>Paste Card JSON</h2>
+          <section class="tool-view" data-tool-view="decks">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Decks</p>
+                <h2>Deck Management</h2>
+              </div>
             </div>
-            <button class="primary-button" id="importButton" type="button">Import Cards</button>
-          </div>
+            <div class="placeholder-panel">
+              <h3>Planned tools</h3>
+              <ul>
+                <li>Deck Index</li>
+                <li>Deck Editor</li>
+                <li>Deck Builder</li>
+              </ul>
+            </div>
+          </section>
 
-          <label class="json-label">
-            JSON
-            <textarea id="cardsJson" class="json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
-          </label>
+          <section class="tool-view" data-tool-view="card-editor">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Cards</p>
+                <h2>Card Editor</h2>
+              </div>
+              <div class="editor-actions">
+                <button class="secondary-button" id="editCardButton" type="button">Edit</button>
+                <button class="secondary-button" id="cancelEditButton" type="button" hidden>Cancel</button>
+                <button class="primary-button" id="saveCardButton" type="button" hidden>Save Changes</button>
+              </div>
+            </div>
 
-          <div class="import-summary" id="importSummary" aria-live="polite">
-            <p>Waiting for JSON.</p>
-          </div>
+            <div class="card-editor-shell">
+              <aside class="panel card-list-panel">
+                <label class="card-search-label">
+                  Search cards
+                  <input id="cardSearchInput" type="search" placeholder="Search id, topic, question, answer">
+                </label>
+                <div id="cardList" class="card-list"></div>
+              </aside>
+
+              <article class="panel card-editor-panel">
+                <div class="editor-field-grid">
+                  <label>
+                    Card ID
+                    <input id="editorCardId" type="text" disabled>
+                  </label>
+                  <label>
+                    Type
+                    <input id="editorCardType" type="text" disabled>
+                  </label>
+                  <label>
+                    Difficulty
+                    <input id="editorCardDifficulty" type="text" disabled>
+                  </label>
+                  <label>
+                    Topic
+                    <input id="editorCardTopic" type="text" disabled>
+                  </label>
+                  <label>
+                    Subtopic
+                    <input id="editorCardSubtopic" type="text" disabled>
+                  </label>
+                </div>
+                <label class="editor-textarea-label">
+                  Front content
+                  <textarea id="editorFront" rows="8" disabled></textarea>
+                </label>
+                <label class="editor-textarea-label">
+                  Back content
+                  <textarea id="editorBack" rows="8" disabled></textarea>
+                </label>
+                <div class="editor-preview">
+                  <h3>Preview</h3>
+                  <div id="editorPreview">Select a card to preview it.</div>
+                </div>
+                <div class="editor-status" id="editorStatus" aria-live="polite"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="import-export">
+            <div class="import-export-grid">
+              <section class="panel admin-panel">
+                <div class="panel-heading admin-heading">
+                  <div>
+                    <p class="panel-label">Target</p>
+                    <h2>Choose Deck</h2>
+                  </div>
+                </div>
+
+                <div class="admin-form-stack">
+                  <div class="segmented-control admin-import-mode" role="group" aria-label="Import mode">
+                    <button type="button" class="mode-button is-active" data-import-mode="existing">Existing</button>
+                    <button type="button" class="mode-button" data-import-mode="new">New Deck</button>
+                  </div>
+
+                  <div id="existingDeckFields">
+                    <label>
+                      Deck
+                      <select id="deckSelect"></select>
+                    </label>
+                    <label class="check-row">
+                      <input id="replaceDuplicates" type="checkbox">
+                      Replace cards with matching IDs
+                    </label>
+                  </div>
+
+                  <div id="newDeckFields" hidden>
+                    <label>
+                      Deck title
+                      <input id="newDeckTitle" type="text" placeholder="CCNP QoS Deep Dive">
+                    </label>
+                    <label>
+                      Deck id
+                      <input id="newDeckId" type="text" placeholder="ccnp-qos-deep-dive">
+                    </label>
+                    <label>
+                      Subject
+                      <input id="newDeckSubject" type="text" placeholder="CCNP">
+                    </label>
+                    <label>
+                      Source
+                      <input id="newDeckSource" type="text" placeholder="Admin import">
+                    </label>
+                    <label>
+                      Tags
+                      <input id="newDeckTags" type="text" placeholder="ccnp, qos, encor">
+                    </label>
+                    <label>
+                      Description
+                      <textarea id="newDeckDescription" rows="4" placeholder="Short deck description"></textarea>
+                    </label>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel admin-panel import-panel">
+                <div class="panel-heading admin-heading">
+                  <div>
+                    <p class="panel-label">Import</p>
+                    <h2>Paste Card JSON</h2>
+                  </div>
+                  <button class="primary-button" id="importButton" type="button">Import Cards</button>
+                </div>
+
+                <label class="json-label">
+                  JSON
+                  <textarea id="cardsJson" class="json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
+                </label>
+
+                <div class="import-summary" id="importSummary" aria-live="polite">
+                  <p>Waiting for JSON.</p>
+                </div>
+              </section>
+            </div>
+
+            <div class="placeholder-panel import-plan">
+              <h3>Future import and export tools</h3>
+              <ul>
+                <li>Import deck JSON</li>
+                <li>Import cards</li>
+                <li>Export deck JSON</li>
+                <li>Export deck index</li>
+                <li>Export viewer-ready package</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="validate">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Validate</p>
+                <h2>Deck Quality Checks</h2>
+              </div>
+            </div>
+            <div class="placeholder-panel">
+              <h3>Planned checks</h3>
+              <ul>
+                <li>Schema check</li>
+                <li>Missing fields</li>
+                <li>Broken render blocks</li>
+                <li>Duplicate IDs</li>
+                <li>Export readiness</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="settings">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Settings</p>
+                <h2>Admin Settings</h2>
+              </div>
+            </div>
+            <div class="placeholder-panel">
+              <h3>Settings area</h3>
+              <p>Future preferences for deck paths, validation behavior, export targets, and admin defaults will live here.</p>
+            </div>
+          </section>
         </section>
       </main>
     </div>

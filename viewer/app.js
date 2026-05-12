@@ -11,14 +11,12 @@ const state = {
   showTags: false,
   shuffle: false,
   mode: "all",
-  session: {
-    id: `session-${Date.now()}`,
-    startedAt: new Date().toISOString(),
-    reviewedIds: new Set(),
-    correct: 0,
-    incorrect: 0,
-    skipped: 0
-  },
+  activeView: "review",
+  focusMode: false,
+  activeSession: false,
+  reviewSet: null,
+  setSummary: null,
+  session: null,
   progress: null
 };
 
@@ -29,13 +27,39 @@ const els = {
   reviewedMetric: document.querySelector("#reviewedMetric"),
   accuracyMetric: document.querySelector("#accuracyMetric"),
   weakMetric: document.querySelector("#weakMetric"),
+  statsReviewedMetric: document.querySelector("#statsReviewedMetric"),
+  statsAccuracyMetric: document.querySelector("#statsAccuracyMetric"),
+  statsWeakMetric: document.querySelector("#statsWeakMetric"),
+  statsFlaggedMetric: document.querySelector("#statsFlaggedMetric"),
   correctMetric: document.querySelector("#correctMetric"),
   incorrectMetric: document.querySelector("#incorrectMetric"),
   skippedMetric: document.querySelector("#skippedMetric"),
+  totalSessionsMetric: document.querySelector("#totalSessionsMetric"),
+  totalReviewedMetric: document.querySelector("#totalReviewedMetric"),
+  overallAccuracyMetric: document.querySelector("#overallAccuracyMetric"),
+  lastReviewedMetric: document.querySelector("#lastReviewedMetric"),
+  lastCountMetric: document.querySelector("#lastCountMetric"),
+  lastAccuracyMetric: document.querySelector("#lastAccuracyMetric"),
+  flaggedMetric: document.querySelector("#flaggedMetric"),
+  homeWeakMetric: document.querySelector("#homeWeakMetric"),
+  sessionHistoryList: document.querySelector("#sessionHistoryList"),
+  homeDashboard: document.querySelector("#homeDashboard"),
   cardPosition: document.querySelector("#cardPosition"),
   filterPanel: document.querySelector("#filterPanel"),
   filterCount: document.querySelector("#filterCount"),
   collapseFiltersButton: document.querySelector("#collapseFiltersButton"),
+  focusModeButton: document.querySelector("#focusModeButton"),
+  focusMainPanel: document.querySelector("#focusMainPanel"),
+  focusDeckTitle: document.querySelector("#focusDeckTitle"),
+  focusFilteredMetric: document.querySelector("#focusFilteredMetric"),
+  focusReviewedMetric: document.querySelector("#focusReviewedMetric"),
+  focusAccuracyMetric: document.querySelector("#focusAccuracyMetric"),
+  focusResumeButton: document.querySelector("#focusResumeButton"),
+  focusShuffleButton: document.querySelector("#focusShuffleButton"),
+  exitFocusButton: document.querySelector("#exitFocusButton"),
+  focusMobileDock: document.querySelector("#focusMobileDock"),
+  focusStatusBox: document.querySelector("#focusStatusBox"),
+  viewButtons: Array.from(document.querySelectorAll(".view-button")),
   searchInput: document.querySelector("#searchInput"),
   domainFilter: document.querySelector("#domainFilter"),
   topicFilter: document.querySelector("#topicFilter"),
@@ -43,6 +67,8 @@ const els = {
   difficultyFilter: document.querySelector("#difficultyFilter"),
   typeFilter: document.querySelector("#typeFilter"),
   tagFilter: document.querySelector("#tagFilter"),
+  viewedFilter: document.querySelector("#viewedFilter"),
+  cardPanel: document.querySelector(".card-panel"),
   cardTitle: document.querySelector("#cardTitle"),
   cardBreadcrumb: document.querySelector("#cardBreadcrumb"),
   difficultyMeta: document.querySelector("#difficultyMeta"),
@@ -58,19 +84,26 @@ const els = {
   skipButton: document.querySelector("#skipButton"),
   prevButton: document.querySelector("#prevButton"),
   nextButton: document.querySelector("#nextButton"),
-  randomButton: document.querySelector("#randomButton"),
-  shuffleButton: document.querySelector("#shuffleButton"),
-  finishButton: document.querySelector("#finishButton"),
+  startSessionButton: document.querySelector("#startSessionButton"),
+  resumeSessionButton: document.querySelector("#resumeSessionButton"),
+  endSessionButton: document.querySelector("#endSessionButton"),
   toggleTagsButton: document.querySelector("#toggleTagsButton"),
   markButton: document.querySelector("#markButton"),
   exportProgressButton: document.querySelector("#exportProgressButton"),
   importProgressInput: document.querySelector("#importProgressInput"),
   resetProgressButton: document.querySelector("#resetProgressButton"),
   weakList: document.querySelector("#weakList"),
+  resultPanel: document.querySelector(".result-panel"),
   sessionBox: document.querySelector("#sessionBox"),
+  summaryPanel: document.querySelector("#summaryPanel"),
+  summaryContent: document.querySelector("#summaryContent"),
+  reviewAgainButton: document.querySelector("#reviewAgainButton"),
   modeButtons: Array.from(document.querySelectorAll(".mode-button")),
   emptyStateTemplate: document.querySelector("#emptyStateTemplate")
 };
+
+document.body.classList.remove("is-focus-mode");
+document.body.dataset.activeView = "dashboard";
 
 init();
 
@@ -181,15 +214,18 @@ function validateBlock(block, label, errors) {
 }
 
 function hydrateDeckHeader(deckData) {
-  els.deckTitle.textContent = deckData.deck.title;
-  els.selectedDeck.textContent = deckData.deck.title;
+  const displayTitle = displayDeckTitle(deckData.deck.title);
+  document.title = displayTitle;
+  els.deckTitle.textContent = displayTitle;
+  els.selectedDeck.textContent = displayTitle;
   els.deckMeta.textContent = `${deckData.deck.source || "JSON deck"} | Version ${deckData.deck.version || "0.1"} | ${deckData.cards.length} cards`;
 }
 
 function bindEvents() {
-  [els.searchInput, els.domainFilter, els.topicFilter, els.subtopicFilter, els.difficultyFilter, els.typeFilter, els.tagFilter].forEach((control) => {
+  [els.searchInput, els.domainFilter, els.topicFilter, els.subtopicFilter, els.difficultyFilter, els.typeFilter, els.tagFilter, els.viewedFilter].forEach((control) => {
     control.addEventListener("input", () => {
       state.currentIndex = 0;
+      clearReviewSet();
       applyFilters();
     });
   });
@@ -199,39 +235,48 @@ function bindEvents() {
       state.mode = button.dataset.mode;
       els.modeButtons.forEach((candidate) => candidate.classList.toggle("is-active", candidate === button));
       state.currentIndex = 0;
+      clearReviewSet();
       applyFilters();
     });
   });
 
+  els.viewButtons.forEach((button) => {
+    button.addEventListener("click", () => setActiveView(button.dataset.view));
+  });
+
   els.questionFace.addEventListener("click", advanceQuestionFace);
   els.questionFace.addEventListener("keydown", (event) => handleKeyboardAction(event, advanceQuestionFace));
-  els.answerFace.addEventListener("click", () => moveCard(1));
-  els.answerFace.addEventListener("keydown", (event) => handleKeyboardAction(event, () => moveCard(1)));
+  els.answerFace.addEventListener("click", hideAnswer);
+  els.answerFace.addEventListener("keydown", (event) => handleKeyboardAction(event, hideAnswer));
 
   els.correctButton.addEventListener("click", () => scoreCurrentCard("correct"));
   els.incorrectButton.addEventListener("click", () => scoreCurrentCard("incorrect"));
   els.skipButton.addEventListener("click", () => scoreCurrentCard("skipped"));
   els.prevButton.addEventListener("click", () => moveCard(-1));
   els.nextButton.addEventListener("click", () => moveCard(1));
-  els.randomButton.addEventListener("click", randomCard);
 
-  els.shuffleButton.addEventListener("click", () => {
+  els.focusShuffleButton.addEventListener("click", () => {
     state.shuffle = !state.shuffle;
-    els.shuffleButton.textContent = state.shuffle ? "Shuffle On" : "Shuffle Off";
-    els.shuffleButton.setAttribute("aria-pressed", String(state.shuffle));
+    syncShuffleButtons();
     applyFilters();
   });
 
   els.markButton.addEventListener("click", toggleMarked);
   els.toggleTagsButton.addEventListener("click", toggleTags);
-  els.finishButton.addEventListener("click", finishSession);
+  els.startSessionButton.addEventListener("click", startSession);
+  els.resumeSessionButton.addEventListener("click", resumeSession);
+  els.endSessionButton.addEventListener("click", endSession);
+  els.focusModeButton.addEventListener("click", enterFocusMode);
+  els.exitFocusButton.addEventListener("click", exitFocusMode);
+  els.focusResumeButton.addEventListener("click", () => setActiveView("review"));
   els.exportProgressButton.addEventListener("click", exportProgress);
   els.importProgressInput.addEventListener("change", importProgress);
   els.resetProgressButton.addEventListener("click", resetProgress);
   els.collapseFiltersButton.addEventListener("click", () => {
-    els.filterPanel.open = false;
-    els.questionFace.focus();
+    startReviewSet();
   });
+  els.reviewAgainButton.addEventListener("click", startReviewSet);
+  window.matchMedia("(max-width: 720px)").addEventListener("change", renderViewState);
 
   document.addEventListener("click", (event) => {
     if (event.target.matches("[data-reset-filters]")) {
@@ -276,11 +321,13 @@ function applyFilters() {
     subtopic: els.subtopicFilter.value,
     difficulty: els.difficultyFilter.value,
     type: els.typeFilter.value,
-    tag: els.tagFilter.value
+    tag: els.tagFilter.value,
+    viewed: els.viewedFilter.value
   };
 
   state.filteredCards = state.cards.filter((card) => {
     const progress = getCardProgress(card.id);
+    const isViewed = isViewedCard(progress);
     const matchesMode =
       state.mode === "all" ||
       (state.mode === "weak" && isWeakCard(card)) ||
@@ -292,7 +339,8 @@ function applyFilters() {
       (!filters.subtopic || card.subtopic === filters.subtopic) &&
       (!filters.difficulty || card.difficulty === filters.difficulty) &&
       (!filters.type || card.type === filters.type) &&
-      (!filters.tag || (card.tags || []).includes(filters.tag));
+      (!filters.tag || (card.tags || []).includes(filters.tag)) &&
+      (!filters.viewed || (filters.viewed === "viewed" ? isViewed : !isViewed));
 
     const searchable = [
       card.id,
@@ -319,6 +367,7 @@ function applyFilters() {
   els.filterCount.textContent = `${state.filteredCards.length} card${state.filteredCards.length === 1 ? "" : "s"}`;
   renderCurrentCard();
   renderStats();
+  renderViewState();
 }
 
 function renderCurrentCard() {
@@ -347,19 +396,20 @@ function renderCurrentCard() {
   renderBlocks(card.back, els.backContent);
   els.answerFace.classList.toggle("is-hidden", !state.answerVisible);
   els.actionBar.classList.toggle("is-hidden", !state.answerVisible);
+  document.body.classList.toggle("is-answer-visible", state.answerVisible);
 
   const progress = getCardProgress(card.id);
   els.markButton.classList.toggle("is-active", progress.markedForReview);
   els.markButton.setAttribute("aria-pressed", String(progress.markedForReview));
   els.markButton.textContent = progress.markedForReview ? "Flagged" : "Flag";
 
-  els.cardPosition.textContent = `${state.currentIndex + 1} / ${state.filteredCards.length}`;
+  els.cardPosition.textContent = cardPositionLabel();
   els.prevButton.disabled = state.filteredCards.length < 2;
   els.nextButton.disabled = state.filteredCards.length < 2;
-  els.randomButton.disabled = state.filteredCards.length < 2;
   [els.correctButton, els.incorrectButton, els.skipButton, els.markButton, els.toggleTagsButton].forEach((button) => {
     button.disabled = false;
   });
+  renderViewState();
 }
 
 function renderEmptyState() {
@@ -373,10 +423,12 @@ function renderEmptyState() {
   els.backContent.replaceChildren();
   els.answerFace.classList.add("is-hidden");
   els.actionBar.classList.add("is-hidden");
+  document.body.classList.remove("is-answer-visible");
   els.cardPosition.textContent = "0 / 0";
-  [els.correctButton, els.incorrectButton, els.skipButton, els.prevButton, els.nextButton, els.randomButton, els.markButton, els.toggleTagsButton].forEach((button) => {
+  [els.correctButton, els.incorrectButton, els.skipButton, els.prevButton, els.nextButton, els.markButton, els.toggleTagsButton].forEach((button) => {
     button.disabled = true;
   });
+  renderViewState();
 }
 
 function renderBlocks(blocks, target) {
@@ -479,6 +531,11 @@ function renderStats() {
   const skipped = allProgress.reduce((total, cardProgress) => total + cardProgress.skipped, 0);
   const accuracy = correct + incorrect ? Math.round((correct / (correct + incorrect)) * 100) : 0;
   const weakCards = state.cards.filter(isWeakCard);
+  const flaggedCards = state.cards.filter((card) => getCardProgress(card.id).markedForReview);
+  const sessions = state.progress.sessions || [];
+  const lastSession = sessions[0];
+  const lastAnswered = lastSession ? lastSession.correct + lastSession.incorrect : 0;
+  const lastAccuracy = lastAnswered ? Math.round((lastSession.correct / lastAnswered) * 100) : 0;
 
   els.reviewedMetric.textContent = String(reviewed);
   els.accuracyMetric.textContent = `${accuracy}%`;
@@ -486,8 +543,46 @@ function renderStats() {
   els.correctMetric.textContent = String(correct);
   els.incorrectMetric.textContent = String(incorrect);
   els.skippedMetric.textContent = String(skipped);
+  els.statsReviewedMetric.textContent = String(reviewed);
+  els.statsAccuracyMetric.textContent = `${accuracy}%`;
+  els.statsWeakMetric.textContent = String(weakCards.length);
+  els.statsFlaggedMetric.textContent = String(flaggedCards.length);
+  els.focusReviewedMetric.textContent = String(reviewed);
+  els.focusAccuracyMetric.textContent = `${accuracy}%`;
+  els.totalSessionsMetric.textContent = String(sessions.length);
+  els.totalReviewedMetric.textContent = String(sessions.reduce((total, session) => total + (session.cardsReviewed || 0), 0));
+  els.overallAccuracyMetric.textContent = `${accuracy}%`;
+  els.lastReviewedMetric.textContent = lastSession ? formatShortDate(lastSession.endedAt) : "None";
+  els.lastCountMetric.textContent = String(lastSession?.cardsReviewed || 0);
+  els.lastAccuracyMetric.textContent = `${lastAccuracy}%`;
+  els.flaggedMetric.textContent = String(flaggedCards.length);
+  els.homeWeakMetric.textContent = String(weakCards.length);
 
   renderWeakAreas(weakCards);
+  renderSessionHistory();
+  renderFocusMain();
+}
+
+function renderSessionHistory() {
+  els.sessionHistoryList.replaceChildren();
+
+  const sessions = state.progress.sessions || [];
+  if (!sessions.length) {
+    els.sessionHistoryList.append(makeElement("p", "No completed sessions yet."));
+    return;
+  }
+
+  sessions.slice(0, 5).forEach((session) => {
+    const totalAnswered = session.correct + session.incorrect;
+    const accuracy = totalAnswered ? Math.round((session.correct / totalAnswered) * 100) : 0;
+    const item = document.createElement("article");
+    item.className = "session-history-card";
+    item.append(
+      makeElement("strong", formatShortDate(session.endedAt)),
+      makeElement("span", `${session.cardsReviewed} reviewed | ${accuracy}% accuracy | ${session.skipped} skipped`)
+    );
+    els.sessionHistoryList.append(item);
+  });
 }
 
 function renderWeakAreas(weakCards) {
@@ -521,6 +616,7 @@ function renderWeakAreas(weakCards) {
 function scoreCurrentCard(result) {
   const card = state.filteredCards[state.currentIndex];
   if (!card) return;
+  ensureActiveSession();
 
   const progress = getCardProgress(card.id);
   const now = new Date().toISOString();
@@ -549,12 +645,19 @@ function scoreCurrentCard(result) {
   state.session.reviewedIds.add(card.id);
   saveProgress();
   renderStats();
-  moveCard(1);
+  recordReviewSetResult(card.id, result);
+
+  if (isReviewSetComplete()) {
+    completeReviewSet();
+    return;
+  }
+
+  moveToNextUnscored(1);
 }
 
 function advanceQuestionFace() {
   if (state.answerVisible) {
-    moveCard(1);
+    hideAnswer();
     return;
   }
 
@@ -568,6 +671,13 @@ function revealAnswer() {
   els.answerFace.focus();
 }
 
+function hideAnswer() {
+  if (!state.answerVisible) return;
+  state.answerVisible = false;
+  renderCurrentCard();
+  els.questionFace.focus();
+}
+
 function handleKeyboardAction(event, action) {
   if (event.key !== "Enter" && event.key !== " ") return;
   event.preventDefault();
@@ -577,6 +687,7 @@ function handleKeyboardAction(event, action) {
 function toggleMarked() {
   const card = state.filteredCards[state.currentIndex];
   if (!card) return;
+  ensureActiveSession();
 
   const progress = getCardProgress(card.id);
   progress.markedForReview = !progress.markedForReview;
@@ -598,18 +709,51 @@ function moveCard(direction) {
   renderCurrentCard();
 }
 
-function randomCard() {
-  if (state.filteredCards.length < 2) return;
-  let nextIndex = state.currentIndex;
-  while (nextIndex === state.currentIndex) {
-    nextIndex = Math.floor(Math.random() * state.filteredCards.length);
+function moveToNextUnscored(direction) {
+  if (!state.filteredCards.length) return;
+
+  if (!state.reviewSet || state.reviewSet.scoredIds.size >= state.reviewSet.ids.length) {
+    moveCard(direction);
+    return;
   }
-  state.currentIndex = nextIndex;
-  state.answerVisible = false;
+
+  const startIndex = state.currentIndex;
+  let nextIndex = startIndex;
+
+  do {
+    nextIndex = (nextIndex + direction + state.filteredCards.length) % state.filteredCards.length;
+    const nextCard = state.filteredCards[nextIndex];
+    if (nextCard && !state.reviewSet.scoredIds.has(nextCard.id)) {
+      state.currentIndex = nextIndex;
+      state.answerVisible = false;
+      renderCurrentCard();
+      return;
+    }
+  } while (nextIndex !== startIndex);
+
   renderCurrentCard();
 }
 
 function finishSession() {
+  endSession();
+}
+
+function startSession() {
+  state.session = createSession();
+  state.activeSession = true;
+  enterFocusMode("main");
+  renderStats();
+}
+
+function resumeSession() {
+  ensureActiveSession();
+  enterFocusMode("main");
+  renderStats();
+}
+
+function endSession() {
+  if (!state.activeSession || !state.session) return;
+
   const endedAt = new Date().toISOString();
   const summary = {
     id: state.session.id,
@@ -622,7 +766,6 @@ function finishSession() {
   };
 
   state.progress.sessions.unshift(summary);
-  state.progress.sessions = state.progress.sessions.slice(0, 20);
   saveProgress();
 
   const totalAnswered = summary.correct + summary.incorrect;
@@ -632,7 +775,23 @@ function finishSession() {
     makeElement("p", `${summary.cardsReviewed} cards reviewed | ${accuracy}% accuracy | ${summary.skipped} skipped`)
   );
 
-  state.session = {
+  state.activeSession = false;
+  state.session = null;
+  state.focusMode = false;
+  state.activeView = "review";
+  renderStats();
+  renderViewState();
+}
+
+function ensureActiveSession() {
+  if (state.activeSession && state.session) return;
+  state.session = createSession();
+  state.activeSession = true;
+  renderViewState();
+}
+
+function createSession() {
+  return {
     id: `session-${Date.now()}`,
     startedAt: new Date().toISOString(),
     reviewedIds: new Set(),
@@ -640,6 +799,214 @@ function finishSession() {
     incorrect: 0,
     skipped: 0
   };
+}
+
+function startReviewSet() {
+  ensureActiveSession();
+  state.currentIndex = clamp(state.currentIndex, 0, Math.max(state.filteredCards.length - 1, 0));
+  state.answerVisible = false;
+  state.setSummary = null;
+  state.reviewSet = {
+    ids: state.filteredCards.map((card) => card.id),
+    scoredIds: new Set(),
+    correct: 0,
+    incorrect: 0,
+    skipped: 0,
+    startedAt: new Date().toISOString()
+  };
+
+  enterFocusMode();
+  setActiveView("review");
+  els.filterPanel.open = false;
+  renderSummary();
+  renderCurrentCard();
+  els.questionFace.focus();
+}
+
+function clearReviewSet() {
+  state.reviewSet = null;
+  state.setSummary = null;
+  renderSummary();
+}
+
+function recordReviewSetResult(cardId, result) {
+  if (!state.reviewSet || state.reviewSet.scoredIds.has(cardId)) return;
+
+  state.reviewSet.scoredIds.add(cardId);
+  state.reviewSet[result] += 1;
+}
+
+function isReviewSetComplete() {
+  return Boolean(state.reviewSet?.ids.length && state.reviewSet.scoredIds.size >= state.reviewSet.ids.length);
+}
+
+function completeReviewSet() {
+  const totalAnswered = state.reviewSet.correct + state.reviewSet.incorrect;
+  const accuracy = totalAnswered ? Math.round((state.reviewSet.correct / totalAnswered) * 100) : 0;
+  state.setSummary = {
+    cardsReviewed: state.reviewSet.scoredIds.size,
+    totalCards: state.reviewSet.ids.length,
+    correct: state.reviewSet.correct,
+    incorrect: state.reviewSet.incorrect,
+    skipped: state.reviewSet.skipped,
+    accuracy
+  };
+
+  state.answerVisible = false;
+  state.focusMode = true;
+  setActiveView("main");
+  renderCurrentCard();
+  renderSummary();
+}
+
+function renderSummary() {
+  if (!els.summaryContent) return;
+
+  if (!state.setSummary) {
+    els.summaryContent.replaceChildren(makeElement("p", "Complete a filtered card set to see a summary."));
+    return;
+  }
+
+  const summary = state.setSummary;
+  els.summaryContent.replaceChildren(
+    summaryMetric("Reviewed", `${summary.cardsReviewed} / ${summary.totalCards}`),
+    summaryMetric("Accuracy", `${summary.accuracy}%`),
+    summaryMetric("Correct", String(summary.correct)),
+    summaryMetric("Incorrect", String(summary.incorrect)),
+    summaryMetric("Skipped", String(summary.skipped))
+  );
+  els.sessionBox.replaceChildren(
+    makeElement("h3", "Card Set Summary"),
+    makeElement("p", `${summary.cardsReviewed} cards reviewed | ${summary.accuracy}% accuracy | ${summary.skipped} skipped`)
+  );
+}
+
+function summaryMetric(label, value) {
+  const article = document.createElement("article");
+  article.className = "metric-card";
+  article.append(makeElement("span", label), makeElement("strong", value));
+  return article;
+}
+
+function cardPositionLabel() {
+  if (!state.reviewSet?.ids.length) {
+    return `${state.currentIndex + 1} / ${state.filteredCards.length}`;
+  }
+
+  const nextCount = Math.min(state.reviewSet.scoredIds.size + 1, state.reviewSet.ids.length);
+  return `${nextCount} / ${state.reviewSet.ids.length}`;
+}
+
+function setFocusMode(enabled) {
+  state.focusMode = Boolean(enabled);
+  renderViewState();
+}
+
+function enterFocusMode(view = state.activeView) {
+  ensureActiveSession();
+  state.focusMode = true;
+  state.activeView = view;
+  if (!["main", "filters", "review", "progress"].includes(state.activeView)) {
+    state.activeView = "main";
+  }
+  renderViewState();
+}
+
+function exitFocusMode() {
+  state.focusMode = false;
+  state.activeView = "review";
+  els.filterPanel.open = true;
+  renderViewState();
+}
+
+function setActiveView(view) {
+  state.activeView = view;
+  if (state.focusMode && view === "filters") els.filterPanel.open = true;
+  renderViewState();
+}
+
+function renderViewState() {
+  const showFocusMain = state.focusMode && state.activeView === "main";
+  const showFilters = state.focusMode && state.activeView === "filters";
+  const showReview = state.focusMode && state.activeView === "review";
+  const showProgress = state.focusMode && state.activeView === "progress";
+  const showSummary = state.focusMode && state.activeView === "main" && Boolean(state.setSummary);
+
+  document.body.dataset.activeView = state.focusMode ? state.activeView : "dashboard";
+  document.body.classList.toggle("is-focus-mode", state.focusMode);
+  els.homeDashboard.hidden = state.focusMode;
+  document.querySelector(".overview-panel").hidden = state.focusMode;
+  els.focusMainPanel.hidden = !showFocusMain;
+  els.filterPanel.hidden = !showFilters;
+  els.filterPanel.open = state.focusMode ? state.activeView === "filters" : els.filterPanel.open;
+  els.cardPanel.hidden = !showReview;
+  els.resultPanel.hidden = !showProgress;
+  els.summaryPanel.hidden = !showSummary;
+  els.focusMobileDock.hidden = !state.focusMode;
+  els.focusModeButton.hidden = state.focusMode;
+  els.startSessionButton.hidden = state.activeSession;
+  els.resumeSessionButton.hidden = !state.activeSession;
+  els.endSessionButton.hidden = !state.activeSession;
+
+  els.focusModeButton.classList.toggle("is-active", state.focusMode);
+  els.focusModeButton.setAttribute("aria-pressed", String(state.focusMode));
+  els.focusModeButton.textContent = state.focusMode ? "Exit Focus" : "Focus Mode";
+  els.viewButtons.forEach((button) => {
+    const isActive = button.dataset.view === state.activeView;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-current", isActive ? "page" : "false");
+  });
+  renderFocusStatus();
+  renderFocusMain();
+}
+
+function renderFocusMain() {
+  if (!state.deck) return;
+  els.focusDeckTitle.textContent = state.deck.title;
+  els.focusFilteredMetric.textContent = String(state.filteredCards.length);
+}
+
+function renderFocusStatus() {
+  if (!state.deck) return;
+
+  const filterSummary = activeFilterSummary();
+  const position = state.filteredCards.length ? cardPositionLabel() : "0 / 0";
+  const parts = [abbreviateDeckTitle(state.deck.title), filterSummary, position].filter(Boolean);
+  els.focusStatusBox.textContent = parts.join(" | ");
+}
+
+function activeFilterSummary() {
+  const values = [
+    els.searchInput.value.trim(),
+    els.domainFilter.value,
+    els.topicFilter.value,
+    els.subtopicFilter.value,
+    els.difficultyFilter.value,
+    els.typeFilter.value,
+    els.tagFilter.value,
+    els.viewedFilter.value
+  ].filter(Boolean);
+
+  if (state.mode !== "all") values.push(titleCase(state.mode));
+  if (!values.length) return "All cards";
+  return values.slice(0, 2).map(titleCase).join(", ");
+}
+
+function abbreviateDeckTitle(title) {
+  return displayDeckTitle(title).replace("Flashcards", "").trim();
+}
+
+function displayDeckTitle(title) {
+  return String(title || "Flashcards")
+    .replace(/\bCCNP\s*/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim() || "Flashcards";
+}
+
+function syncShuffleButtons() {
+  const label = state.shuffle ? "Shuffle On" : "Shuffle Off";
+  els.focusShuffleButton.textContent = label;
+  els.focusShuffleButton.setAttribute("aria-pressed", String(state.shuffle));
 }
 
 function resetFilters() {
@@ -650,9 +1017,11 @@ function resetFilters() {
   els.difficultyFilter.value = "";
   els.typeFilter.value = "";
   els.tagFilter.value = "";
+  els.viewedFilter.value = "";
   state.mode = "all";
   els.modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "all"));
   state.currentIndex = 0;
+  clearReviewSet();
   applyFilters();
 }
 
@@ -708,6 +1077,10 @@ function isWeakCard(card) {
   const answered = progress.correct + progress.incorrect;
   const accuracy = answered ? progress.correct / answered : 1;
   return progress.markedForReview || progress.incorrect >= 2 || (answered >= 2 && accuracy < 0.7) || progress.confidence <= 2;
+}
+
+function isViewedCard(progress) {
+  return progress.attempts > 0 || progress.skipped > 0 || Boolean(progress.lastReviewed);
 }
 
 function blocksToSearchText(blocks) {
@@ -791,6 +1164,16 @@ function titleCase(value) {
   return String(value)
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatShortDate(value) {
+  if (!value) return "None";
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(value));
 }
 
 function clamp(value, min, max) {

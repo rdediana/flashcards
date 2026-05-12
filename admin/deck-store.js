@@ -1,7 +1,7 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const DATA_DIR = path.join(__dirname, "..", "data");
+const DATA_DIR = path.join(__dirname, "..", "viewer", "data");
 const DECK_DIR = path.join(DATA_DIR, "decks");
 const DECK_INDEX_PATH = path.join(DATA_DIR, "deck-index.json");
 
@@ -10,6 +10,17 @@ const REQUIRED_CARD_FIELDS = ["id", "blueprint", "domain", "topic", "subtopic", 
 async function listDecks() {
   const index = await readDeckIndex();
   return index.decks || [];
+}
+
+async function getDeck(deckId) {
+  const index = await readDeckIndex();
+  const target = await readExistingDeck(index, deckId);
+  return {
+    indexEntry: (index.decks || []).find((deck) => deck.deckId === deckId),
+    deck: target.deckData.deck,
+    cards: target.deckData.cards,
+    summary: summarizeDeck(target.deckData)
+  };
 }
 
 async function importCards(payload) {
@@ -47,6 +58,47 @@ async function importCards(payload) {
     replaced: result.replaced,
     skipped: result.skipped,
     totalCards: target.deckData.cards.length
+  };
+}
+
+async function updateCard(payload) {
+  const index = await readDeckIndex();
+  const target = await readExistingDeck(index, payload.deckId);
+  const cardIndex = target.deckData.cards.findIndex((card) => card.id === payload.cardId);
+  if (cardIndex === -1) {
+    const error = new Error("Select an existing card.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const existingCard = target.deckData.cards[cardIndex];
+  const updatedCard = {
+    ...existingCard,
+    type: cleanString(payload.type) || existingCard.type,
+    difficulty: cleanString(payload.difficulty) || existingCard.difficulty,
+    topic: cleanString(payload.topic) || existingCard.topic,
+    subtopic: cleanString(payload.subtopic) || existingCard.subtopic,
+    front: Array.isArray(payload.front) ? payload.front : existingCard.front,
+    back: Array.isArray(payload.back) ? payload.back : existingCard.back
+  };
+
+  target.deckData.cards[cardIndex] = updatedCard;
+  const cardErrors = validateCards(target.deckData.cards);
+  if (cardErrors.length) {
+    const error = new Error("Card validation failed.");
+    error.statusCode = 400;
+    error.details = cardErrors;
+    throw error;
+  }
+
+  await fs.writeFile(target.filePath, `${JSON.stringify(target.deckData, null, 2)}\n`);
+  index.updated = new Date().toISOString().slice(0, 10);
+  await fs.writeFile(DECK_INDEX_PATH, `${JSON.stringify(index, null, 2)}\n`);
+
+  return {
+    deck: target.deckData.deck,
+    card: updatedCard,
+    summary: summarizeDeck(target.deckData)
   };
 }
 
@@ -178,7 +230,7 @@ async function readExistingDeck(index, deckId) {
   }
 
   const indexPath = entry.path;
-  const filePath = path.join(__dirname, "..", indexPath);
+  const filePath = path.join(DATA_DIR, path.relative("data", indexPath));
   const deckData = JSON.parse(await fs.readFile(filePath, "utf8"));
   if (!deckData.deck || !Array.isArray(deckData.cards)) {
     const error = new Error(`${entry.title} is not a valid deck file.`);
@@ -244,8 +296,68 @@ function normalizeTags(value) {
     .filter(Boolean);
 }
 
+function cleanString(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function summarizeDeck(deckData) {
+  const cards = deckData.cards || [];
+  const duplicateIds = findDuplicates(cards.map((card) => card.id).filter(Boolean));
+  const missingFields = [];
+  const cardTypes = countBy(cards, "type");
+  const difficulties = countBy(cards, "difficulty");
+  const tags = new Map();
+
+  cards.forEach((card) => {
+    REQUIRED_CARD_FIELDS.forEach((field) => {
+      if (!card[field]) missingFields.push(`${card.id || "Unknown card"} missing ${field}`);
+    });
+
+    if (!Array.isArray(card.tags)) {
+      missingFields.push(`${card.id || "Unknown card"} missing tags array`);
+      return;
+    }
+
+    card.tags.forEach((tag) => {
+      tags.set(tag, (tags.get(tag) || 0) + 1);
+    });
+  });
+
+  return {
+    totalCards: cards.length,
+    cardTypes,
+    difficulties,
+    tags: Array.from(tags.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([tag, count]) => ({ tag, count })),
+    missingFields,
+    duplicateIds,
+    exportReady: missingFields.length === 0 && duplicateIds.length === 0
+  };
+}
+
+function countBy(cards, field) {
+  return cards.reduce((counts, card) => {
+    const key = card[field] || "missing";
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function findDuplicates(values) {
+  const seen = new Set();
+  const duplicates = new Set();
+  values.forEach((value) => {
+    if (seen.has(value)) duplicates.add(value);
+    seen.add(value);
+  });
+  return Array.from(duplicates).sort();
+}
+
 module.exports = {
+  getDeck,
   importCards,
   listDecks,
+  updateCard,
   validateCards
 };
