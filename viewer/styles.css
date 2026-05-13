@@ -23,10 +23,16 @@
 
 html {
   min-height: 100%;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(39, 143, 159, 0.18), transparent 34rem),
+    linear-gradient(135deg, #0a141c 0%, #0d1a24 52%, #08131a 100%);
 }
 
 body {
   min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   margin: 0;
   background:
     radial-gradient(circle at top right, rgba(39, 143, 159, 0.18), transparent 34rem),
@@ -60,6 +66,10 @@ button {
   margin-bottom: 26px;
 }
 
+.topbar > div:first-child {
+  min-width: 0;
+}
+
 .eyebrow,
 .panel-label,
 .face-label,
@@ -77,6 +87,8 @@ label,
   margin: 8px 0 8px;
   font-size: clamp(2.25rem, 5vw, 4.1rem);
   line-height: 0.95;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .deck-meta,
@@ -177,11 +189,15 @@ label,
 .deck-picker-label {
   display: grid;
   gap: 8px;
+  width: 100%;
   max-width: 520px;
+  min-width: 0;
 }
 
 .deck-picker-label select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 44px;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
@@ -212,6 +228,7 @@ label,
 }
 
 .metric-card {
+  min-width: 0;
   min-height: 66px;
   padding: 12px;
   border: 1px solid var(--line-strong);
@@ -955,6 +972,8 @@ body.is-focus-mode .flashcard {
 
 @media (max-width: 720px) {
   .app-shell {
+    width: 100%;
+    max-width: 100%;
     padding: 12px;
   }
 
