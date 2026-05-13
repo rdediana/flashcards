@@ -27,7 +27,7 @@
           <option value="decks">Decks</option>
           <option value="card-editor">Card Editor</option>
           <option value="import-export">Import / Export</option>
-          <option value="validate">Validate</option>
+          <option value="card-validator">Card Validator</option>
           <option value="settings">Settings</option>
         </select>
       </div>
@@ -43,7 +43,7 @@
             <button type="button" data-tool="decks" class="admin-nav-button">Decks</button>
             <button type="button" data-tool="card-editor" class="admin-nav-button">Card Editor</button>
             <button type="button" data-tool="import-export" class="admin-nav-button">Import / Export</button>
-            <button type="button" data-tool="validate" class="admin-nav-button">Validate</button>
+            <button type="button" data-tool="card-validator" class="admin-nav-button">Card Validator</button>
             <button type="button" data-tool="settings" class="admin-nav-button">Settings</button>
           </nav>
         </aside>
@@ -106,15 +106,209 @@
                 <p class="panel-label">Decks</p>
                 <h2>Deck Management</h2>
               </div>
+              <div class="editor-actions">
+                <button class="secondary-button" id="showDeckIndexButton" type="button">View Index JSON</button>
+                <button class="primary-button" id="createDeckButton" type="button">Add Deck</button>
+              </div>
             </div>
-            <div class="placeholder-panel">
-              <h3>Planned tools</h3>
-              <ul>
-                <li>Deck Index</li>
-                <li>Deck Editor</li>
-                <li>Deck Builder</li>
-              </ul>
+
+            <div class="deck-manager-grid">
+              <section class="panel admin-tool-card deck-index-card">
+                <div class="section-heading-row">
+                  <h3>Deck Index</h3>
+                  <span id="deckIndexSyncStatus" class="status-pill">Checking</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Deck Title</th>
+                        <th>Deck ID</th>
+                        <th>Subject</th>
+                        <th>Version</th>
+                        <th>Card Count</th>
+                        <th>Tags</th>
+                        <th>Path</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="deckIndexTableBody"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="panel admin-tool-card">
+                <h3>Selected Deck Details</h3>
+                <form id="deckDetailsForm" class="deck-details-form">
+                  <label>
+                    Deck ID
+                    <input id="deckManagerId" type="text">
+                  </label>
+                  <label>
+                    Title
+                    <input id="deckManagerTitle" type="text">
+                  </label>
+                  <label>
+                    Version
+                    <input id="deckManagerVersion" type="text">
+                  </label>
+                  <label>
+                    Subject
+                    <input id="deckManagerSubject" type="text">
+                  </label>
+                  <label>
+                    Source
+                    <input id="deckManagerSource" type="text">
+                  </label>
+                  <label>
+                    Tags
+                    <input id="deckManagerTags" type="text" placeholder="ccnp, encor">
+                  </label>
+                  <label class="span-two">
+                    Description
+                    <textarea id="deckManagerDescription" rows="4"></textarea>
+                  </label>
+                  <div class="editor-actions span-two">
+                    <button class="primary-button" id="saveDeckDetailsButton" type="submit">Save Details</button>
+                    <button class="secondary-button" id="resetDeckDetailsButton" type="button">Reset</button>
+                  </div>
+                </form>
+                <p id="deckDetailsStatus" class="editor-status" aria-live="polite"></p>
+              </section>
+
+              <section class="panel admin-tool-card">
+                <h3>Deck Actions</h3>
+                <div class="deck-action-grid">
+                  <button class="secondary-button" id="validateDeckButton" type="button">Validate Deck</button>
+                  <button class="secondary-button" id="exportDeckButton" type="button">Export Deck</button>
+                  <button class="secondary-button" id="cloneDeckButton" type="button">Clone Deck</button>
+                  <button class="danger-button" id="deleteDeckButton" type="button">Delete Deck</button>
+                </div>
+                <label class="json-label compact-json-label">
+                  Import full deck JSON
+                  <textarea id="deckImportJson" class="json-input compact-json-input" spellcheck="false" placeholder='{"deck":{"id":"...","title":"..."},"cards":[]}'></textarea>
+                </label>
+                <label class="check-row">
+                  <input id="replaceDeckImport" type="checkbox">
+                  Replace existing deck with matching ID
+                </label>
+                <button class="primary-button" id="importDeckButton" type="button">Import Deck</button>
+                <p id="deckActionStatus" class="editor-status" aria-live="polite"></p>
+              </section>
+
+              <div class="deck-right-rail">
+                <section class="panel admin-tool-card">
+                  <h3>Deck Statistics</h3>
+                  <div class="stat-summary-grid">
+                    <article>
+                      <h4>Total Cards</h4>
+                      <strong id="deckStatsTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Blueprints</h4>
+                      <strong id="deckStatsBlueprintTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Domains</h4>
+                      <strong id="deckStatsDomainTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Topics</h4>
+                      <strong id="deckStatsTopicTotal">0</strong>
+                    </article>
+                  </div>
+                  <div class="stat-explorer-controls">
+                    <label>
+                      Statistic
+                      <select id="deckStatsDimension">
+                        <option value="blueprints">Blueprint</option>
+                        <option value="domains">Domain</option>
+                        <option value="topics">Topic</option>
+                        <option value="subtopics">Subtopic</option>
+                        <option value="tags">Tags</option>
+                        <option value="cardTypes">Type</option>
+                        <option value="difficulties">Difficulty</option>
+                      </select>
+                    </label>
+                    <label>
+                      Search
+                      <input id="deckStatsSearch" type="search" placeholder="Filter subtopics, tags, topics">
+                    </label>
+                  </div>
+                  <p id="deckStatsResultCount" class="empty-admin-text"></p>
+                  <div id="deckStatsList" class="stat-list stat-explorer-list"></div>
+                </section>
+
+                <section class="panel admin-tool-card">
+                  <h3>Validation / Health Summary</h3>
+                  <div id="deckHealthStatus" class="status-pill">Checking</div>
+                  <div id="deckHealthList" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-card">
+                  <h3>Coverage Warnings</h3>
+                  <div id="deckCoverageWarnings" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-card">
+                  <h3>Deck Index Sync Check</h3>
+                  <div id="deckIndexSyncList" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-card">
+                  <h3>Deck Version Notes</h3>
+                  <div id="deckVersionNotes" class="issue-list"></div>
+                </section>
+              </div>
             </div>
+
+            <dialog id="deckModal" class="admin-dialog">
+              <form method="dialog" class="admin-tool-card">
+                <h3 id="deckModalTitle">Add Deck</h3>
+                <label>
+                  Deck title
+                  <input id="modalDeckTitle" type="text" placeholder="CCNP QoS Deep Dive">
+                </label>
+                <label>
+                  Deck ID
+                  <input id="modalDeckId" type="text" placeholder="ccnp-qos-deep-dive">
+                </label>
+                <label>
+                  Version
+                  <input id="modalDeckVersion" type="text" value="0.1">
+                </label>
+                <label>
+                  Subject
+                  <input id="modalDeckSubject" type="text" placeholder="CCNP">
+                </label>
+                <label>
+                  Source
+                  <input id="modalDeckSource" type="text" placeholder="Admin deck manager">
+                </label>
+                <label>
+                  Tags
+                  <input id="modalDeckTags" type="text" placeholder="ccnp, qos">
+                </label>
+                <label>
+                  Description
+                  <textarea id="modalDeckDescription" rows="4"></textarea>
+                </label>
+                <div class="editor-actions">
+                  <button class="secondary-button" id="cancelDeckModalButton" type="button">Cancel</button>
+                  <button class="primary-button" id="submitDeckModalButton" type="button">Create Deck</button>
+                </div>
+              </form>
+            </dialog>
+
+            <dialog id="deckIndexDialog" class="admin-dialog wide-dialog">
+              <form method="dialog" class="admin-tool-card">
+                <div class="section-heading-row">
+                  <h3>Formatted deck-index.json</h3>
+                  <button class="secondary-button" type="submit">Close</button>
+                </div>
+                <pre id="deckIndexJsonView" class="json-preview"></pre>
+              </form>
+            </dialog>
           </section>
 
           <section class="tool-view" data-tool-view="card-editor">
@@ -190,11 +384,6 @@
                 </div>
 
                 <div class="admin-form-stack">
-                  <div class="segmented-control admin-import-mode" role="group" aria-label="Import mode">
-                    <button type="button" class="mode-button is-active" data-import-mode="existing">Existing</button>
-                    <button type="button" class="mode-button" data-import-mode="new">New Deck</button>
-                  </div>
-
                   <div id="existingDeckFields">
                     <label>
                       Deck
@@ -204,33 +393,35 @@
                       <input id="replaceDuplicates" type="checkbox">
                       Replace cards with matching IDs
                     </label>
-                  </div>
-
-                  <div id="newDeckFields" hidden>
-                    <label>
-                      Deck title
-                      <input id="newDeckTitle" type="text" placeholder="CCNP QoS Deep Dive">
-                    </label>
-                    <label>
-                      Deck id
-                      <input id="newDeckId" type="text" placeholder="ccnp-qos-deep-dive">
-                    </label>
-                    <label>
-                      Subject
-                      <input id="newDeckSubject" type="text" placeholder="CCNP">
-                    </label>
-                    <label>
-                      Source
-                      <input id="newDeckSource" type="text" placeholder="Admin import">
-                    </label>
-                    <label>
-                      Tags
-                      <input id="newDeckTags" type="text" placeholder="ccnp, qos, encor">
-                    </label>
-                    <label>
-                      Description
-                      <textarea id="newDeckDescription" rows="4" placeholder="Short deck description"></textarea>
-                    </label>
+                    <section class="import-deck-details" aria-live="polite">
+                      <h3>Deck Details</h3>
+                      <dl>
+                        <div>
+                          <dt>Deck Title</dt>
+                          <dd id="importDeckTitle">Select a deck</dd>
+                        </div>
+                        <div>
+                          <dt>Deck ID</dt>
+                          <dd id="importDeckId">-</dd>
+                        </div>
+                        <div>
+                          <dt>Subject</dt>
+                          <dd id="importDeckSubject">-</dd>
+                        </div>
+                        <div>
+                          <dt>Version</dt>
+                          <dd id="importDeckVersion">-</dd>
+                        </div>
+                        <div>
+                          <dt>Card Count</dt>
+                          <dd id="importDeckCardCount">-</dd>
+                        </div>
+                        <div>
+                          <dt>Description</dt>
+                          <dd id="importDeckDescription">-</dd>
+                        </div>
+                      </dl>
+                    </section>
                   </div>
                 </div>
               </section>
@@ -246,43 +437,74 @@
 
                 <label class="json-label">
                   JSON
+                  <span class="check-row inline-check-row">
+                    <input id="clearJsonAfterImport" type="checkbox" checked>
+                    Clear JSON text after successful import
+                  </span>
                   <textarea id="cardsJson" class="json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
                 </label>
 
                 <div class="import-summary" id="importSummary" aria-live="polite">
                   <p>Waiting for JSON.</p>
                 </div>
+                <div class="editor-actions import-extra-actions">
+                  <button class="secondary-button" id="exportSkippedCardsButton" type="button" hidden>Export Skipped Cards</button>
+                </div>
               </section>
             </div>
 
             <div class="placeholder-panel import-plan">
-              <h3>Future import and export tools</h3>
+              <h3>Import and export workflow</h3>
               <ul>
-                <li>Import deck JSON</li>
                 <li>Import cards</li>
-                <li>Export deck JSON</li>
-                <li>Export deck index</li>
-                <li>Export viewer-ready package</li>
+                <li>Replace matching card IDs when needed</li>
+                <li>Use Deck Management for deck creation, full deck import, and deck JSON export</li>
               </ul>
             </div>
           </section>
 
-          <section class="tool-view" data-tool-view="validate">
+          <section class="tool-view" data-tool-view="card-validator">
             <div class="panel-heading admin-heading">
               <div>
-                <p class="panel-label">Validate</p>
-                <h2>Deck Quality Checks</h2>
+                <p class="panel-label">Card Validator</p>
+                <h2>Validate Card JSON</h2>
               </div>
+              <button class="primary-button" id="validateCardsButton" type="button">Validate Cards</button>
             </div>
-            <div class="placeholder-panel">
-              <h3>Planned checks</h3>
-              <ul>
-                <li>Schema check</li>
-                <li>Missing fields</li>
-                <li>Broken render blocks</li>
-                <li>Duplicate IDs</li>
-                <li>Export readiness</li>
-              </ul>
+
+            <div class="admin-section-grid validator-grid">
+              <section class="panel admin-tool-card">
+                <h3>Paste Cards Data</h3>
+                <label class="check-row">
+                  <input id="validatorReplaceDuplicates" type="checkbox">
+                  Treat matching card IDs as replacements
+                </label>
+                <label class="json-label">
+                  JSON
+                  <textarea id="validatorCardsJson" class="json-input validator-json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
+                </label>
+              </section>
+
+              <section class="panel admin-tool-card">
+                <h3>Validation Results</h3>
+                <div class="dashboard-grid compact-dashboard-grid">
+                  <article class="metric-card">
+                    <span>Total</span>
+                    <strong id="validatorTotalCards">0</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span>Valid</span>
+                    <strong id="validatorValidCards">0</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span>Needs Fix</span>
+                    <strong id="validatorInvalidCards">0</strong>
+                  </article>
+                </div>
+                <div id="validatorResults" class="issue-list">
+                  <p>Paste card JSON and click Validate Cards.</p>
+                </div>
+              </section>
             </div>
           </section>
 

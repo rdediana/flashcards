@@ -13517,6 +13517,998 @@
           ]
         }
       ]
+    },
+    {
+      "id": "qos-wred-001",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "WRED and AF Drop Precedence",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "wred",
+        "cbwfq",
+        "af"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A CBWFQ class has WRED configured with the following thresholds:\n\nAF31: min 8 max 10\nAF32: min 5 max 10\nAF33: min 2 max 6\n\nWhich traffic is most likely to be dropped first during congestion, and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AF33 traffic is most likely to be dropped first because it has the most aggressive WRED thresholds.\n\nWRED uses average queue depth to begin probabilistic packet drops before the queue is full. Lower minimum thresholds cause earlier drops.\n\nAF drop precedence behavior:\n- AF31 = lowest drop precedence (most protected)\n- AF32 = medium drop precedence\n- AF33 = highest drop precedence (least protected)\n\nIn this example:\n- AF33 begins random drops at queue depth 2\n- AF32 begins random drops at queue depth 5\n- AF31 begins random drops at queue depth 8\n\nThis demonstrates differentiated packet discard within a single AF queue."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-002",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Limit and Serialization Delay",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "queue-limit",
+        "serialization",
+        "cbwfq"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A CBWFQ class is configured with:\n\nqueue-limit 10 packets\nshape average 256000\n\nTwo traffic tests are performed:\n\nTest A:\n10 packets × 100 bytes\n\nTest B:\n10 packets × 1400 bytes\n\nBoth queues reach the maximum queue-limit.\n\nWhich test introduces more queue delay, and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Test B introduces significantly more queue delay because larger packets create greater byte depth and require more serialization time.\n\nImportant concept:\nqueue-limit counts packets, not bytes.\n\nApproximate queued data:\n\nTest A:\n10 × 100-byte packets = 1,000 bytes\n\nTest B:\n10 × 1400-byte packets = 14,000 bytes\n\nAt a shaped rate of 256 kbps:\n- Larger byte depth takes longer to transmit\n- Larger packets consume more tokens from the shaper\n- Serialization delay increases dramatically\n\nKey CCNP insight:\nThe same packet-count queue depth can represent very different actual delay depending on packet size."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-003",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AF Queues and WRED Interpretation",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "wred",
+        "af31",
+        "af32",
+        "af33"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A network engineer believes AF31, AF32, and AF33 each use separate queues because they have different WRED thresholds.\n\nWhy is this assumption incorrect?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AF31, AF32, and AF33 do not necessarily represent separate queues.\n\nIn a typical CBWFQ + DSCP-based WRED design, they are usually different DSCP values sharing the SAME CBWFQ class queue.\n\nThe distinction is:\n- One queue exists for the class (for example, cm-af3)\n- Different WRED thresholds are applied within that shared queue based on DSCP value\n\nOperationally:\n- AF31 receives the most protection\n- AF32 is dropped earlier\n- AF33 is dropped most aggressively\n\nThis allows differentiated packet discard inside a single forwarding class.\n\nKey CCNP insight:\nWRED profiles can differ per DSCP while still operating within the same queue."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-004",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Tail Drop vs WRED",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "tail-drop",
+        "wred"
+      ],
+      "front": [
+        {
+          "type": "heading",
+          "text": "Tail Drop vs WRED"
+        },
+        {
+          "type": "text",
+          "text": "Compare tail drop and WRED behavior in a CBWFQ queue."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "Tail Drop",
+            "WRED"
+          ],
+          "rows": [
+            [
+              "When drops occur",
+              "Only after queue is full",
+              "Before queue is full"
+            ],
+            [
+              "Drop behavior",
+              "Reactive",
+              "Proactive"
+            ],
+            [
+              "Congestion handling",
+              "Queue exhaustion",
+              "Congestion avoidance"
+            ],
+            [
+              "TCP impact",
+              "Can trigger global synchronization",
+              "Attempts to avoid synchronization"
+            ],
+            [
+              "DSCP awareness",
+              "No",
+              "Yes when dscp-based WRED is enabled"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key CCNP concept: WRED is designed to influence TCP behavior before complete queue collapse occurs."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-005",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Hierarchical QoS Interpretation",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "hqos",
+        "cbwfq",
+        "mqc"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Class-map: cm-af3\n  queue limit 10 packets\n  (queue depth/total drops/no-buffer drops) 9/119/0\n  bandwidth 40% (102 kbps)\n\n    dscp       Random drop      Tail drop\n    af31       0                0\n    af32       6                0\n    af33       46               0"
+        },
+        {
+          "type": "text",
+          "text": "Interpret the output. What does it prove about congestion handling inside the AF3 class?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "The AF3 class is actively congested because queue depth and drops are increasing.",
+            "WRED is operational because random drops are occurring.",
+            "Tail drop has not occurred because tail-drop counters remain at 0.",
+            "AF33 is being dropped more aggressively than AF32 due to lower WRED thresholds.",
+            "AF31 is currently protected because its thresholds are higher and congestion has not yet reached its drop profile."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "This output demonstrates differentiated packet discard inside a single CBWFQ queue."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-006",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Shaping Queue Packet Flow",
+      "type": "sequence",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "shaping",
+        "token-bucket"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Place the following shaping events in the correct operational order:\n\n- Packet transmitted\n- Packet arrives\n- Packet queued\n- Tokens replenished\n- Shaper checks token availability"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Packet arrives",
+            "Shaper checks token availability",
+            "If insufficient tokens exist, packet queued",
+            "Tokens replenished over time",
+            "Packet transmitted once sufficient tokens exist"
+          ]
+        },
+        {
+          "type": "diagram",
+          "text": "Packet -> Token Check -> Queue (if needed) -> Tokens Refill -> Transmission"
+        },
+        {
+          "type": "callout",
+          "text": "Key CCNP concept: shaping delays packets rather than immediately dropping them."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-007",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Parent Shaper Interpretation",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "shaping",
+        "hqos"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Class-map: class-default\n  shape (average) cir 256000, bc 1024, be 1024\n  target shape rate 256000"
+        },
+        {
+          "type": "text",
+          "text": "Interpret the output. What operational behavior should occur on this interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Traffic is shaped to an average rate of 256 kbps.",
+            "Packets exceeding the current token availability are queued rather than immediately dropped.",
+            "The shaper uses a token bucket mechanism with Bc and Be values controlling burst behavior.",
+            "Congestion is intentionally created so child CBWFQ queues become active.",
+            "Queue depth and delay increase when ingress traffic exceeds 256 kbps."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key CCNP insight: shaping delays packets; policing drops packets."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-008",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Depth Interpretation",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "queue-depth",
+        "serialization"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A CBWFQ class has a queue-limit of 10 packets.\n\nTwo flows enter the queue:\n- Flow A: 10 packets at 100 bytes each\n- Flow B: 10 packets at 1500 bytes each\n\nBoth queues are full.\n\nWhich flow creates more serialization delay and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Flow",
+            "Approx Bytes Queued",
+            "Approx Impact"
+          ],
+          "rows": [
+            [
+              "Flow A",
+              "1,000 bytes",
+              "Lower delay"
+            ],
+            [
+              "Flow B",
+              "15,000 bytes",
+              "Much higher delay"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Queue-limit counts packets, not bytes. Larger packets consume more serialization time and represent deeper byte queues."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-009",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AF Queue Structure",
+      "type": "misconception",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "af",
+        "wred"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Misconception Trap:\n\nAF31, AF32, and AF33 must each use separate hardware queues because they have different WRED thresholds."
+        },
+        {
+          "type": "text",
+          "text": "Why is this assumption incorrect?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AF31, AF32, and AF33 commonly share the SAME CBWFQ class queue while using DIFFERENT WRED drop profiles.\n\nThe queue is associated to the class (for example, cm-af3), while WRED thresholds are associated to DSCP values within that queue."
+        },
+        {
+          "type": "diagram",
+          "text": "cm-af3 queue\n ├── AF31 → higher thresholds\n ├── AF32 → medium thresholds\n └── AF33 → aggressive thresholds"
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-010",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Random Drop Interpretation",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "wred",
+        "drops"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "af31  random drop 0\naf32  random drop 6\naf33  random drop 46\n\nTail drop all = 0"
+        },
+        {
+          "type": "text",
+          "text": "What does this output prove about queue behavior?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "WRED is operational because random-drop counters are increasing.",
+            "AF33 is being dropped more aggressively due to lower thresholds.",
+            "Tail drop has not occurred because the queue has not fully exhausted.",
+            "Congestion avoidance is occurring before full queue collapse.",
+            "AF31 currently has the most protection."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-011",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Exponential Weight",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "wred",
+        "average-depth"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does the WRED exponential weight determine?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "How quickly average queue depth reacts to congestion",
+            "How smooth the moving average calculation becomes",
+            "How sensitive WRED is to short bursts"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Higher exponential weight = smoother and slower reacting average queue depth."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-012",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Bandwidth Percent",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "cbwfq",
+        "scheduler"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare 'bandwidth percent 40' versus 'shape average 256000' in MQC QoS."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "bandwidth percent",
+            "shape average"
+          ],
+          "rows": [
+            [
+              "Primary Function",
+              "Scheduler guarantee",
+              "Rate limiting"
+            ],
+            [
+              "Drops or Delays",
+              "Scheduling behavior only",
+              "Queues and delays traffic"
+            ],
+            [
+              "Acts During Congestion",
+              "Yes",
+              "Always"
+            ],
+            [
+              "Hard Traffic Cap",
+              "No",
+              "Yes"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-013",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Token Bucket Behavior",
+      "type": "sequence",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "token-bucket",
+        "shaping"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Place the shaping operations in correct order:\n\n- Packet transmitted\n- Packet arrives\n- Tokens replenished\n- Queue packet\n- Check token availability"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Packet arrives",
+            "Check token availability",
+            "Queue packet if insufficient tokens exist",
+            "Tokens replenished over time",
+            "Packet transmitted"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-014",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "WRED Threshold Interpretation",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "thresholds",
+        "wred"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A queue uses:\n\nAF31 min/max = 8/10\nAF33 min/max = 2/6\n\nAn engineer notices AF33 drops occurring while AF31 remains unaffected.\n\nWhy is this expected?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "AF33 uses more aggressive WRED thresholds, so random drops begin at lower queue depths.\n\nAF31 receives greater congestion protection because its minimum threshold is much higher."
+        },
+        {
+          "type": "callout",
+          "text": "AF drop precedence controls which traffic becomes disposable first during congestion."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-015",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Limit Misconception",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "queue-limit"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the most important operational misconception about 'queue-limit 10 packets'?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A queue-limit of 10 packets does NOT represent a fixed amount of delay.\n\nActual delay depends heavily on packet size and transmission rate."
+        },
+        {
+          "type": "diagram",
+          "text": "Packet Count + Packet Size + Serialization Rate = Queue Delay"
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-016",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Parent and Child Policies",
+      "type": "config-interpretation",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "hqos",
+        "mqc"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "policy-map PARENT\n class class-default\n  shape average 256000\n  service-policy CHILD\n\npolicy-map CHILD\n class CM-AF3\n  bandwidth percent 40"
+        },
+        {
+          "type": "text",
+          "text": "How does the CHILD policy bandwidth calculation work?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The CHILD policy bandwidth percentage is calculated relative to the parent shaper rate, not the physical interface speed."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "256 kbps × 40% ≈ 102 kbps guaranteed bandwidth"
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-017",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Tail Drop Behavior",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "tail-drop"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When does tail drop occur in a queue?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Packets continue entering queue until queue-limit is reached.",
+            "Once queue is full, new arriving packets are discarded.",
+            "Tail drop is reactive because it waits for full queue exhaustion."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-018",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Mean Queue Depth",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "mean-queue-depth"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Mean queue depth: 1 packets"
+        },
+        {
+          "type": "text",
+          "text": "Why is mean queue depth important to WRED operation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "WRED decisions are based on average queue depth rather than instantaneous queue depth.\n\nThis prevents short microbursts from immediately triggering aggressive packet drops."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-019",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "AF Classification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "classification",
+        "mqc"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command best verifies that AF31 traffic is matching the correct CBWFQ class?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show policy-map interface"
+        },
+        {
+          "type": "text",
+          "text": "The class packet counters prove whether traffic is being classified into the intended queue."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-020",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Congestion Avoidance",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "congestion-avoidance"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is WRED considered a congestion-avoidance mechanism rather than a congestion-reaction mechanism?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "WRED begins probabilistic packet drops before the queue becomes completely full, attempting to signal congestion early and prevent queue collapse."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-021",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Delay Prediction",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "delay",
+        "serialization"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A shaped interface runs at 256 kbps.\n\nWhich queue creates greater delay?\n\nA:\n5 × 1500-byte packets\n\nB:\n20 × 100-byte packets"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Queue A likely creates greater serialization delay because the byte depth is much larger even though packet count is lower."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Queue",
+            "Approx Bytes"
+          ],
+          "rows": [
+            [
+              "A",
+              "7,500"
+            ],
+            [
+              "B",
+              "2,000"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-022",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Hierarchy",
+      "type": "diagram",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "hqos",
+        "queueing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Describe the logical queue hierarchy for a parent shaper with child CBWFQ classes."
+        }
+      ],
+      "back": [
+        {
+          "type": "diagram",
+          "text": "Physical Interface\n   ↓\nParent Shaper Queue\n   ↓\nChild Class Queues\n   ├── AF1 Queue\n   ├── AF3 Queue\n   └── class-default"
+        },
+        {
+          "type": "text",
+          "text": "The parent shaper creates the bottleneck while child queues compete for scheduler service within that shaped rate."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-023",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Queue Depth Troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "queue-depth",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A QoS policy shows:\n\nqueue depth 0\nrandom drops 0\n\nAn engineer expects WRED activity but sees none.\n\nWhat is the most likely explanation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "No meaningful congestion exists",
+            "Traffic rate may not exceed shaped rate",
+            "Queue depth is not building",
+            "WRED requires sustained congestion to activate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-024",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Shaping vs Policing",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "policing",
+        "shaping"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare shaping and policing behavior during congestion."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "Shaping",
+            "Policing"
+          ],
+          "rows": [
+            [
+              "Traffic handling",
+              "Queues excess packets",
+              "Drops or remarks excess traffic"
+            ],
+            [
+              "Buffers used",
+              "Yes",
+              "Typically no"
+            ],
+            [
+              "Delay introduced",
+              "Yes",
+              "Usually no"
+            ],
+            [
+              "Typical deployment",
+              "WAN edge smoothing",
+              "Traffic enforcement"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-025",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Scheduler Guarantees",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "scheduler",
+        "cbwfq"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A parent shaper runs at 256 kbps.\n\nAF1 bandwidth percent 25\nAF3 bandwidth percent 40\n\nDuring congestion, what minimum bandwidth guarantees exist for each class?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Class",
+            "Approx Minimum Guarantee"
+          ],
+          "rows": [
+            [
+              "AF1",
+              "~64 kbps"
+            ],
+            [
+              "AF3",
+              "~102 kbps"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Bandwidth percentages are relative to the parent shaper rate, not the physical interface speed."
+        }
+      ]
+    },
+    {
+      "id": "qos-wred-026",
+      "blueprint": "1.4",
+      "domain": "Architecture",
+      "topic": "QoS",
+      "subtopic": "Packet-Based WRED",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "qos",
+        "wred",
+        "packet-based"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does 'packet-based WRED' imply about threshold calculations?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Threshold calculations are based on packet counts rather than byte counts.\n\nAverage queue depth is measured in packets."
+        }
+      ]
     }
   ]
 }

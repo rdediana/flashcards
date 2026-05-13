@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-05-12",
+  "updated": "2026-05-13",
   "decks": [
     {
       "deckId": "ccnp-encor-350-401-v1.2",
@@ -13,6 +13,33 @@
         "encor",
         "350-401",
         "exam"
+      ]
+    },
+    {
+      "deckId": "ccnp-encor-350-401-exam-study-memory-tables-c",
+      "title": "CCNP ENCOR 350-401 Memory Tables C",
+      "subject": "CCNP Exam 350-401",
+      "description": "Exam version: ccnp-encor-350-401-v1.2\nMemory Tables C",
+      "path": "data/decks/ccnp-encor-350-401-exam-study-memory-tables-c.json",
+      "tags": [
+        "ccnp",
+        "encor",
+        "350-401",
+        "exam",
+        "memory-tables"
+      ]
+    },
+    {
+      "deckId": "ccnp-encor-350-401-memory-tables-b",
+      "title": "CCNP ENCOR 350-401 Memory Tables B",
+      "subject": "CCNP Exam 350-401",
+      "description": "Exam version: ccnp-encor-350-401-v1.2\nMemory Tables B",
+      "path": "data/decks/ccnp-encor-350-401-memory-tables-b.json",
+      "tags": [
+        "ccnp",
+        "exam",
+        "memory-tables",
+        "350-401"
       ]
     }
   ]

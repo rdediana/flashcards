@@ -1,7 +1,19 @@
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const { getDeck, importCards, listDecks, updateCard } = require("./deck-store");
+const {
+  cloneDeck,
+  createEmptyDeck,
+  deleteDeck,
+  getDeck,
+  getDeckIndex,
+  importCards,
+  importDeck,
+  listDecks,
+  updateCard,
+  updateDeckDetails,
+  validateCardImport
+} = require("./deck-store");
 
 const PORT = Number(process.env.PORT || 8787);
 const PUBLIC_DIR = __dirname;
@@ -22,13 +34,47 @@ const server = http.createServer(async (request, response) => {
       return sendJson(response, { decks: await listDecks() });
     }
 
+    if (url.pathname === "/api/deck-index" && request.method === "GET") {
+      return sendJson(response, await getDeckIndex());
+    }
+
     if (url.pathname === "/api/deck" && request.method === "GET") {
       return sendJson(response, await getDeck(url.searchParams.get("deckId")));
+    }
+
+    if (url.pathname === "/api/deck" && request.method === "POST") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await createEmptyDeck(body));
+    }
+
+    if (url.pathname === "/api/deck" && request.method === "PUT") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await updateDeckDetails(body));
+    }
+
+    if (url.pathname === "/api/deck" && request.method === "DELETE") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await deleteDeck(body.deckId));
+    }
+
+    if (url.pathname === "/api/deck/import" && request.method === "POST") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await importDeck(body));
+    }
+
+    if (url.pathname === "/api/deck/clone" && request.method === "POST") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await cloneDeck(body));
     }
 
     if (url.pathname === "/api/import" && request.method === "POST") {
       const body = await readJsonBody(request);
       return sendJson(response, await importCards(body));
+    }
+
+    if (url.pathname === "/api/cards/validate" && request.method === "POST") {
+      const body = await readJsonBody(request);
+      return sendJson(response, await validateCardImport(body));
     }
 
     if (url.pathname === "/api/card" && request.method === "POST") {

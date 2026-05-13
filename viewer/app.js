@@ -1,9 +1,11 @@
 const deckIndexPath = "./data/deck-index.json";
 const fallbackDeckPath = "./data/decks/ccnp-encor-350-401-v1.2.json";
+const selectedDeckStorageKey = "flashcards.selectedDeckId";
 
 const state = {
   deck: null,
   deckIndex: null,
+  deckEntry: null,
   cards: [],
   filteredCards: [],
   currentIndex: 0,
@@ -23,7 +25,7 @@ const state = {
 const els = {
   deckTitle: document.querySelector("#deckTitle"),
   deckMeta: document.querySelector("#deckMeta"),
-  selectedDeck: document.querySelector("#selectedDeck"),
+  deckPicker: document.querySelector("#deckPicker"),
   reviewedMetric: document.querySelector("#reviewedMetric"),
   accuracyMetric: document.querySelector("#accuracyMetric"),
   weakMetric: document.querySelector("#weakMetric"),
@@ -109,18 +111,8 @@ init();
 
 async function init() {
   try {
-    const deckData = await loadInitialDeck();
-    const errors = validateDeck(deckData);
-    if (errors.length) {
-      throw new Error(errors.join(" "));
-    }
-
-    state.deck = deckData.deck;
-    state.cards = deckData.cards;
-    state.progress = loadProgress();
-
-    hydrateDeckHeader(deckData);
-    populateFilters();
+    const initialDeck = await loadInitialDeck();
+    applyLoadedDeck(initialDeck.deckData, initialDeck.entry);
     bindEvents();
     applyFilters();
   } catch (error) {
@@ -136,15 +128,58 @@ async function loadInitialDeck() {
     }
 
     state.deckIndex = await indexResponse.json();
-    const firstDeck = state.deckIndex.decks?.[0];
-    if (!firstDeck?.path) {
+    const decks = state.deckIndex.decks || [];
+    const savedDeckId = localStorage.getItem(selectedDeckStorageKey);
+    const selectedDeck = decks.find((deck) => deck.deckId === savedDeckId) || decks[0];
+    if (!selectedDeck?.path) {
       throw new Error("Deck index does not list a deck path.");
     }
 
-    return fetchJson(resolveDeckPath(firstDeck.path));
+    return {
+      deckData: await fetchJson(resolveDeckPath(selectedDeck.path)),
+      entry: selectedDeck
+    };
   } catch {
-    return fetchJson(fallbackDeckPath);
+    return {
+      deckData: await fetchJson(fallbackDeckPath),
+      entry: null
+    };
   }
+}
+
+async function loadDeckFromSelection(deckId) {
+  const entry = (state.deckIndex?.decks || []).find((deck) => deck.deckId === deckId);
+  if (!entry?.path) throw new Error("Selected deck is missing a path.");
+  const deckData = await fetchJson(resolveDeckPath(entry.path));
+  applyLoadedDeck(deckData, entry);
+  localStorage.setItem(selectedDeckStorageKey, deckData.deck.id);
+  applyFilters();
+}
+
+function applyLoadedDeck(deckData, entry) {
+  const errors = validateDeck(deckData);
+  if (errors.length) {
+    throw new Error(errors.join(" "));
+  }
+
+  state.deck = deckData.deck;
+  state.deckEntry = entry;
+  state.cards = deckData.cards;
+  state.filteredCards = [];
+  state.currentIndex = 0;
+  state.answerVisible = false;
+  state.showTags = false;
+  state.mode = "all";
+  state.activeSession = false;
+  state.session = null;
+  state.reviewSet = null;
+  state.setSummary = null;
+  state.progress = loadProgress();
+
+  hydrateDeckHeader(deckData);
+  populateDeckPicker();
+  populateFilters();
+  resetFilterControls();
 }
 
 async function fetchJson(path) {
@@ -217,11 +252,18 @@ function hydrateDeckHeader(deckData) {
   const displayTitle = displayDeckTitle(deckData.deck.title);
   document.title = displayTitle;
   els.deckTitle.textContent = displayTitle;
-  els.selectedDeck.textContent = displayTitle;
   els.deckMeta.textContent = `${deckData.deck.source || "JSON deck"} | Version ${deckData.deck.version || "0.1"} | ${deckData.cards.length} cards`;
 }
 
 function bindEvents() {
+  els.deckPicker.addEventListener("change", async () => {
+    try {
+      await loadDeckFromSelection(els.deckPicker.value);
+    } catch (error) {
+      renderLoadError(error);
+    }
+  });
+
   [els.searchInput, els.domainFilter, els.topicFilter, els.subtopicFilter, els.difficultyFilter, els.typeFilter, els.tagFilter, els.viewedFilter].forEach((control) => {
     control.addEventListener("input", () => {
       state.currentIndex = 0;
@@ -285,6 +327,25 @@ function bindEvents() {
   });
 }
 
+function populateDeckPicker() {
+  els.deckPicker.replaceChildren();
+  const decks = state.deckIndex?.decks || [];
+  const options = decks.length ? decks : [{
+    deckId: state.deck?.id || "",
+    title: state.deck?.title || "Current deck"
+  }];
+
+  options.forEach((deck) => {
+    const option = document.createElement("option");
+    option.value = deck.deckId;
+    option.textContent = deck.title || deck.deckId;
+    els.deckPicker.append(option);
+  });
+
+  els.deckPicker.value = state.deck?.id || options[0]?.deckId || "";
+  els.deckPicker.disabled = options.length < 2;
+}
+
 function populateFilters() {
   setOptions(els.domainFilter, uniqueValues(state.cards, "domain"), "All domains");
   setOptions(els.topicFilter, uniqueValues(state.cards, "topic"), "All topics");
@@ -292,6 +353,19 @@ function populateFilters() {
   setOptions(els.difficultyFilter, uniqueValues(state.cards, "difficulty"), "All difficulties");
   setOptions(els.typeFilter, uniqueValues(state.cards, "type"), "All types");
   setOptions(els.tagFilter, [...new Set(state.cards.flatMap((card) => card.tags || []))].sort(), "All tags");
+}
+
+function resetFilterControls() {
+  els.searchInput.value = "";
+  els.domainFilter.value = "";
+  els.topicFilter.value = "";
+  els.subtopicFilter.value = "";
+  els.difficultyFilter.value = "";
+  els.typeFilter.value = "";
+  els.tagFilter.value = "";
+  els.viewedFilter.value = "";
+  state.mode = "all";
+  els.modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "all"));
 }
 
 function setOptions(select, values, defaultLabel) {
@@ -1010,16 +1084,7 @@ function syncShuffleButtons() {
 }
 
 function resetFilters() {
-  els.searchInput.value = "";
-  els.domainFilter.value = "";
-  els.topicFilter.value = "";
-  els.subtopicFilter.value = "";
-  els.difficultyFilter.value = "";
-  els.typeFilter.value = "";
-  els.tagFilter.value = "";
-  els.viewedFilter.value = "";
-  state.mode = "all";
-  els.modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "all"));
+  resetFilterControls();
   state.currentIndex = 0;
   clearReviewSet();
   applyFilters();

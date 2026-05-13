@@ -146,9 +146,9 @@ label,
 
 .overview-panel {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(360px, 1.4fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.25fr);
   gap: 18px;
-  align-items: center;
+  align-items: start;
   margin-bottom: 18px;
   border-radius: 8px;
   padding: 16px 18px;
@@ -162,13 +162,38 @@ label,
 }
 
 .selected-deck-line {
+  display: grid;
+  gap: 10px;
   min-width: 0;
 }
 
 .selected-deck-line h2 {
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.deck-picker-label {
+  display: grid;
+  gap: 8px;
+  max-width: 520px;
+}
+
+.deck-picker-label select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #0d1d26;
+  color: var(--text);
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 850;
+}
+
+.deck-picker-label select:disabled {
+  color: var(--muted);
 }
 
 .metric-grid {
@@ -1031,6 +1056,7 @@ body.is-focus-mode .flashcard {
 
   .selected-deck-line h2 {
     font-size: 1rem;
+    white-space: normal;
   }
 
   .overview-metrics {
