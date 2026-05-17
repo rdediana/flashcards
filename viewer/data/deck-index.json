@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-05-13",
+  "updated": "2026-05-17",
   "decks": [
     {
       "deckId": "ccnp-encor-350-401-v1.2",
@@ -40,6 +40,31 @@
         "exam",
         "memory-tables",
         "350-401"
+      ]
+    },
+    {
+      "deckId": "ccnp-encor-350-401-ocg",
+      "title": "CCNP ENCOR 350-401 OCG",
+      "subject": "CCNP ENCOR 350-401",
+      "description": "CCNP ENCOR 350-401 Official Cert Guide, 2nd Edition",
+      "path": "data/decks/ccnp-encor-350-401-ocg.json",
+      "tags": [
+        "CCNP",
+        "ENCOR",
+        "350-401",
+        "OCG"
+      ]
+    },
+    {
+      "deckId": "intro-to-organic-chemistry",
+      "title": "Intro To Organic Chemistry",
+      "subject": "Organic Chemistry",
+      "description": "",
+      "path": "data/decks/intro-to-organic-chemistry.json",
+      "tags": [
+        "organic",
+        "chemistry",
+        "intro"
       ]
     }
   ]

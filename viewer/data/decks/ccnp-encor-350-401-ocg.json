@@ -1,0 +1,2962 @@
+{
+  "deck": {
+    "id": "ccnp-encor-350-401-ocg",
+    "title": "CCNP ENCOR 350-401 OCG",
+    "version": "0.1",
+    "source": "Admin deck manager",
+    "description": "CCNP ENCOR 350-401 Official Cert Guide, 2nd Edition"
+  },
+  "cards": [
+    {
+      "id": "overlay-tunnels-001",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Overlay vs Underlay",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "overlay",
+        "underlay"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between an overlay network and an underlay network?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "An underlay network is the physical transport network that provides IP reachability between devices. An overlay network is a logical/virtual network built on top of the underlay using tunneling (e.g., GRE, IPsec, VXLAN, LISP, MPLS). Overlays enable virtualization, segmentation, and security across the underlay."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-002",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "tunneling"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is GRE and what was its original purpose?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Generic Routing Encapsulation (GRE) is a tunneling protocol that encapsulates a wide variety of network-layer protocols inside IP packets. It was originally created to transport non-routable legacy protocols such as IPX across an IP network, and is now most commonly used as an overlay for IPv4/IPv6 and to build VPNs."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-003",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Overhead",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "mtu"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How many bytes does GRE (without IPsec) add to a packet, and why is IP MTU often tuned on GRE tunnels?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GRE adds a minimum of 24 bytes of overhead (new outer IP header + GRE header). IP MTU is typically lowered on the tunnel interface (commonly to 1400) so the router fragments in advance, preventing fragmentation issues for hosts that cannot detect the reduced path MTU."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-004",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Configuration",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "configuration"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show the minimum required commands to configure a GRE tunnel between two routers."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel100\n ip address 192.168.100.1 255.255.255.0\n tunnel source GigabitEthernet0/1\n tunnel destination 100.64.2.2"
+        },
+        {
+          "type": "text",
+          "text": "Required: interface tunnel, tunnel source, tunnel destination, and an IP address. Tunnel mode defaults to GRE/IP. Optional: bandwidth, keepalive, ip mtu, tunnel mode."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-005",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Keepalives",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "keepalive"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the purpose of GRE keepalives, and what are the default values?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GRE keepalives ensure bidirectional reachability across the tunnel so the line protocol stays up only when the remote endpoint is actually reachable. Without keepalives, the tunnel relies solely on having a route to the destination. Default keepalive timer is 10 seconds with 3 retries."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel100\n keepalive 5 3"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-006",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Recursive Routing",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "recursive-routing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A GRE tunnel keeps flapping with the syslog '%TUN-5-RECURDOWN: Tunnel100 temporarily disabled due to recursive routing'. What is the cause and fix?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Recursive routing occurs when the router learns the tunnel destination (the underlay endpoint) through the tunnel itself. This typically happens when the transport/Internet-facing interface is advertised into the same routing protocol that runs over the tunnel."
+        },
+        {
+          "type": "callout",
+          "text": "Fix: Do not advertise the tunnel source/destination IP into the routing protocol that runs across the tunnel. Keep underlay reachability separate (e.g., via a static default route)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-007",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command verifies the source, destination, protocol, and keepalive of a GRE tunnel?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show interfaces tunnel 100"
+        },
+        {
+          "type": "text",
+          "text": "Look for: 'Tunnel source ... destination ...', 'Tunnel protocol/transport GRE/IP', and 'Keepalive set'."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-008",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Services",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "security"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the four security services provided by IPsec?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Peer authentication (PSK or digital certificates)",
+            "Data confidentiality (DES/3DES/AES — AES recommended)",
+            "Data integrity (HMAC with MD5 or SHA — SHA recommended)",
+            "Replay detection (unique sequence numbers per packet)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-009",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Headers",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "ah",
+        "esp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare IPsec Authentication Header (AH) and Encapsulating Security Payload (ESP)."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Feature",
+            "AH (proto 51)",
+            "ESP (proto 50)"
+          ],
+          "rows": [
+            [
+              "Data integrity",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Peer authentication",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Replay protection",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Data confidentiality (encryption)",
+              "No",
+              "Yes"
+            ],
+            [
+              "NAT-T support",
+              "No",
+              "Yes"
+            ],
+            [
+              "Recommended",
+              "No (rarely used)",
+              "Yes"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-010",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Modes",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "tunnel-mode",
+        "transport-mode"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between IPsec tunnel mode and transport mode?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Tunnel mode encrypts the entire original IP packet and adds a new outer IP header — used when the IPsec peer is not the original source/destination, providing overlay capability. Transport mode encrypts/authenticates only the payload and reuses the original IP header — used when GRE provides the overlay (e.g., GRE over IPsec) so encapsulation isn't doubled."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-011",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Weak Crypto",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "crypto"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which IPsec encryption and hashing algorithms should be avoided in modern designs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Encryption: DES and 3DES (use AES instead)",
+            "Hashing: MD5 (use SHA-2 family)",
+            "DH groups 1, 2, and 5 (use group 14 or higher)",
+            "RSA keys < 2048 bits"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "IOS XE 17.11.1+ rejects weak crypto by default (Field Notice 72510)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-012",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Diffie-Hellman",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "dh"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the role of Diffie-Hellman (DH) in IPsec, and what does the DH group number indicate?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DH is an asymmetric key-exchange protocol that lets two peers derive a shared secret over an unsecure channel. That shared secret is then used to seed symmetric keys (e.g., AES) for actual data encryption. The DH group indicates the modulus size: group 1 = 768-bit, 2 = 1024, 5 = 1536, 14 = 2048, 19 = 256-bit ECDH, 20 = 384-bit ECDH. Larger = stronger; groups 14+ are recommended."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-013",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IKEv1 Phases",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "ikev1"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are IKEv1 Phase 1 and Phase 2, and which SAs do they establish?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Phase 1 establishes a single bidirectional ISAKMP/IKE SA between peers using main mode (6 messages) or aggressive mode (3 messages). Phase 2 leverages that ISAKMP SA via quick mode (3 messages) to establish two unidirectional IPsec SAs — one in each direction — used to protect actual data traffic."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-014",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IKEv1 Modes",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ikev1",
+        "main-mode",
+        "aggressive-mode"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do IKEv1 main mode and aggressive mode differ?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "Main Mode",
+            "Aggressive Mode"
+          ],
+          "rows": [
+            [
+              "Messages",
+              "6 (MM1–MM6)",
+              "3 (AM1–AM3)"
+            ],
+            [
+              "Identity protection",
+              "Yes (encrypted)",
+              "No (exposed)"
+            ],
+            [
+              "Speed",
+              "Slower",
+              "Faster"
+            ],
+            [
+              "Flexibility/security",
+              "More flexible & secure",
+              "Less flexible, less secure"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-015",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IKEv2",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ikev2",
+        "ikev1"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the key improvements of IKEv2 over IKEv1?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Fewer messages: only 4 (IKE_SA_INIT + IKE_AUTH) vs 9 in IKEv1 main mode",
+            "Built-in anti-DoS protection",
+            "EAP support (great for remote access)",
+            "Asymmetric authentication — each peer can use a different method",
+            "Next-Generation Encryption (AES-GCM, SHA-256/384/512, ECDH, ECDSA)",
+            "CREATE_CHILD_SA replaces quick mode with only 2 messages",
+            "Not interoperable with IKEv1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-016",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE over IPsec",
+      "type": "config-interpretation",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "ipsec",
+        "ipsec-profile"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Interpret the configuration. Which tunneling/encryption design is being used?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto isakmp policy 10\n authentication pre-share\n hash sha256\n encryption aes\n group 14\ncrypto isakmp key CISCO123 address 100.64.1.1\ncrypto ipsec transform-set AES_SHA esp-aes esp-sha-hmac\n mode transport\ncrypto ipsec profile IPSEC_PROFILE\n set transform-set AES_SHA\ninterface Tunnel100\n ip address 192.168.100.2 255.255.255.0\n tunnel source GigabitEthernet0/1\n tunnel destination 100.64.1.1\n tunnel protection ipsec profile IPSEC_PROFILE"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "This is GRE over IPsec in transport mode, protected by an IPsec profile (modern, recommended approach over crypto maps). Authentication is PSK, IKE phase 1 uses AES + SHA-256 + DH group 14, and ESP uses AES + SHA-HMAC. The tunnel mode is left default (GRE/IP), and IPsec encrypts only the GRE payload because of 'mode transport'."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-017",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "VTI vs GRE over IPsec",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vti",
+        "gre",
+        "ipsec"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between a static VTI over IPsec and GRE over IPsec?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GRE over IPsec adds a GRE header inside the IPsec encapsulation, supports multicast and non-IP protocols natively, and routes via the GRE tunnel. Static VTI uses 'tunnel mode ipsec ipv4/ipv6' and natively encapsulates IPv4/IPv6 in IPsec without an extra GRE header — cleaner and lower overhead, but the underlying IPsec tunnel mode is used for routing."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel100\n tunnel mode ipsec ipv4\n tunnel protection ipsec profile IPSEC_PROFILE"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-018",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Crypto Maps vs IPsec Profiles",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "crypto-maps",
+        "ipsec-profile"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are IPsec profiles preferred over crypto maps for protecting tunnel interfaces?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Crypto maps don't natively support MPLS over the tunnel",
+            "Configuration with crypto ACLs becomes complex and error-prone",
+            "Crypto ACL entries can consume excessive TCAM",
+            "IPsec profiles attach directly to the tunnel interface with 'tunnel protection ipsec profile <name>' — much cleaner"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-019",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Verification",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which two commands verify ISAKMP and IPsec SA status, and what should you look for?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show crypto isakmp sa\nshow crypto ipsec sa"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "show crypto isakmp sa: state should be QM_IDLE and ACTIVE (Phase 1 is up)",
+            "show crypto ipsec sa: 'pkts encaps/encrypt' and 'pkts decaps/decrypt' counters should be incrementing, and inbound/outbound ESP SAs should be ACTIVE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-020",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Concepts",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "eid",
+        "rloc"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What problem does LISP solve, and how does it separate IP addresses?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "LISP was created to address Internet routing-table scalability issues (aggregation, traffic engineering, multihoming, route churn). It separates an IP address into two namespaces: the EID (Endpoint Identifier — the host's identity) and the RLOC (Routing Locator — the location/where the host is attached). The same EID can move between sites, and only the RLOC mapping changes."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-021",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Components",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "itr",
+        "etr",
+        "ms",
+        "mr"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Define the LISP roles: ITR, ETR, xTR, MS, MR, PETR, PITR."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Role",
+            "Function"
+          ],
+          "rows": [
+            [
+              "ITR",
+              "Ingress Tunnel Router — encapsulates EID traffic leaving the LISP site"
+            ],
+            [
+              "ETR",
+              "Egress Tunnel Router — de-encapsulates traffic entering the LISP site"
+            ],
+            [
+              "xTR",
+              "Router performing both ITR and ETR functions"
+            ],
+            [
+              "MS",
+              "Map Server — stores EID-to-RLOC mappings registered by ETRs"
+            ],
+            [
+              "MR",
+              "Map Resolver — receives map requests from ITRs and forwards them"
+            ],
+            [
+              "PETR",
+              "Proxy ETR — for traffic between LISP sites and non-LISP destinations"
+            ],
+            [
+              "PITR",
+              "Proxy ITR — encapsulates traffic from non-LISP sites toward LISP EIDs"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-022",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Control Plane",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "control-plane"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does the LISP control plane resemble DNS, and why is this efficient?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Like DNS resolves a name to an IP, LISP resolves an EID to an RLOC by sending map requests to the Map Resolver. This is a pull model — mappings are only retrieved on demand and cached. Compare this with traditional routing protocols (BGP/OSPF), which use a push model and flood all routes everywhere. LISP scales better because routers only learn what they actually need."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-023",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Data Plane",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "data-plane",
+        "udp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What encapsulation does the LISP data plane use, and what UDP ports are involved?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The LISP data plane uses IP-in-IP/UDP encapsulation. The ITR adds an outer IP header (RLOC source → RLOC destination), an outer UDP header, and a LISP shim header (containing the Instance ID for VRF/segmentation), then the original inner IP packet."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Data plane UDP destination port: 4341",
+            "Control plane (map request/reply, map register/notify) UDP port: 4342",
+            "UDP source port is tactically chosen by the ITR for ECMP load sharing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-024",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Map Registration",
+      "type": "sequence",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "map-register"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Describe the LISP map registration process between an ETR and the Map Server."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "ETR sends a Map-Register message to the MS containing its EID prefix(es) and the RLOC the MS should hand out.",
+            "ETR may set the proxy map-reply (P-bit) to ask the MS to answer map requests on its behalf.",
+            "MS confirms by sending a Map-Notify back to the ETR (UDP 4342 src/dst).",
+            "EID prefixes not registered with the MS are forwarded natively, not via LISP."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-025",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Map Request",
+      "type": "sequence",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "map-request"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Walk through the LISP map request/reply process when an ITR receives traffic for an unknown EID."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "ITR receives a packet, performs FIB lookup, hits a default route, and confirms the source is a registered EID.",
+            "ITR sends an encapsulated Map-Request to the MR (UDP dst 4342).",
+            "MR/MS forwards the Map-Request to the authoritative ETR for that EID prefix.",
+            "ETR (or MS, if proxy-reply was requested) sends a Map-Reply directly to the ITR with the EID-to-RLOC mapping.",
+            "ITR installs the mapping in its local map cache and FIB.",
+            "ITR begins LISP-encapsulating subsequent packets to the destination RLOC."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-026",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "PETR vs PITR",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "petr",
+        "pitr"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between a Proxy ETR (PETR) and a Proxy ITR (PITR)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "PETR: Used when LISP-site traffic needs to reach a non-LISP destination. The ITR receives a negative map-reply, encapsulates the traffic to the PETR, which de-encapsulates and forwards it natively to the non-LISP destination."
+        },
+        {
+          "type": "text",
+          "text": "PITR: Used when non-LISP source traffic needs to reach LISP EIDs. The PITR resolves the EID-to-RLOC mapping (just like an ITR) and encapsulates traffic to the destination ETR. Unlike a regular ITR, a PITR does not require the source to be a registered EID."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-027",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "vni"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What problems does VXLAN solve compared to traditional VLANs, and how many segments does it support?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Scales beyond the 4,000-VLAN limit — VXLAN's 24-bit VNI supports ~16 million segments",
+            "Provides Layer 2 over Layer 3 (MAC-in-IP/UDP), avoiding STP-blocked links",
+            "Enables ECMP across the underlay",
+            "Supports host mobility across the fabric",
+            "Reduces MAC table pressure on transit underlay devices"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-028",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Encapsulation",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "vtep",
+        "udp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a VTEP, and what UDP port does VXLAN use?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A VTEP (Virtual Tunnel Endpoint) originates and terminates VXLAN tunnels. It has a local LAN interface (bridges local hosts) and an IP interface (faces the underlay; used for VXLAN encap/decap and VTEP identification). VXLAN uses MAC-in-IP/UDP encapsulation."
+        },
+        {
+          "type": "callout",
+          "text": "IANA-assigned VXLAN UDP destination port: 4789. Some older Linux implementations used 8472 — beware in mixed-vendor deployments."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-029",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Control Planes",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "control-plane",
+        "evpn",
+        "lisp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "VXLAN itself defines only a data plane. Which control planes are commonly paired with VXLAN on Cisco devices?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "VXLAN with multicast underlay (flood-and-learn)",
+            "VXLAN with static unicast tunnels",
+            "VXLAN with MP-BGP EVPN — most common in data center / private cloud",
+            "VXLAN with LISP control plane — used in Cisco SD-Access (campus)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-030",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP vs VXLAN Encapsulation",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "vxlan",
+        "encapsulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the key encapsulation difference between LISP and VXLAN, and what overlays does each support?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "LISP performs IP-in-IP/UDP encapsulation — it carries the inner IP packet only, so it supports Layer 3 overlays. VXLAN performs MAC-in-IP/UDP encapsulation — it preserves the original Ethernet header, so it supports both Layer 2 and Layer 3 overlays. The VXLAN spec actually originated from a Layer 2 LISP draft, which is why their packet formats are similar but not identical."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-031",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Tunnel States",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "tunnel-state"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What conditions cause a GRE tunnel interface line protocol to come up or go down?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "By default, a GRE tunnel's line protocol comes up when the router has a route to the tunnel destination in the routing table. It goes down if that route is removed. With keepalives configured, the line protocol additionally requires successful bidirectional keepalives — without responses, the line protocol goes down even if a route exists."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-032",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE TTL Behavior",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "ttl",
+        "traceroute"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does a traceroute across a GRE tunnel appear to show only one hop, regardless of how many underlay hops exist?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The original packet (with its TTL) is encapsulated as the GRE payload. The new outer IP header gets its own TTL (default 255 for GRE). Underlay hops only decrement the outer TTL, not the inner one. The inner TTL only decrements by one for the entire tunnel traversal, so the tunnel looks like a single hop. Use 'tunnel ttl <value>' to change the outer TTL."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-033",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Tunnel Source",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "tunnel-source",
+        "loopback"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is using a loopback as a GRE tunnel source often preferred over a physical interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A loopback interface is always up as long as the router is reachable. If the router has multiple physical paths/transport interfaces, sourcing the tunnel from a loopback allows the underlay routing protocol to reroute around a failed transport interface without bringing down the tunnel. Sourcing from a single physical interface ties the tunnel's fate to that one link."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-034",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Tunnel Bandwidth",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "bandwidth",
+        "qos"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is configuring 'bandwidth' on a tunnel interface important?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Virtual interfaces have no physical bandwidth, so they default to a low reference value. Routing protocols that use bandwidth in metric calculations (e.g., EIGRP, OSPF cost) and QoS policies need a realistic value to behave correctly. Set it with 'bandwidth <kbps>' on the tunnel interface."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-035",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A GRE tunnel is configured on both sides, but the tunnel interface is up/down. The tunnel destination is pingable. What should you check next?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Confirm the tunnel destination on the local router matches the source IP the remote router uses (must be symmetric).",
+            "Verify there is a route to the tunnel destination NOT through the tunnel itself (no recursive routing).",
+            "Check that any firewalls/ACLs along the path permit IP protocol 47 (GRE).",
+            "If keepalives are enabled, ensure they are configured on both sides or behavior may differ.",
+            "Verify NAT — GRE traffic must be properly translated or excluded."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-036",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Replay Protection",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "replay"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does IPsec protect against replay attacks?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Each IPsec packet is tagged with a unique, monotonically increasing sequence number. The receiving VPN peer keeps an anti-replay window and rejects any packet with a sequence number it has already processed or one outside the window. This prevents an attacker from capturing legitimate traffic and replaying it to forge a session."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-037",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Transform Sets",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "transform-set"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is an IPsec transform set, and what does it define?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A transform set is a named combination of security protocols and algorithms that two IPsec peers agree to use for protecting a data flow. It can include one AH transform, one ESP encryption transform, one ESP authentication transform, and optionally an IP compression transform. Both peers must agree on a matching transform set during IPsec SA negotiation."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto ipsec transform-set AES_SHA esp-aes esp-sha-hmac\n mode transport"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-038",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Perfect Forward Secrecy",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "pfs"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Perfect Forward Secrecy (PFS) in IPsec, and what is the trade-off?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "PFS is an optional Phase 2 feature that performs an additional Diffie-Hellman exchange when generating each new IPsec session key. This ensures that derived session keys are independent of any prior keys — so if one key is compromised, past or future keys are not. Trade-off: extra DH exchanges consume more CPU. Recommended where security matters more than performance."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-039",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "ISAKMP Policy",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ikev1",
+        "isakmp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show a typical IKEv1 ISAKMP policy with modern, secure parameters."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto isakmp policy 10\n authentication pre-share\n encryption aes 256\n hash sha256\n group 14\n lifetime 3600"
+        },
+        {
+          "type": "text",
+          "text": "Lower priority numbers are tried first. Lifetime is the only parameter that doesn't need an exact match — peers negotiate the lower of the two values."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-040",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Authentication Methods",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "authentication"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare Pre-Shared Key (PSK) and digital certificate (RSA-SIG) authentication for IPsec."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "PSK",
+            "Digital Certificates (RSA-SIG)"
+          ],
+          "rows": [
+            [
+              "Setup",
+              "Easy — shared secret string",
+              "Requires PKI/CA infrastructure"
+            ],
+            [
+              "Scalability",
+              "Poor — one secret per peer pair",
+              "Excellent — trust the CA, scale to thousands of peers"
+            ],
+            [
+              "Security",
+              "Weaker — leaked key compromises all",
+              "Stronger — per-device certificates"
+            ],
+            [
+              "Typical use",
+              "Small site-to-site VPNs / labs",
+              "Enterprise, DMVPN, remote access"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-041",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "DMVPN",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dmvpn",
+        "ipsec"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What technologies make up Cisco DMVPN, and what problem does it solve?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DMVPN (Dynamic Multipoint VPN) combines three technologies: multipoint GRE (mGRE), IPsec for encryption, and NHRP (Next Hop Resolution Protocol) to dynamically map tunnel endpoints. It simplifies hub-and-spoke VPNs and enables on-demand spoke-to-spoke tunnels without preconfiguring every spoke pair, scaling to thousands of sites."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-042",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GET VPN",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "getvpn",
+        "ipsec"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What makes Cisco GET VPN unique compared to other IPsec VPNs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GET VPN (Group Encrypted Transport VPN) is tunnel-less — it preserves the original IP header and uses group keys shared by all members. This means it can run over MPLS or private WANs without breaking native services like multicast or QoS, while still encrypting data for compliance (HIPAA, PCI DSS, SOX). It's any-to-any by design but only works over private/trusted networks (not the public Internet directly)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-043",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "FlexVPN",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "flexvpn",
+        "ikev2"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Cisco FlexVPN, and which IKE version does it use?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "FlexVPN is Cisco's unified IKEv2-only VPN framework. A single configuration paradigm supports site-to-site, hub-and-spoke, spoke-to-spoke partial mesh, and remote access. It heavily uses virtual access interfaces and is the recommended modern alternative to legacy crypto-map and DMVPN designs on IOS XE."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-044",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "VPN Solution Selection",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vpn",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An enterprise has 500 branches connected via MPLS. They need encryption between sites for PCI compliance without breaking native multicast or QoS. Which Cisco VPN solution is the best fit, and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GET VPN. It uses tunnel-less encryption that preserves the original IP header, allowing the MPLS provider's services (multicast, QoS classification) to keep working unchanged. It scales to thousands of sites with any-to-any encryption using group keys, which is ideal for a private WAN scenario. DMVPN or FlexVPN would impose tunnel encapsulation that disrupts MPLS-native services."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-045",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Encapsulation Overhead",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "mtu",
+        "overhead"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Approximately how much overhead does GRE + AES + SHA-1 add, and why does this matter?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GRE + AES + SHA-1 adds roughly 62–77 bytes of overhead. This matters because the additional headers reduce the effective payload that can fit within the underlying interface MTU. If not adjusted, fragmentation, performance issues, or PMTUD black-holing can occur. Common mitigations: lower 'ip mtu' on the tunnel (e.g., 1400) and adjust TCP MSS with 'ip tcp adjust-mss'."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Tunnel Type",
+            "Approx Overhead"
+          ],
+          "rows": [
+            [
+              "GRE only",
+              "24 bytes"
+            ],
+            [
+              "DES/3DES IPsec transport",
+              "18–25 bytes"
+            ],
+            [
+              "DES/3DES IPsec tunnel",
+              "38–45 bytes"
+            ],
+            [
+              "GRE + DES/3DES",
+              "42–49 bytes"
+            ],
+            [
+              "GRE + AES + SHA-1",
+              "62–77 bytes"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-046",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "'show crypto isakmp sa' shows MM_NO_STATE between two peers. What does this indicate, and what should you check?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "MM_NO_STATE means the ISAKMP SA is created but Phase 1 negotiation has not completed (often it just failed or hasn't started). Common causes:"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Mismatched Phase 1 parameters (encryption, hash, DH group, authentication method)",
+            "Mismatched PSK between the two peers",
+            "Wrong peer IP address or unreachable peer (UDP/500 or 4500 blocked)",
+            "Identity mismatch (e.g., NAT changing source IP)",
+            "Run 'debug crypto isakmp' on both sides to identify the failing parameter"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-047",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "VTI Configuration",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vti",
+        "ipsec"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show a complete static VTI over IPsec configuration using PSK and an IPsec profile."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto isakmp policy 10\n authentication pre-share\n encryption aes 256\n hash sha256\n group 14\ncrypto isakmp key CISCO123 address 100.64.2.2\n!\ncrypto ipsec transform-set AES_SHA esp-aes 256 esp-sha-hmac\n mode tunnel\n!\ncrypto ipsec profile IPSEC_PROFILE\n set transform-set AES_SHA\n!\ninterface Tunnel100\n ip address 192.168.100.1 255.255.255.0\n tunnel source GigabitEthernet0/1\n tunnel destination 100.64.2.2\n tunnel mode ipsec ipv4\n tunnel protection ipsec profile IPSEC_PROFILE"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-048",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE vs VTI Mode",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "vti"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command converts a tunnel interface from GRE to a VTI for IPsec, and which command reverts it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Convert to VTI (IPsec native):\ninterface Tunnel100\n tunnel mode ipsec ipv4\n\n! Revert to GRE (the default):\ninterface Tunnel100\n tunnel mode gre ip"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-049",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Use Cases",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "use-cases"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Beyond Internet routing scalability, what are common use cases for LISP today?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Cisco Software-Defined Access (SD-Access) campus fabric",
+            "Data center mobility (VM/host moves with the same EID)",
+            "Network virtualization and segmentation (Instance ID)",
+            "IPv4-to-IPv6 transition",
+            "Traffic engineering and multihoming for branches",
+            "IoT mobility scenarios"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-050",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Instance ID",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "instance-id",
+        "vrf"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the LISP Instance ID, and what role does it play?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The Instance ID is a 24-bit field in the LISP shim header that provides device- and path-level virtualization, similar to a VPN ID in MPLS L3VPN. It maps EIDs to specific VRFs, enabling overlapping IP address spaces between tenants and segmentation across the LISP fabric. SD-Access uses Instance IDs to keep virtual networks (VNs) isolated."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-051",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Push vs Pull",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "routing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is LISP described as a 'pull' routing model, and how does that compare to traditional routing protocols?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Traditional routing (BGP, OSPF, EIGRP) uses a push model — every router floods its routes to neighbors so all routers learn everything, regardless of whether they need it. LISP uses a pull model — ITRs only request mappings from the MR/MS when actually needed, then cache them. This drastically reduces routing-table size on edge devices and is much more scalable for mobility-heavy environments."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-052",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Negative Map Reply",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "petr"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a negative map-reply, and how does an ITR use it with a PETR?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "When an ITR sends a map-request for a destination that isn't a registered LISP EID, the MS returns a negative map-reply containing the shortest non-LISP prefix that covers the destination. The ITR caches this prefix and forwards matching traffic to a configured PETR (proxy ETR), which de-encapsulates and forwards the packet natively into the non-LISP world (e.g., the Internet)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-053",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP UDP Ports",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "udp",
+        "ports"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What UDP ports does LISP use, and for what purpose?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Port",
+            "Plane",
+            "Use"
+          ],
+          "rows": [
+            [
+              "UDP 4341",
+              "Data plane",
+              "Carries LISP-encapsulated user traffic"
+            ],
+            [
+              "UDP 4342",
+              "Control plane",
+              "Map-Request, Map-Reply, Map-Register, Map-Notify"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-054",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Map Cache",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "map-cache"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the LISP map cache, and why is it important for scalability?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The map cache is a local table on each ITR that stores recently learned EID-to-RLOC mappings (with TTLs). Instead of re-querying the MR every time, the ITR uses the cache to quickly forward traffic. This is what allows LISP edge devices to operate without a full Internet routing table — they only cache what they actively use, dramatically reducing memory and CPU requirements."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-055",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Mobility",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "mobility"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An endpoint with EID 10.1.1.5 moves from LISP Site A (RLOC 100.64.1.1) to LISP Site B (RLOC 100.64.2.2). How does LISP handle the move?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "The endpoint keeps its EID (10.1.1.5) — no IP change.",
+            "The new ETR at Site B detects the endpoint and registers the EID with the MS, providing its own RLOC (100.64.2.2).",
+            "The MS updates the mapping database with the new EID-to-RLOC binding.",
+            "Existing ITRs with stale cache entries either receive a Solicit-Map-Request to refresh, or their cache TTL expires — they then re-resolve and learn the new RLOC.",
+            "Traffic flows to the new location without needing any underlay routing changes."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-056",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Header",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "header",
+        "vni"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the key fields in a VXLAN-encapsulated packet from outermost to innermost?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Outer Ethernet header (VTEP-to-VTEP underlay MACs)",
+            "Outer IP header (source VTEP IP → destination VTEP IP)",
+            "Outer UDP header (dst port 4789, src port hash for ECMP)",
+            "VXLAN header (8 bytes, includes the 24-bit VNI)",
+            "Original inner Ethernet frame (preserved — this is what enables L2 overlays)",
+            "Original inner IP / payload"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-057",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Gateway",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "gateway"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a VXLAN gateway, and why is it needed?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A VXLAN gateway is a VTEP device that bridges between a VXLAN segment (identified by a VNI) and a traditional VLAN segment. It's needed when legacy devices that don't understand VXLAN need to communicate with hosts in a VXLAN overlay — the gateway combines the VXLAN segment and the VLAN into a single Layer 2 broadcast domain."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-058",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN VNI Scale",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "vni"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How many overlay segments can VXLAN support, and how does that compare to VLANs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VXLAN uses a 24-bit VNI, supporting approximately 16 million (2^24) overlay segments. Traditional 802.1Q VLANs use a 12-bit ID, allowing only ~4,000 (2^12) segments. This scale is critical for multi-tenant data centers and large enterprise fabrics."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-059",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN UDP Source Port",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "ecmp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is the UDP source port in a VXLAN packet usually a hash of the inner flow rather than a fixed value?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "If all VXLAN traffic between two VTEPs used the same source port, ECMP across the underlay would polarize all flows onto one path. By hashing inner Layer 2/3/4 fields into the outer UDP source port, each unique inner flow gets a different outer 5-tuple. Underlay routers can then load-balance VXLAN traffic across all ECMP paths effectively."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-060",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN BGP EVPN",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "evpn",
+        "bgp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is MP-BGP EVPN preferred over multicast flood-and-learn as a VXLAN control plane in modern data centers?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Eliminates the multicast underlay requirement — no PIM needed",
+            "Provides a true control plane: VTEPs advertise MAC, IP, and VTEP info via BGP rather than learning by flooding",
+            "Reduces unknown unicast flooding and BUM traffic via ARP suppression and known-host advertisements",
+            "Scales much better for large multi-tenant fabrics",
+            "Supports symmetric IRB for distributed Layer 3 routing across VTEPs",
+            "Provides extensible multi-tenancy via L2/L3 VNIs and route targets"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-061",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Protocol Number",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "protocol"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What IP protocol number identifies GRE traffic, and why does it matter for ACLs and firewalls?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "GRE uses IP protocol number 47. Firewalls and ACLs along the underlay path must permit IP protocol 47 between the tunnel source and destination IPs. GRE is not TCP or UDP — there are no port numbers — so 'permit gre host A host B' is the correct ACL syntax."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ip access-list extended PERMIT_GRE\n permit gre host 100.64.1.1 host 100.64.2.2"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-062",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "TCP MSS Adjustment",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "mss",
+        "mtu"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is 'ip tcp adjust-mss' commonly used on tunnel interfaces, and what is a typical value?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Tunnels reduce effective MTU due to encapsulation overhead. If hosts negotiate a TCP MSS that's too large, packets get fragmented or dropped (especially with PMTUD black holes). 'ip tcp adjust-mss' lets the router rewrite the MSS in TCP SYN packets transiting the tunnel, forcing endpoints to use a smaller segment size. Common value: 1360 (with IP MTU 1400)."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel100\n ip mtu 1400\n ip tcp adjust-mss 1360"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-063",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Multicast Support",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "multicast"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is GRE often used together with IPsec instead of using IPsec alone for site-to-site VPNs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Native IPsec (without VTI) only encapsulates unicast IP traffic — it does not support multicast or non-IP protocols, which means routing protocols like OSPF and EIGRP can't run directly over it. GRE supports multicast and broadcast, so wrapping traffic in GRE first allows routing protocols to form adjacencies across the tunnel. IPsec then encrypts the GRE-encapsulated traffic for confidentiality."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-064",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Header Fields",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "header"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does a GRE header contain at minimum, and what optional fields can be included?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Required: Flags (4 bits), Version (3 bits, usually 0), Protocol Type (16 bits — identifies the encapsulated payload, e.g., 0x0800 for IPv4)",
+            "Optional: Checksum (for payload integrity)",
+            "Optional: Key (used by mGRE/DMVPN to identify tunnels sharing the same source)",
+            "Optional: Sequence Number (rarely used)",
+            "Minimum GRE header is 4 bytes; total minimum overhead with the new outer IP header is 24 bytes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-065",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Tunnel Key",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "mgre",
+        "tunnel-key"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the purpose of the GRE tunnel key, and where is it commonly used?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The tunnel key is an optional 32-bit value in the GRE header used to differentiate multiple tunnels that share the same source/destination IPs (most commonly mGRE in DMVPN). Both endpoints must agree on the key. Configure with 'tunnel key <number>' on the tunnel interface."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface Tunnel100\n tunnel key 12345"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-066",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "NAT Traversal",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "nat-t"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is NAT-T (NAT Traversal) in IPsec, and why is it required when a peer is behind NAT?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "NAT-T encapsulates IPsec ESP packets inside UDP port 4500 to allow them to pass through NAT devices. Native ESP (IP protocol 50) has no port number, so traditional PAT cannot translate multiple ESP flows from different hosts. NAT-T detection happens during IKE — peers exchange NAT-D payloads, and if NAT is detected, subsequent IKE and ESP traffic switches from UDP/500 to UDP/4500. AH does not support NAT-T because NAT modifies fields that AH authenticates."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-067",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IKE UDP Ports",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ikev1",
+        "ikev2",
+        "ports"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What UDP ports are used by IKE and IPsec, and when does each apply?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Port / Protocol",
+            "Use"
+          ],
+          "rows": [
+            [
+              "UDP 500",
+              "ISAKMP / IKE Phase 1 and 2 (no NAT in path)"
+            ],
+            [
+              "UDP 4500",
+              "IKE and ESP encapsulated in UDP when NAT-T is in use"
+            ],
+            [
+              "IP protocol 50",
+              "ESP (when no NAT)"
+            ],
+            [
+              "IP protocol 51",
+              "AH (when no NAT)"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-068",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Crypto Map Configuration",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "crypto-map"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show a complete legacy crypto-map IPsec configuration with PSK that protects traffic between two LANs."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto isakmp policy 10\n authentication pre-share\n encryption aes 256\n hash sha256\n group 14\ncrypto isakmp key CISCO123 address 100.64.2.2\n!\ncrypto ipsec transform-set AES_SHA esp-aes 256 esp-sha-hmac\n mode tunnel\n!\nip access-list extended VPN_TRAFFIC\n permit ip 10.1.1.0 0.0.0.255 10.2.2.0 0.0.0.255\n!\ncrypto map VPN 10 ipsec-isakmp\n match address VPN_TRAFFIC\n set peer 100.64.2.2\n set transform-set AES_SHA\n!\ninterface GigabitEthernet0/1\n crypto map VPN"
+        },
+        {
+          "type": "callout",
+          "text": "Apply the crypto map to the OUTSIDE physical interface, not the tunnel interface. Crypto maps are legacy — prefer IPsec profiles or VTI for new deployments."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-069",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec SA Direction",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "sa"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does each IPsec peer have two IPsec SAs but only one ISAKMP SA?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The ISAKMP/IKE SA is bidirectional — a single secure channel used for negotiation and rekeying that both peers can initiate from. IPsec SAs are unidirectional, so each direction of data traffic needs its own SA: one inbound and one outbound on each peer. That's why 'show crypto ipsec sa' shows separate inbound and outbound ESP SAs with different SPI values."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-070",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "SPI",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "spi"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the SPI (Security Parameter Index) in IPsec, and how is it used?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The SPI is a 32-bit value carried in every ESP/AH header that, together with the destination IP and security protocol (ESP/AH), uniquely identifies the IPsec SA used to process the packet. When a router receives an IPsec packet, it looks up the SA by SPI to know which keys, algorithms, and anti-replay window to apply. SPIs are different in each direction (inbound vs outbound)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-071",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Dead Peer Detection",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "dpd"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Dead Peer Detection (DPD), and why is it useful?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DPD is a keepalive mechanism used by IKE peers to detect when the remote peer is unreachable (crashed, rebooted, or lost connectivity). Without DPD, an IPsec SA could remain in place even though the peer is gone, causing black-holed traffic until the SA lifetime expires. DPD probes are sent on demand (when traffic is sent but no return is received) and trigger SA cleanup and renegotiation."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "crypto isakmp keepalive 10 3"
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-072",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "IPsec Lifetime",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "lifetime"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are IPsec SA lifetimes, and why do they exist?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "IPsec SAs expire and are renegotiated based on two thresholds: time-based (default 3600 seconds for IPsec, 86400 seconds for IKE) and volume-based (default 4,608,000 KB). Whichever is hit first triggers a rekey. This limits the amount of data protected by any single key, reducing the risk if a key is compromised. Rekeying happens transparently before the old SA expires."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-073",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Remote Access VPN",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "remote-access",
+        "vpn"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What protocols support remote-access VPN on Cisco IOS XE and ASA/Secure Firewall?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "IOS XE: FlexVPN (IKEv2 only)",
+            "ASA / Secure Firewall: SSL VPN (TLS/DTLS via AnyConnect/Secure Client) and IKEv2 IPsec VPN",
+            "Both scale to thousands of remote users",
+            "Legacy IKEv1 EzVPN is deprecated for remote access"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-074",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Tunnel Mode IPsec Header",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "tunnel-mode"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In IPsec tunnel mode with ESP, what is the order of headers in the resulting packet?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "New outer IP header (IPsec peer source → IPsec peer destination, protocol 50 = ESP)",
+            "ESP header (contains SPI and sequence number)",
+            "Original IP header (encrypted)",
+            "Original payload (encrypted)",
+            "ESP trailer (padding, next-header) — encrypted",
+            "ESP authentication data (HMAC) — appended at the end"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-075",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Configuration",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "configuration"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show a basic LISP xTR configuration that registers an EID prefix and points to a Map Server / Map Resolver."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "router lisp\n locator-set RLOC_SET\n  100.64.1.1 priority 1 weight 100\n exit-locator-set\n !\n service ipv4\n  eid-table default\n  database-mapping 10.1.1.0/24 locator-set RLOC_SET\n  itr map-resolver 192.0.2.10\n  etr map-server 192.0.2.10 key MY_KEY\n  itr\n  etr\n exit-service-ipv4\n!"
+        },
+        {
+          "type": "text",
+          "text": "Key elements: locator-set defines RLOCs, database-mapping registers the EID prefix, and map-server/map-resolver point to the central MS/MR."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-076",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Verification",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which commands are used to verify LISP operation on an xTR?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show lisp site\nshow ip lisp\nshow ip lisp map-cache\nshow ip lisp database\nshow ip lisp statistics"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "show lisp site — registered EID prefixes (on MS)",
+            "show ip lisp database — local EID-to-RLOC mappings",
+            "show ip lisp map-cache — learned EID-to-RLOC mappings (resolved by ITR)",
+            "show ip lisp statistics — encapsulated/de-encapsulated packet counts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-077",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP and SD-Access",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "sd-access"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does Cisco SD-Access use LISP, and which planes does it provide?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "SD-Access uses LISP as the control plane (for endpoint registration and EID-to-RLOC mappings) and VXLAN as the data plane (for actual encapsulation, since VXLAN supports L2 + L3 overlays). The fabric edge nodes are xTRs, the fabric border nodes typically act as PxTRs to non-fabric networks, and the control plane node hosts the MS/MR functions. CTS/SGT tags travel inside the VXLAN header for policy enforcement."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-078",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "LISP Troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An ITR isn't encapsulating traffic toward an EID, even though the destination is reachable from another LISP site. What should you check?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Verify the source IP is a registered EID — non-EID sources won't trigger LISP encapsulation on a regular ITR (they would on a PITR).",
+            "Check 'show ip lisp map-cache' — is there a mapping? If not, was a map-request sent (and answered)?",
+            "Check 'show lisp site' on the MS — is the destination EID registered by the remote ETR?",
+            "Verify reachability between the ITR and the MR/MS (UDP 4342) and between RLOCs (UDP 4341).",
+            "Confirm the FIB matches a default route (so encapsulation is even attempted)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-079",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN with Multicast",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "multicast",
+        "flood-and-learn"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does VXLAN with multicast underlay handle BUM (broadcast, unknown unicast, multicast) traffic?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Each VNI is mapped to an underlay multicast group. BUM frames received on a VTEP's local LAN are encapsulated and sent to that multicast group, so all VTEPs participating in the VNI receive them. VTEPs use PIM in the underlay to build distribution trees. MAC learning happens via flood-and-learn — VTEPs observe the source MAC and source VTEP IP from received frames. This works but doesn't scale well; modern designs prefer EVPN."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-080",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN MAC Table",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "evpn",
+        "mac-learning"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Two VTEPs in a VXLAN EVPN fabric have hosts in the same VNI 10000. Host A on VTEP1 sends an ARP for Host B on VTEP2. Walk through what happens."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Host A's ARP request arrives on VTEP1's local interface (VLAN mapped to VNI 10000).",
+            "VTEP1 already learned Host B's MAC/IP via EVPN BGP advertisements from VTEP2.",
+            "VTEP1 performs ARP suppression: it replies locally on behalf of Host B using the cached info — no flood across the underlay.",
+            "Host A then sends a unicast frame to Host B's MAC; VTEP1 encapsulates it in VXLAN with VNI 10000, source VTEP1 IP, destination VTEP2 IP.",
+            "VTEP2 de-encapsulates, looks up the local MAC, and forwards to Host B."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "EVPN eliminates flooding for known hosts — unlike multicast flood-and-learn — making the fabric far more scalable."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-081",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "Anycast Gateway",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "anycast",
+        "gateway"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a distributed anycast gateway in a VXLAN EVPN fabric, and why is it useful?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Every VTEP that hosts a given subnet is configured with the same SVI IP and same virtual MAC (the anycast gateway). Hosts use this as their default gateway. Because every leaf is the gateway, traffic is routed at the first hop — no hairpinning to a centralized gateway. When a host moves, it still uses the same gateway IP/MAC, so no ARP refresh is needed. This dramatically reduces east-west latency and supports seamless workload mobility."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-082",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN vs LISP",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "lisp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare LISP and VXLAN at a high level."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "LISP",
+            "VXLAN"
+          ],
+          "rows": [
+            [
+              "Type",
+              "Both control + data plane",
+              "Data plane only"
+            ],
+            [
+              "Encapsulation",
+              "IP-in-IP/UDP",
+              "MAC-in-IP/UDP"
+            ],
+            [
+              "Overlay support",
+              "Layer 3 only",
+              "Layer 2 and Layer 3"
+            ],
+            [
+              "UDP port",
+              "4341 (data), 4342 (control)",
+              "4789 (data)"
+            ],
+            [
+              "Segment ID",
+              "24-bit Instance ID",
+              "24-bit VNI"
+            ],
+            [
+              "Common pairing",
+              "Acts as control plane for VXLAN in SD-Access",
+              "Pairs with EVPN, multicast, or LISP control plane"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-083",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Underlay",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "underlay"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What requirements must a VXLAN underlay network meet?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "IP reachability between all VTEPs (via OSPF, IS-IS, or eBGP)",
+            "MTU large enough for VXLAN overhead — typically jumbo frames (9000+) to avoid fragmentation",
+            "Equal-Cost Multi-Path (ECMP) support to balance flows across spine links",
+            "If using flood-and-learn: PIM multicast",
+            "If using EVPN: MP-BGP between VTEPs (often via route reflectors on the spines)",
+            "Loopback interfaces on each VTEP used as the VTEP source IP"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-084",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "GRE Scenario",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "gre",
+        "ospf"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Two routers, R1 and R2, build a GRE tunnel over the Internet using their public IPs as tunnel source/destination. They want OSPF to form an adjacency over the tunnel and learn each other's LANs. What configuration steps are required?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configure tunnel interfaces on both routers with matching tunnel source/destination and an IP from a shared subnet.",
+            "Ensure underlay reachability via static default routes pointing to the ISP — NOT via OSPF over the tunnel (avoids recursive routing).",
+            "Enable OSPF on the tunnel interface and on each LAN — the tunnel network and LANs go into OSPF; the public/Internet-facing interface does NOT.",
+            "Optionally tune 'ip mtu 1400' and 'ip tcp adjust-mss 1360' on the tunnel.",
+            "Verify with 'show ip ospf neighbor' (adjacency over Tunnel100) and 'show ip route ospf' (remote LAN learned via the tunnel)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-085",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Site-to-Site Scenario",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "site-to-site",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You need to build a site-to-site VPN that supports OSPF, multicast, and modern crypto, while being easy to manage. Should you use crypto maps, GRE over IPsec with a profile, or a static VTI? Justify."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Use either GRE over IPsec with an IPsec profile (using transport mode) or a static VTI ('tunnel mode ipsec ipv4') with an IPsec profile."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Crypto maps: avoid — legacy, complex ACLs, no native multicast or routing protocol support.",
+            "GRE over IPsec: best when you must run multicast/non-IP or need GRE-specific features like tunnel keys (DMVPN).",
+            "Static VTI: cleanest and lowest overhead for IP-only traffic; supports multicast over the tunnel and routing protocols natively. Recommended for new pure-IP site-to-site deployments."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-086",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "ISAKMP Verification",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Interpret this output. What is the state of the IPsec tunnel?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "R1# show crypto isakmp sa\nIPv4 Crypto ISAKMP SA\ndst             src             state          conn-id status\n100.64.1.1      100.64.2.2      QM_IDLE           1008 ACTIVE"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Phase 1 (ISAKMP) is fully up and authenticated. The state QM_IDLE means the SA is idle but ready to negotiate additional Quick Mode IPsec SAs (Phase 2). Status ACTIVE confirms the SA is currently in use. This is the expected steady-state output for a healthy IKEv1 tunnel — next, verify Phase 2 with 'show crypto ipsec sa'."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-087",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Crypto ACL Direction",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "ipsec",
+        "crypto-acl"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why must crypto ACLs be exact mirror images on both IPsec peers when using crypto maps?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Crypto ACLs define 'interesting traffic' — what should be encrypted. The local ACL describes outbound flows (source = local LAN, destination = remote LAN), and the remote peer's ACL must describe the inverse (source = remote LAN, destination = local LAN). If they don't mirror exactly, the proxy IDs negotiated during Quick Mode (QM1/QM2) won't match, and the IPsec SA will fail to establish (often shown as 'IKE_SA_INIT_FAILED' or proxy-ID mismatch errors)."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-088",
+      "blueprint": "2.3.a",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "EID vs RLOC Example",
+      "type": "scenario",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "lisp",
+        "eid",
+        "rloc"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A laptop has IP address 10.1.1.5 in a LISP campus fabric. It connects via switch SW1 (RLOC 100.64.1.1). Identify the EID, the RLOC, and what would change if the laptop moved to a different building served by SW2 (RLOC 100.64.2.2)."
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "EID: 10.1.1.5 — the laptop's identity; it does NOT change when the laptop moves.",
+            "RLOC at original location: 100.64.1.1 (SW1)",
+            "After the move, the EID stays 10.1.1.5, but the RLOC mapping updates to 100.64.2.2 (SW2).",
+            "The MS database is updated by SW2 via map-register, and ITRs eventually refresh their map cache to send traffic to the new RLOC."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-089",
+      "blueprint": "2.3.b",
+      "domain": "Virtualization",
+      "topic": "Network Virtualization",
+      "subtopic": "VXLAN Sizing",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vxlan",
+        "overhead",
+        "mtu"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How much overhead does VXLAN add to an Ethernet frame, and what underlay MTU is recommended?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VXLAN adds 50 bytes total: outer Ethernet (14) + outer IP (20) + outer UDP (8) + VXLAN header (8) = 50 bytes (54 if a VLAN tag is also added on the underlay link). To carry an unmodified 1500-byte inner Ethernet frame without fragmentation, the underlay MTU should be at least 1554 — but jumbo frames (9000+) are strongly recommended in data center fabrics to support large inner payloads."
+        }
+      ]
+    },
+    {
+      "id": "overlay-tunnels-090",
+      "blueprint": "2.2.b",
+      "domain": "Virtualization",
+      "topic": "Data Path Virtualization",
+      "subtopic": "Overlay Stacking",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "overlay",
+        "mpls",
+        "gre",
+        "ipsec"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why might an enterprise tunnel MPLS over GRE over IPsec, and what does this illustrate about overlays?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "MPLS labels can't be transported natively across the public Internet, so MPLS is wrapped in GRE to give it an IP-based outer header — GRE adds the overlay capability. IPsec then wraps the GRE-encapsulated MPLS for confidentiality and integrity across the untrusted Internet. This is a key concept: an overlay can be built on top of another overlay. Each layer solves a specific problem (transport, confidentiality, virtualization), and stacking them is common in modern WAN designs (e.g., SD-WAN frequently stacks IPsec over UDP over an underlay)."
+        }
+      ]
+    }
+  ]
+}

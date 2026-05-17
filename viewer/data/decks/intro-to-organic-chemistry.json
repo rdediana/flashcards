@@ -1,0 +1,406 @@
+{
+  "deck": {
+    "id": "intro-to-organic-chemistry",
+    "title": "Intro To Organic Chemistry",
+    "version": "0.1",
+    "source": "Admin deck manager",
+    "description": ""
+  },
+  "cards": [
+    {
+      "id": "covalent-bonding-shapes-molecules-001",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Lewis Model of Bonding",
+      "subtopic": "Octet rule and bond formation",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "organic-chemistry",
+        "lewis-model",
+        "octet-rule",
+        "covalent-bonding",
+        "chapter-1"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In the Lewis model, why do atoms form ionic or covalent bonds?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Atoms form bonds to reach a more stable valence-shell electron configuration, often resembling the nearest noble gas. They can do this by transferring electrons to form ions or by sharing electron pairs to form covalent bonds."
+        },
+        {
+          "type": "callout",
+          "text": "Organic chemistry relies heavily on the sharing model: carbon usually forms covalent bonds rather than simple ionic compounds."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-002",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Lewis Model of Bonding",
+      "subtopic": "Ionic vs covalent bonding",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "organic-chemistry",
+        "ionic-bond",
+        "covalent-bond",
+        "electron-transfer",
+        "electron-sharing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the key difference between an ionic bond and a covalent bond in the Lewis model?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Bond type",
+            "Electron behavior",
+            "Typical atoms involved"
+          ],
+          "rows": [
+            [
+              "Ionic bond",
+              "Electrons are transferred, forming a cation and an anion",
+              "Usually metal + nonmetal"
+            ],
+            [
+              "Covalent bond",
+              "Electrons are shared as bonding electron pairs",
+              "Usually nonmetal + nonmetal"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Misconception trap: covalent bonds still involve electrostatic attraction, but the electrons are shared rather than fully transferred."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-003",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Electronegativity",
+      "subtopic": "Periodic trends",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "organic-chemistry",
+        "electronegativity",
+        "periodic-trends",
+        "bond-polarity"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How does electronegativity generally change across the periodic table, and why does this matter in organic chemistry?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Electronegativity generally increases from left to right across a period and from bottom to top within a group. This matters because electronegativity differences help predict whether bonds are nonpolar covalent, polar covalent, or ionic."
+        },
+        {
+          "type": "callout",
+          "text": "High-yield organic chemistry use: electronegativity helps locate electron-rich and electron-poor sites in molecules."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-004",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Electronegativity",
+      "subtopic": "Bond classification",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "organic-chemistry",
+        "electronegativity",
+        "bond-classification",
+        "polar-covalent"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A C–H bond has a much smaller electronegativity difference than a C–O bond. Which bond is more polar, and what does that imply about reactivity?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The C–O bond is more polar because oxygen is much more electronegative than carbon. The oxygen becomes partially negative and the carbon becomes partially positive, making the carbon more susceptible to attack by electron-rich species in later organic reactions."
+        },
+        {
+          "type": "diagram",
+          "text": "Cδ+—Oδ−"
+        },
+        {
+          "type": "callout",
+          "text": "Structure-reactivity link: bond polarity often predicts where nucleophiles and electrophiles will interact."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-005",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Bond Polarity",
+      "subtopic": "Partial charges",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "organic-chemistry",
+        "bond-polarity",
+        "partial-charge",
+        "dipole"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In a polar covalent bond, which atom gets δ− and which atom gets δ+?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The more electronegative atom attracts the shared electrons more strongly and becomes partially negative, δ−. The less electronegative atom has less electron density and becomes partially positive, δ+."
+        },
+        {
+          "type": "diagram",
+          "text": "less electronegative atom δ+ — more electronegative atom δ−"
+        },
+        {
+          "type": "callout",
+          "text": "Partial charge is not the same as formal charge. Partial charges come from unequal sharing; formal charges come from electron bookkeeping in a Lewis structure."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-006",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Lewis Structures",
+      "subtopic": "Neutral organic bonding patterns",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "organic-chemistry",
+        "lewis-structures",
+        "bonding-patterns",
+        "valence"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "For neutral organic molecules, what bonding patterns should you usually expect for H, C, N, O, and halogens?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Atom",
+            "Common neutral bonding pattern"
+          ],
+          "rows": [
+            [
+              "H",
+              "1 bond"
+            ],
+            [
+              "C",
+              "4 bonds"
+            ],
+            [
+              "N",
+              "3 bonds + 1 lone pair"
+            ],
+            [
+              "O",
+              "2 bonds + 2 lone pairs"
+            ],
+            [
+              "F, Cl, Br, I",
+              "1 bond + 3 lone pairs"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Exam tip: when a Lewis structure looks wrong, first check carbon’s four bonds, oxygen’s two bonds, nitrogen’s three bonds, and halogen’s one bond."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-007",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Formal Charge",
+      "subtopic": "Formal charge calculation",
+      "type": "sequence",
+      "difficulty": "medium",
+      "tags": [
+        "organic-chemistry",
+        "formal-charge",
+        "lewis-structures",
+        "electron-bookkeeping"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the step-by-step method for finding formal charge on an atom in a Lewis structure?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Start with a correct Lewis structure.",
+            "Assign the atom all of its lone-pair electrons.",
+            "Assign the atom one electron from each bond attached to it.",
+            "Compare that assigned electron count to the valence electrons of the neutral atom.",
+            "Formal charge = neutral valence electrons − assigned electrons."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Formal charge is bookkeeping. It does not automatically show the real electron-density distribution of the molecule."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-008",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Formal Charge",
+      "subtopic": "Hydronium and methoxide",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "organic-chemistry",
+        "formal-charge",
+        "oxygen",
+        "hydronium",
+        "methoxide"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Oxygen is neutral when it has two bonds and two lone pairs. What formal charge does oxygen usually have if it has three bonds and one lone pair, or one bond and three lone pairs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Oxygen pattern",
+            "Typical formal charge",
+            "Example"
+          ],
+          "rows": [
+            [
+              "3 bonds + 1 lone pair",
+              "+1",
+              "H3O+"
+            ],
+            [
+              "2 bonds + 2 lone pairs",
+              "0",
+              "H2O or alcohol oxygen"
+            ],
+            [
+              "1 bond + 3 lone pairs",
+              "-1",
+              "CH3O−"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Reasoning shortcut: oxygen wants 6 assigned electrons for formal charge 0."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-009",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Lewis Structures",
+      "subtopic": "Octet limits for second-row atoms",
+      "type": "exam-tip",
+      "difficulty": "hard",
+      "tags": [
+        "organic-chemistry",
+        "octet-rule",
+        "lewis-structures",
+        "second-row-elements",
+        "misconception-trap"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is a Lewis structure unacceptable if it gives carbon, nitrogen, or oxygen 10 valence electrons?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Carbon, nitrogen, and oxygen are second-period elements. Their valence shell contains only one 2s orbital and three 2p orbitals, so they can accommodate a maximum of 8 valence electrons. A structure that gives them 10 electrons violates the octet rule and is not an acceptable Lewis structure."
+        },
+        {
+          "type": "callout",
+          "text": "Misconception trap: third-period atoms like sulfur or phosphorus may expand their valence shells, but second-period atoms such as C, N, and O cannot."
+        }
+      ]
+    },
+    {
+      "id": "covalent-bonding-shapes-molecules-010",
+      "blueprint": "ch01-sec1.2",
+      "domain": "Covalent Bonding and Shapes of Molecules",
+      "topic": "Bond Polarity",
+      "subtopic": "Predicting reactive sites from polarity",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "organic-chemistry",
+        "bond-polarity",
+        "structure-reactivity",
+        "electrophile",
+        "nucleophile"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An organic molecule contains a C–O bond. Without knowing the full reaction yet, what reactive pattern can you predict from the polarity of that bond?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Because oxygen is more electronegative than carbon, the C–O bond is polarized Cδ+–Oδ−. This means the carbon side is relatively electron-poor and may behave as an electrophilic site, while the oxygen side is relatively electron-rich and may interact with electrophiles or acids."
+        },
+        {
+          "type": "diagram",
+          "text": "electron-rich region: Oδ− ← Cδ+ : electron-poor region"
+        },
+        {
+          "type": "callout",
+          "text": "This is one of the first structure-reactivity habits in organic chemistry: use bond polarity to predict where electron-rich and electron-poor sites are located."
+        }
+      ]
+    }
+  ]
+}
