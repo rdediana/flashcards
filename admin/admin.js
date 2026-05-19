@@ -7,6 +7,7 @@ const state = {
   currentDeck: null,
   currentDeckDetails: null,
   cards: [],
+  visibleCardIds: [],
   selectedCardId: null,
   editMode: false,
   deckModalMode: "create",
@@ -23,6 +24,7 @@ const els = {
   deckSelect: document.querySelector("#deckSelect"),
   replaceDuplicates: document.querySelector("#replaceDuplicates"),
   clearJsonAfterImport: document.querySelector("#clearJsonAfterImport"),
+  clearImportJsonButton: document.querySelector("#clearImportJsonButton"),
   cardsJson: document.querySelector("#cardsJson"),
   importButton: document.querySelector("#importButton"),
   importSummary: document.querySelector("#importSummary"),
@@ -93,20 +95,34 @@ const els = {
   readinessDetail: document.querySelector("#readinessDetail"),
   cardSearchInput: document.querySelector("#cardSearchInput"),
   cardList: document.querySelector("#cardList"),
+  selectedCardMetadata: document.querySelector("#selectedCardMetadata"),
+  selectedCardPath: document.querySelector("#selectedCardPath"),
   editorCardId: document.querySelector("#editorCardId"),
+  editorCardBlueprint: document.querySelector("#editorCardBlueprint"),
+  editorCardDomain: document.querySelector("#editorCardDomain"),
   editorCardType: document.querySelector("#editorCardType"),
   editorCardDifficulty: document.querySelector("#editorCardDifficulty"),
   editorCardTopic: document.querySelector("#editorCardTopic"),
   editorCardSubtopic: document.querySelector("#editorCardSubtopic"),
+  editorCardTags: document.querySelector("#editorCardTags"),
   editorFront: document.querySelector("#editorFront"),
   editorBack: document.querySelector("#editorBack"),
   editorPreview: document.querySelector("#editorPreview"),
+  copySelectedCardJsonButton: document.querySelector("#copySelectedCardJsonButton"),
+  exportSelectedCardJsonButton: document.querySelector("#exportSelectedCardJsonButton"),
+  bulkTagsInput: document.querySelector("#bulkTagsInput"),
+  addTagsToResultsButton: document.querySelector("#addTagsToResultsButton"),
+  removeTagsFromResultsButton: document.querySelector("#removeTagsFromResultsButton"),
+  replaceTagsForResultsButton: document.querySelector("#replaceTagsForResultsButton"),
   editCardButton: document.querySelector("#editCardButton"),
   cancelEditButton: document.querySelector("#cancelEditButton"),
   saveCardButton: document.querySelector("#saveCardButton"),
   editorStatus: document.querySelector("#editorStatus"),
   validateCardsButton: document.querySelector("#validateCardsButton"),
+  validatorImportButton: document.querySelector("#validatorImportButton"),
   validatorReplaceDuplicates: document.querySelector("#validatorReplaceDuplicates"),
+  validatorClearJsonAfterImport: document.querySelector("#validatorClearJsonAfterImport"),
+  clearValidatorJsonButton: document.querySelector("#clearValidatorJsonButton"),
   validatorCardsJson: document.querySelector("#validatorCardsJson"),
   validatorTotalCards: document.querySelector("#validatorTotalCards"),
   validatorValidCards: document.querySelector("#validatorValidCards"),
@@ -135,6 +151,9 @@ function bindEvents() {
   });
 
   els.importButton.addEventListener("click", importCards);
+  els.clearImportJsonButton.addEventListener("click", () => {
+    els.cardsJson.value = "";
+  });
   els.exportSkippedCardsButton.addEventListener("click", exportSkippedCards);
   els.showDeckIndexButton.addEventListener("click", showDeckIndexJson);
   els.createDeckButton.addEventListener("click", () => openDeckModal("create"));
@@ -164,11 +183,30 @@ function bindEvents() {
     els.modalDeckId.dataset.touched = "true";
   });
   els.cardSearchInput.addEventListener("input", renderCardList);
+  els.copySelectedCardJsonButton.addEventListener("click", copySelectedCardJson);
+  els.exportSelectedCardJsonButton.addEventListener("click", exportSelectedCardJson);
+  els.addTagsToResultsButton.addEventListener("click", () => applyTagsToSearchResults("add"));
+  els.removeTagsFromResultsButton.addEventListener("click", () => applyTagsToSearchResults("remove"));
+  els.replaceTagsForResultsButton.addEventListener("click", () => applyTagsToSearchResults("replace"));
   els.editCardButton.addEventListener("click", enterEditMode);
   els.cancelEditButton.addEventListener("click", cancelEdit);
   els.saveCardButton.addEventListener("click", saveSelectedCard);
   els.validateCardsButton.addEventListener("click", validatePastedCards);
-  [els.editorCardType, els.editorCardDifficulty, els.editorCardTopic, els.editorCardSubtopic, els.editorFront, els.editorBack].forEach((input) => {
+  els.validatorImportButton.addEventListener("click", importValidatedCards);
+  els.clearValidatorJsonButton.addEventListener("click", () => {
+    els.validatorCardsJson.value = "";
+  });
+  [
+    els.editorCardBlueprint,
+    els.editorCardDomain,
+    els.editorCardType,
+    els.editorCardDifficulty,
+    els.editorCardTopic,
+    els.editorCardSubtopic,
+    els.editorCardTags,
+    els.editorFront,
+    els.editorBack
+  ].forEach((input) => {
     input.addEventListener("input", renderDraftPreview);
   });
 }
@@ -516,6 +554,7 @@ function renderIssueList(target, issues, emptyMessage) {
 function renderCardList() {
   const query = els.cardSearchInput.value.trim().toLowerCase();
   const cards = query ? state.cards.filter((card) => cardMatches(card, query)) : state.cards;
+  state.visibleCardIds = cards.map((card) => card.id).filter(Boolean);
   els.cardList.replaceChildren();
 
   if (!cards.length) {
@@ -530,7 +569,7 @@ function renderCardList() {
     button.classList.toggle("is-active", card.id === state.selectedCardId);
     button.innerHTML = `
       <strong>${escapeHtml(card.id)}</strong>
-      <span>${escapeHtml([card.topic, card.subtopic].filter(Boolean).join(" / "))}</span>
+      <span>${escapeHtml([card.domain, card.topic, card.subtopic].filter(Boolean).join(" / "))}</span>
     `;
     button.addEventListener("click", () => {
       if (state.editMode && hasEditorChanges()) {
@@ -549,20 +588,30 @@ function renderCardList() {
 function renderSelectedCard() {
   const card = state.cards.find((candidate) => candidate.id === state.selectedCardId);
   if (!card) {
+    els.selectedCardPath.textContent = "Select a card to view metadata.";
     els.editorPreview.textContent = "Select a card to preview it.";
     return;
   }
 
   els.editorCardId.value = card.id || "";
+  els.editorCardBlueprint.value = card.blueprint || "";
+  els.editorCardDomain.value = card.domain || "";
   els.editorCardType.value = card.type || "";
   els.editorCardDifficulty.value = card.difficulty || "";
   els.editorCardTopic.value = card.topic || "";
   els.editorCardSubtopic.value = card.subtopic || "";
+  els.editorCardTags.value = Array.isArray(card.tags) ? card.tags.join(", ") : "";
   els.editorFront.value = blocksToText(card.front);
   els.editorBack.value = blocksToText(card.back);
+  renderSelectedCardMetadata(card);
   renderReadonlyPreview(card);
   renderEditorMode();
   renderEditorStatus("", "neutral");
+}
+
+function renderSelectedCardMetadata(card) {
+  const path = [card.domain, card.topic, card.subtopic].filter(Boolean).join(" | ") || "No domain, topic, or subtopic";
+  els.selectedCardPath.textContent = path;
 }
 
 function renderPreviewBlock(title, blocks) {
@@ -626,6 +675,7 @@ async function saveSelectedCard() {
 
     const index = state.cards.findIndex((candidate) => candidate.id === data.card.id);
     if (index !== -1) state.cards[index] = data.card;
+    state.currentDeckDetails.cards = state.cards;
     state.currentDeckDetails.summary = data.summary;
     state.editMode = false;
     renderDashboard();
@@ -643,10 +693,13 @@ function readCardEditorPayload(card) {
   return {
     deckId: state.currentDeck?.id,
     cardId: card.id,
+    blueprint: els.editorCardBlueprint.value,
+    domain: els.editorCardDomain.value,
     type: els.editorCardType.value,
     difficulty: els.editorCardDifficulty.value,
     topic: els.editorCardTopic.value,
     subtopic: els.editorCardSubtopic.value,
+    tags: parseTags(els.editorCardTags.value),
     front: facePayload(card.front, els.editorFront.value),
     back: facePayload(card.back, els.editorBack.value)
   };
@@ -663,7 +716,17 @@ function facePayload(existingBlocks, editedText) {
 
 function renderEditorMode() {
   const editable = state.editMode;
-  [els.editorCardType, els.editorCardDifficulty, els.editorCardTopic, els.editorCardSubtopic, els.editorFront, els.editorBack].forEach((input) => {
+  [
+    els.editorCardBlueprint,
+    els.editorCardDomain,
+    els.editorCardType,
+    els.editorCardDifficulty,
+    els.editorCardTopic,
+    els.editorCardSubtopic,
+    els.editorCardTags,
+    els.editorFront,
+    els.editorBack
+  ].forEach((input) => {
     input.disabled = !editable;
   });
   els.editCardButton.hidden = editable;
@@ -676,13 +739,17 @@ function renderDraftPreview() {
   if (!card) return;
   const draftCard = {
     ...card,
+    blueprint: els.editorCardBlueprint.value,
+    domain: els.editorCardDomain.value,
     type: els.editorCardType.value,
     difficulty: els.editorCardDifficulty.value,
     topic: els.editorCardTopic.value,
     subtopic: els.editorCardSubtopic.value,
+    tags: parseTags(els.editorCardTags.value),
     front: facePayload(card.front, els.editorFront.value),
     back: facePayload(card.back, els.editorBack.value)
   };
+  renderSelectedCardMetadata(draftCard);
   renderReadonlyPreview(draftCard);
 }
 
@@ -694,13 +761,132 @@ function selectedCard() {
   return state.cards.find((candidate) => candidate.id === state.selectedCardId);
 }
 
+async function applyTagsToSearchResults(mode) {
+  const tags = parseTags(els.bulkTagsInput.value);
+  const targetCards = state.cards.filter((card) => state.visibleCardIds.includes(card.id));
+  if (!targetCards.length) {
+    renderEditorStatus("No search results to update.", "error");
+    return;
+  }
+  if (!tags.length && mode !== "replace") {
+    renderEditorStatus("Enter one or more tags first.", "error");
+    return;
+  }
+
+  const confirmed = confirm(`${modeTagsLabel(mode)} ${targetCards.length} visible card${targetCards.length === 1 ? "" : "s"}?`);
+  if (!confirmed) return;
+
+  setBulkTagButtonsDisabled(true);
+  renderEditorStatus(`${modeTagsLabel(mode)} ${targetCards.length} visible card${targetCards.length === 1 ? "" : "s"}...`, "neutral");
+  try {
+    for (const card of targetCards) {
+      const nextTags = tagsForMode(card.tags || [], tags, mode);
+      const response = await fetch("/api/card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cardPayloadFromCard(card, { tags: nextTags }))
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        const details = data.details?.length ? ` ${data.details.join(" ")}` : "";
+        throw new Error(`${data.error || "Bulk tag update failed."}${details}`);
+      }
+      const index = state.cards.findIndex((candidate) => candidate.id === data.card.id);
+      if (index !== -1) state.cards[index] = data.card;
+      state.currentDeckDetails.cards = state.cards;
+      state.currentDeckDetails.summary = data.summary;
+    }
+    renderDashboard();
+    renderCardList();
+    renderSelectedCard();
+    renderEditorStatus(`${modeTagsLabel(mode)} ${targetCards.length} visible card${targetCards.length === 1 ? "" : "s"}.`, "success");
+  } catch (error) {
+    renderEditorStatus(error.message, "error");
+  } finally {
+    setBulkTagButtonsDisabled(false);
+  }
+}
+
+function setBulkTagButtonsDisabled(disabled) {
+  [els.addTagsToResultsButton, els.removeTagsFromResultsButton, els.replaceTagsForResultsButton].forEach((button) => {
+    button.disabled = disabled;
+  });
+}
+
+function modeTagsLabel(mode) {
+  return {
+    add: "Add tags to",
+    remove: "Remove tags from",
+    replace: "Replace tags for"
+  }[mode] || "Update tags for";
+}
+
+function tagsForMode(currentTags, requestedTags, mode) {
+  const current = normalizeUniqueTags(currentTags);
+  const requested = normalizeUniqueTags(requestedTags);
+  if (mode === "replace") return requested;
+  if (mode === "remove") {
+    const removeSet = new Set(requested.map((tag) => tag.toLowerCase()));
+    return current.filter((tag) => !removeSet.has(tag.toLowerCase()));
+  }
+  return normalizeUniqueTags([...current, ...requested]);
+}
+
+function cardPayloadFromCard(card, overrides = {}) {
+  return {
+    deckId: state.currentDeck?.id,
+    cardId: card.id,
+    blueprint: card.blueprint,
+    domain: card.domain,
+    type: card.type,
+    difficulty: card.difficulty,
+    topic: card.topic,
+    subtopic: card.subtopic,
+    tags: card.tags,
+    front: card.front,
+    back: card.back,
+    ...overrides
+  };
+}
+
+async function copySelectedCardJson() {
+  const card = selectedCard();
+  if (!card) return;
+  const text = `${JSON.stringify(card, null, 2)}\n`;
+  try {
+    await navigator.clipboard.writeText(text);
+    renderEditorStatus(`Copied ${card.id || "selected card"} JSON.`, "success");
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.append(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+    renderEditorStatus(`Copied ${card.id || "selected card"} JSON.`, "success");
+  }
+}
+
+function exportSelectedCardJson() {
+  const card = selectedCard();
+  if (!card) return;
+  downloadJson(card, `${jsonFilenamePart(card.id || "selected-card")}.json`);
+  renderEditorStatus(`Exported ${card.id || "selected card"} JSON.`, "success");
+}
+
 function hasEditorChanges() {
   const card = selectedCard();
   if (!card) return false;
-  return els.editorCardType.value !== (card.type || "")
+  return els.editorCardBlueprint.value !== (card.blueprint || "")
+    || els.editorCardDomain.value !== (card.domain || "")
+    || els.editorCardType.value !== (card.type || "")
     || els.editorCardDifficulty.value !== (card.difficulty || "")
     || els.editorCardTopic.value !== (card.topic || "")
     || els.editorCardSubtopic.value !== (card.subtopic || "")
+    || els.editorCardTags.value !== (Array.isArray(card.tags) ? card.tags.join(", ") : "")
     || els.editorFront.value !== blocksToText(card.front)
     || els.editorBack.value !== blocksToText(card.back);
 }
@@ -910,14 +1096,9 @@ async function importCards() {
     }
 
     state.lastSkippedCards = data.skippedCards || [];
-    renderSummary([
-      `<strong>${escapeHtml(data.deck.title)}</strong> updated.`,
-      `${data.added} added, ${data.replaced.length} replaced, ${data.skipped.length} skipped.`,
-      `${data.totalCards} cards now in deck.`,
-      renderSkippedImportDetails(state.lastSkippedCards)
-    ].join("<br>"), "success");
+    renderImportSummary(data, "success");
     els.exportSkippedCardsButton.hidden = state.lastSkippedCards.length === 0;
-    if (els.clearJsonAfterImport.checked) {
+    if (els.clearJsonAfterImport.checked && !state.lastSkippedCards.length) {
       els.cardsJson.value = "";
     }
     await loadDecks();
@@ -936,6 +1117,38 @@ function renderSkippedImportDetails(skippedCards) {
     `<ul>${skippedCards.slice(0, 10).map((item) => `<li><code>${escapeHtml(item.id)}</code>: ${escapeHtml(item.reason)}</li>`).join("")}</ul>`,
     skippedCards.length > 10 ? `<span class="summary-note">${skippedCards.length - 10} more skipped cards are available in the export.</span>` : ""
   ].filter(Boolean).join("");
+}
+
+function renderImportSummary(data, type) {
+  const importSummary = data.importSummary || {};
+  const cardSummary = data.cardSummary || {};
+  const status = importSummary.status || "Success";
+  const fields = [
+    ["Status", status],
+    ["Payload type", importSummary.payloadType || "Unknown"],
+    ["Cards found", importSummary.totalFound ?? data.added + (data.replaced?.length || 0) + (data.skipped?.length || 0)],
+    ["Cards imported", importSummary.imported ?? data.added],
+    ["Cards updated", importSummary.updated ?? data.replaced?.length ?? 0],
+    ["Cards skipped", importSummary.skipped ?? data.skipped?.length ?? 0],
+    ["Validation errors", importSummary.validationErrors ?? 0],
+    ["Duplicate IDs", formatList(cardSummary.duplicateIds)],
+    ["Missing required fields", formatList(cardSummary.missingRequiredFields)],
+    ["Domains", formatCountKeys(cardSummary.domains)],
+    ["Topics", formatCountKeys(cardSummary.topics)],
+    ["Subtopics", formatCountKeys(cardSummary.subtopics)],
+    ["Tags", formatTags(cardSummary.tags)],
+    ["Types", formatCounts(cardSummary.typeCounts)],
+    ["Difficulty", formatCounts(cardSummary.difficultyCounts)],
+    ["Block types", formatCounts(cardSummary.renderBlockTypeCounts)],
+    ["First imported card ID", cardSummary.firstCardId || "none"],
+    ["Last imported card ID", cardSummary.lastCardId || "none"]
+  ];
+
+  renderSummary([
+    `<strong>Import Summary</strong><br><strong>${escapeHtml(data.deck?.title || "Selected deck")}</strong> updated. ${escapeHtml(String(data.totalCards ?? 0))} cards now in deck.`,
+    renderSummaryGrid(fields),
+    renderSkippedImportDetails(state.lastSkippedCards)
+  ].filter(Boolean).join(""), type);
 }
 
 function exportSkippedCards() {
@@ -973,6 +1186,51 @@ async function validatePastedCards() {
   }
 }
 
+async function importValidatedCards() {
+  els.validatorImportButton.disabled = true;
+  renderValidatorStatus("Importing valid cards...", "neutral");
+
+  try {
+    const response = await fetch("/api/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        deckId: els.deckSelect.value,
+        replaceDuplicates: els.validatorReplaceDuplicates.checked,
+        cardsJson: els.validatorCardsJson.value
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const details = data.details?.length ? ` ${data.details.join(" ")}` : "";
+      throw new Error(`${data.error || "Import failed."}${details}`);
+    }
+
+    if (els.validatorClearJsonAfterImport.checked && !(data.skippedCards || []).length) {
+      els.validatorCardsJson.value = "";
+    }
+    renderValidatorResults({
+      parseStatus: "Parsed",
+      payloadType: data.importSummary?.payloadType || "Unknown",
+      totalCards: data.importSummary?.totalFound || 0,
+      validCards: data.importSummary?.imported || 0,
+      invalidCards: [],
+      duplicateCards: (data.skippedCards || []).map((item) => ({
+        id: item.id,
+        skipReason: item.reason
+      })),
+      summary: data.cardSummary,
+      importSummary: data.importSummary
+    });
+    await loadDecks();
+    await loadDeckDetails(data.deck.id);
+  } catch (error) {
+    renderValidatorError(error.message);
+  } finally {
+    els.validatorImportButton.disabled = false;
+  }
+}
+
 function renderValidatorResults(data) {
   els.validatorTotalCards.textContent = String(data.totalCards || 0);
   els.validatorValidCards.textContent = String(data.validCards || 0);
@@ -989,6 +1247,31 @@ function renderValidatorResults(data) {
       details: [item.skipReason]
     }))
   ];
+
+  const summary = document.createElement("div");
+  summary.className = "validation-result-card";
+  summary.innerHTML = `
+    <strong>${data.importSummary ? "Import Summary" : "Validation Summary"}</strong>
+    ${renderSummaryGrid([
+      ["JSON parse status", data.parseStatus || "Parsed"],
+      ["Payload type", data.payloadType || "Unknown"],
+      ["Total cards detected", data.totalCards || 0],
+      ["Required fields", data.summary?.missingRequiredFields?.length ? "Needs fixes" : "Present"],
+      ["Duplicate IDs", formatList(data.summary?.duplicateIds)],
+      ["Missing required fields", formatList(data.summary?.missingRequiredFields)],
+      ["Invalid tags format", formatList(data.summary?.invalidTagsFormat)],
+      ["Invalid front/back format", formatList(data.summary?.invalidFrontBackFormat)],
+      ["Invalid render blocks", formatList(data.summary?.invalidRenderBlocks)],
+      ["Types", formatCounts(data.summary?.typeCounts)],
+      ["Difficulty", formatCounts(data.summary?.difficultyCounts)],
+      ["Domains", formatCountKeys(data.summary?.domains)],
+      ["Topics", formatCountKeys(data.summary?.topics)],
+      ["Subtopics", formatCountKeys(data.summary?.subtopics)],
+      ["Tags", formatTags(data.summary?.tags)],
+      ["Block types", formatCounts(data.summary?.renderBlockTypeCounts)]
+    ])}
+  `;
+  els.validatorResults.append(summary);
 
   if (!issues.length) {
     els.validatorResults.append(makeIssueParagraph("All pasted cards validate. No import skips detected for the selected options."));
@@ -1022,7 +1305,17 @@ function renderValidatorError(message) {
   els.validatorTotalCards.textContent = "0";
   els.validatorValidCards.textContent = "0";
   els.validatorInvalidCards.textContent = "0";
-  els.validatorResults.replaceChildren(makeIssueParagraph(message));
+  const block = document.createElement("div");
+  block.className = "validation-result-card";
+  block.innerHTML = `
+    <strong>Validation Summary</strong>
+    ${renderSummaryGrid([
+      ["JSON parse status", message.startsWith("Invalid JSON") ? "Failed" : "Not parsed"],
+      ["Payload type", "Invalid/unknown"],
+      ["Total cards detected", 0]
+    ])}
+  `;
+  els.validatorResults.replaceChildren(block, makeIssueParagraph(message));
 }
 
 function makeIssueParagraph(message) {
@@ -1042,7 +1335,51 @@ function readForm() {
 function renderSummary(message, type) {
   els.importSummary.classList.toggle("is-error", type === "error");
   els.importSummary.classList.toggle("is-success", type === "success");
-  els.importSummary.innerHTML = type === "error" ? message : `<p>${message}</p>`;
+  els.importSummary.innerHTML = message;
+}
+
+function renderSummaryGrid(fields) {
+  return `<div class="summary-grid">${fields.map(([label, value]) => `
+    <p><span>${escapeHtml(label)}</span>${escapeHtml(normalizeSummaryValue(value))}</p>
+  `).join("")}</div>`;
+}
+
+function normalizeSummaryValue(value) {
+  if (value === undefined || value === null || value === "") return "none";
+  return String(value);
+}
+
+function formatCounts(counts) {
+  const entries = Object.entries(counts || {}).filter(([, count]) => count > 0);
+  if (!entries.length) return "none";
+  return entries
+    .sort(([labelA, countA], [labelB, countB]) => countB - countA || labelA.localeCompare(labelB))
+    .map(([label, count]) => `${label} ${count}`)
+    .join(", ");
+}
+
+function formatCountKeys(counts) {
+  const keys = Object.entries(counts || {})
+    .filter(([label, count]) => label !== "missing" && count > 0)
+    .sort(([labelA], [labelB]) => labelA.localeCompare(labelB))
+    .map(([label]) => label);
+  return keys.length ? keys.join(", ") : "none";
+}
+
+function formatTags(tags) {
+  if (!tags?.length) return "none";
+  return tags.map(({ tag, count }) => `${tag} ${count}`).join(", ");
+}
+
+function formatList(items) {
+  return items?.length ? items.slice(0, 12).join("; ") : "none";
+}
+
+function jsonFilenamePart(value) {
+  return String(value)
+    .trim()
+    .replace(/[\\/:"*?<>|]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "selected-card";
 }
 
 function renderEmptyDeckState(message) {
@@ -1096,6 +1433,27 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function parseTags(value) {
+  if (Array.isArray(value)) return normalizeUniqueTags(value);
+  return normalizeUniqueTags(String(value || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean));
+}
+
+function normalizeUniqueTags(tags) {
+  const seen = new Set();
+  const normalized = [];
+  (tags || []).forEach((tag) => {
+    const value = String(tag || "").trim();
+    const key = value.toLowerCase();
+    if (!value || seen.has(key)) return;
+    seen.add(key);
+    normalized.push(value);
+  });
+  return normalized;
 }
 
 function escapeHtml(value) {

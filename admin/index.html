@@ -318,6 +318,8 @@
                 <h2>Card Editor</h2>
               </div>
               <div class="editor-actions">
+                <button class="secondary-button" id="copySelectedCardJsonButton" type="button">Copy Selected Card JSON</button>
+                <button class="secondary-button" id="exportSelectedCardJsonButton" type="button">Export Selected Card JSON</button>
                 <button class="secondary-button" id="editCardButton" type="button">Edit</button>
                 <button class="secondary-button" id="cancelEditButton" type="button" hidden>Cancel</button>
                 <button class="primary-button" id="saveCardButton" type="button" hidden>Save Changes</button>
@@ -331,31 +333,58 @@
                   <input id="cardSearchInput" type="search" placeholder="Search id, topic, question, answer">
                 </label>
                 <div id="cardList" class="card-list"></div>
+                <section class="bulk-tags-panel">
+                  <h3>Tags for Search Results</h3>
+                  <label>
+                    Tags
+                    <input id="bulkTagsInput" type="text" placeholder="ospf, routing">
+                  </label>
+                  <div class="editor-actions">
+                    <button class="secondary-button small-button" id="addTagsToResultsButton" type="button">Add</button>
+                    <button class="secondary-button small-button" id="removeTagsFromResultsButton" type="button">Remove</button>
+                    <button class="secondary-button small-button" id="replaceTagsForResultsButton" type="button">Replace</button>
+                  </div>
+                </section>
               </aside>
 
               <article class="panel card-editor-panel">
-                <div class="editor-field-grid">
+                <section class="selected-card-metadata" id="selectedCardMetadata" aria-live="polite">
+                  <p class="metadata-path" id="selectedCardPath">Select a card to view metadata.</p>
+                  <div class="metadata-grid">
+                    <label>
+                      <strong>Card ID</strong>
+                      <input id="editorCardId" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Blueprint</strong>
+                      <input id="editorCardBlueprint" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Domain</strong>
+                      <input id="editorCardDomain" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Topic</strong>
+                      <input id="editorCardTopic" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Subtopic</strong>
+                      <input id="editorCardSubtopic" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Type</strong>
+                      <input id="editorCardType" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Difficulty</strong>
+                      <input id="editorCardDifficulty" type="text" disabled>
+                    </label>
+                  </div>
                   <label>
-                    Card ID
-                    <input id="editorCardId" type="text" disabled>
+                    <strong>Tags</strong>
+                    <input id="editorCardTags" type="text" disabled placeholder="tag1, tag2">
                   </label>
-                  <label>
-                    Type
-                    <input id="editorCardType" type="text" disabled>
-                  </label>
-                  <label>
-                    Difficulty
-                    <input id="editorCardDifficulty" type="text" disabled>
-                  </label>
-                  <label>
-                    Topic
-                    <input id="editorCardTopic" type="text" disabled>
-                  </label>
-                  <label>
-                    Subtopic
-                    <input id="editorCardSubtopic" type="text" disabled>
-                  </label>
-                </div>
+                </section>
                 <label class="editor-textarea-label">
                   Front content
                   <textarea id="editorFront" rows="8" disabled></textarea>
@@ -432,13 +461,16 @@
                     <p class="panel-label">Import</p>
                     <h2>Paste Card JSON</h2>
                   </div>
-                  <button class="primary-button" id="importButton" type="button">Import Cards</button>
+                  <div class="editor-actions">
+                    <button class="secondary-button" id="clearImportJsonButton" type="button">Clear</button>
+                    <button class="primary-button" id="importButton" type="button">Import Cards</button>
+                  </div>
                 </div>
 
                 <label class="json-label">
                   JSON
                   <span class="check-row inline-check-row">
-                    <input id="clearJsonAfterImport" type="checkbox" checked>
+                    <input id="clearJsonAfterImport" type="checkbox">
                     Clear JSON text after successful import
                   </span>
                   <textarea id="cardsJson" class="json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
@@ -469,7 +501,10 @@
                 <p class="panel-label">Card Validator</p>
                 <h2>Validate Card JSON</h2>
               </div>
-              <button class="primary-button" id="validateCardsButton" type="button">Validate Cards</button>
+              <div class="editor-actions">
+                <button class="secondary-button" id="clearValidatorJsonButton" type="button">Clear</button>
+                <button class="primary-button" id="validateCardsButton" type="button">Validate Cards</button>
+              </div>
             </div>
 
             <div class="admin-section-grid validator-grid">
@@ -479,10 +514,15 @@
                   <input id="validatorReplaceDuplicates" type="checkbox">
                   Treat matching card IDs as replacements
                 </label>
+                <label class="check-row">
+                  <input id="validatorClearJsonAfterImport" type="checkbox">
+                  Clear JSON text after successful import
+                </label>
                 <label class="json-label">
                   JSON
                   <textarea id="validatorCardsJson" class="json-input validator-json-input" spellcheck="false" placeholder='{"cards":[...]}'></textarea>
                 </label>
+                <button class="primary-button" id="validatorImportButton" type="button">Import Valid Cards</button>
               </section>
 
               <section class="panel admin-tool-card">

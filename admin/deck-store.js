@@ -248,12 +248,15 @@ async function importDeck(payload) {
 }
 
 async function importCards(payload) {
-  const parsedCards = extractCards(payload.cardsJson);
+  const parsedPayload = parseCardPayload(payload.cardsJson);
+  const parsedCards = parsedPayload.cards;
   const cardErrors = validateCards(parsedCards);
   if (cardErrors.length) {
     const error = new Error("Card validation failed.");
     error.statusCode = 400;
     error.details = cardErrors;
+    error.summary = buildCardSummary(parsedCards);
+    error.payloadType = parsedPayload.payloadType;
     throw error;
   }
 
@@ -272,12 +275,15 @@ async function importCards(payload) {
     replaced: result.replaced,
     skipped: result.skipped,
     skippedCards: result.skippedCards,
+    importSummary: buildImportSummary(parsedPayload, result),
+    cardSummary: buildCardSummary(parsedCards),
     totalCards: target.deckData.cards.length
   };
 }
 
 async function validateCardImport(payload) {
-  const parsedCards = extractCards(payload.cardsJson);
+  const parsedPayload = parseCardPayload(payload.cardsJson);
+  const parsedCards = parsedPayload.cards;
   const index = await readDeckIndex();
   const target = payload.deckId ? await readExistingDeck(index, payload.deckId) : null;
   const existingIds = new Set((target?.deckData.cards || []).map((card) => card.id).filter(Boolean));
@@ -285,12 +291,16 @@ async function validateCardImport(payload) {
   const results = buildCardValidationResults(parsedCards, existingIds, replaceDuplicates);
   const invalidCards = results.filter((card) => !card.valid);
   const duplicateCards = results.filter((card) => card.wouldSkip);
+  const summary = buildCardSummary(parsedCards);
 
   return {
+    parseStatus: "Parsed",
+    payloadType: parsedPayload.payloadType,
     totalCards: parsedCards.length,
     validCards: results.length - invalidCards.length,
     invalidCards,
     duplicateCards,
+    summary,
     results
   };
 }
@@ -308,10 +318,13 @@ async function updateCard(payload) {
   const existingCard = target.deckData.cards[cardIndex];
   const updatedCard = {
     ...existingCard,
+    blueprint: cleanString(payload.blueprint) || existingCard.blueprint,
+    domain: cleanString(payload.domain) || existingCard.domain,
     type: cleanString(payload.type) || existingCard.type,
     difficulty: cleanString(payload.difficulty) || existingCard.difficulty,
     topic: cleanString(payload.topic) || existingCard.topic,
     subtopic: cleanString(payload.subtopic) || existingCard.subtopic,
+    tags: Object.prototype.hasOwnProperty.call(payload, "tags") ? normalizeTags(payload.tags) : existingCard.tags,
     front: Array.isArray(payload.front) ? payload.front : existingCard.front,
     back: Array.isArray(payload.back) ? payload.back : existingCard.back
   };
@@ -381,6 +394,10 @@ function validateDeckData(deckData) {
 }
 
 function extractCards(rawJson) {
+  return parseCardPayload(rawJson).cards;
+}
+
+function parseCardPayload(rawJson) {
   if (!rawJson || !rawJson.trim()) {
     const error = new Error("Paste JSON before importing.");
     error.statusCode = 400;
@@ -396,14 +413,29 @@ function extractCards(rawJson) {
     throw error;
   }
 
-  const cards = Array.isArray(parsed) ? parsed : parsed.cards;
+  let payloadType = "Invalid/unknown";
+  let cards;
+  if (Array.isArray(parsed)) {
+    payloadType = "Cards array";
+    cards = parsed;
+  } else if (Array.isArray(parsed?.cards) && parsed?.deck && typeof parsed.deck === "object") {
+    payloadType = "Full deck object";
+    cards = parsed.cards;
+  } else if (Array.isArray(parsed?.cards)) {
+    payloadType = "Cards-only object";
+    cards = parsed.cards;
+  } else if (parsed && typeof parsed === "object" && !Array.isArray(parsed) && parsed.id) {
+    payloadType = "Single card object";
+    cards = [parsed];
+  }
+
   if (!Array.isArray(cards)) {
     const error = new Error("JSON must contain a cards array, or be an array of card objects.");
     error.statusCode = 400;
     throw error;
   }
 
-  return cards;
+  return { parsed, payloadType, cards };
 }
 
 function validateCards(cards) {
@@ -585,6 +617,88 @@ function buildCardValidationResults(cards, existingIds = new Set(), replaceDupli
   });
 }
 
+function buildImportSummary(parsedPayload, mergeResult) {
+  const failedCount = (mergeResult.skipped?.length || 0);
+  const importedCount = (mergeResult.added || 0) + (mergeResult.replaced?.length || 0);
+  return {
+    status: failedCount ? "Partial success" : "Success",
+    payloadType: parsedPayload.payloadType,
+    totalFound: parsedPayload.cards.length,
+    imported: importedCount,
+    added: mergeResult.added || 0,
+    updated: mergeResult.replaced?.length || 0,
+    skipped: mergeResult.skipped?.length || 0,
+    duplicateIds: findDuplicates(parsedPayload.cards.map((card) => card?.id).filter(Boolean)),
+    validationErrors: 0
+  };
+}
+
+function buildCardSummary(cards) {
+  const safeCards = Array.isArray(cards) ? cards : [];
+  const missingRequiredFields = [];
+  const invalidTagsFormat = [];
+  const invalidFrontBackFormat = [];
+  const invalidRenderBlocks = [];
+  const renderBlockTypeCounts = {};
+  const tags = new Map();
+
+  safeCards.forEach((card, index) => {
+    const label = card?.id || `card ${index + 1}`;
+    if (!card || typeof card !== "object" || Array.isArray(card)) {
+      missingRequiredFields.push(`${label} must be an object`);
+      return;
+    }
+
+    REQUIRED_CARD_FIELDS.forEach((field) => {
+      if (!card[field]) missingRequiredFields.push(`${label} missing ${field}`);
+    });
+
+    if (!Array.isArray(card.tags)) {
+      invalidTagsFormat.push(`${label} tags must be an array`);
+    } else {
+      card.tags.forEach((tag) => {
+        tags.set(tag, (tags.get(tag) || 0) + 1);
+      });
+    }
+
+    ["front", "back"].forEach((field) => {
+      if (!Array.isArray(card[field])) {
+        invalidFrontBackFormat.push(`${label} ${field} must be an array`);
+        return;
+      }
+      card[field].forEach((block, blockIndex) => {
+        if (block?.type) {
+          renderBlockTypeCounts[block.type] = (renderBlockTypeCounts[block.type] || 0) + 1;
+        }
+        const blockErrors = [];
+        validateBlock(block, `${label} ${field} block ${blockIndex + 1}`, blockErrors);
+        invalidRenderBlocks.push(...blockErrors);
+      });
+    });
+  });
+
+  return {
+    totalCards: safeCards.length,
+    blueprints: countBy(safeCards, "blueprint"),
+    domains: countBy(safeCards, "domain"),
+    topics: countBy(safeCards, "topic"),
+    subtopics: countBy(safeCards, "subtopic"),
+    typeCounts: countBy(safeCards, "type"),
+    difficultyCounts: countBy(safeCards, "difficulty"),
+    renderBlockTypeCounts,
+    tags: Array.from(tags.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([tag, count]) => ({ tag, count })),
+    duplicateIds: findDuplicates(safeCards.map((card) => card?.id).filter(Boolean)),
+    missingRequiredFields,
+    invalidTagsFormat,
+    invalidFrontBackFormat,
+    invalidRenderBlocks,
+    firstCardId: safeCards[0]?.id || "",
+    lastCardId: safeCards[safeCards.length - 1]?.id || ""
+  };
+}
+
 function summarizeDeck(deckData) {
   const cards = deckData.cards || [];
   const duplicateIds = findDuplicates(cards.map((card) => card.id).filter(Boolean));
@@ -719,7 +833,7 @@ async function checkDeckIndexSync(index) {
 
 function countBy(cards, field) {
   return cards.reduce((counts, card) => {
-    const key = card[field] || "missing";
+    const key = card && typeof card === "object" && !Array.isArray(card) && card[field] ? card[field] : "missing";
     counts[key] = (counts[key] || 0) + 1;
     return counts;
   }, {});

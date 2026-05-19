@@ -90,7 +90,9 @@ const server = http.createServer(async (request, response) => {
   } catch (error) {
     sendJson(response, {
       error: error.message || "Unexpected server error.",
-      details: error.details || []
+      details: error.details || [],
+      summary: error.summary,
+      payloadType: error.payloadType
     }, error.statusCode || 500);
   }
 });

@@ -14509,6 +14509,1353 @@
           "text": "Threshold calculations are based on packet counts rather than byte counts.\n\nAverage queue depth is measured in packets."
         }
       ]
+    },
+    {
+      "id": "wireless-auth-001",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Authentication Overview",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "authentication"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why must wireless clients be authenticated before being granted access to a wireless network?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "To control access so that only trusted/expected devices reach corporate or sensitive resources. Guests should be limited to a separate WLAN, and rogue or unknown clients should be blocked from associating at all. Authentication validates either the device, the user, or both before network access is granted."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-002",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Open Authentication",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "open-auth"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Open Authentication?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Open Authentication is the original 802.11 method that requires no credentials. The client sends an 802.11 authentication request and is allowed to associate. It validates only that the client is a valid 802.11 device — not the user's identity. Real user authentication must be added through other means (e.g., WebAuth)."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-003",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Open Authentication Use Case",
+      "type": "scenario",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "open-auth",
+        "guest"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Where is Open Authentication most commonly seen in practice?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "On public/guest WLANs at hotels, coffee shops, airports, etc. Clients associate immediately, then a WebAuth portal typically prompts them to accept an Acceptable Use Policy or enter basic credentials before full network access is granted."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-004",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Configuring Open Authentication",
+      "type": "config-interpretation",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "open-auth",
+        "ios-xe"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On an IOS XE WLC, where do you configure Open Authentication on a WLAN, and what setting indicates Open Auth?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Tags & Profiles > WLANs",
+            "Add or edit a WLAN; set the SSID under the General tab",
+            "Go to Security > Layer 2 tab",
+            "Set Layer 2 Security Mode to None"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "When verified in the WLAN list, the Security column will show [open]."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-005",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "WPA Versions",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa",
+        "wpa2",
+        "wpa3"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare WPA, WPA2, and WPA3 at a high level."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Version",
+            "Notes"
+          ],
+          "rows": [
+            [
+              "WPA (WPA1)",
+              "Original Wi-Fi Alliance certification; uses TKIP. Now considered weak/deprecated."
+            ],
+            [
+              "WPA2",
+              "Adds AES/CCMP encryption; widely deployed. Personal mode vulnerable to offline dictionary attacks against 4-way handshake."
+            ],
+            [
+              "WPA3",
+              "Most secure; Personal mode replaces PSK exchange with SAE, adds forward secrecy and protection against dictionary attacks."
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Always use the highest WPA version supported by your WLCs, APs, and clients."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-006",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Personal vs Enterprise Mode",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "psk",
+        "802.1x"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between WPA personal mode and WPA enterprise mode?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Mode",
+            "Auth Method",
+            "Use Case"
+          ],
+          "rows": [
+            [
+              "Personal",
+              "Pre-Shared Key (PSK)",
+              "Small environments, embedded devices; same key configured on all clients and APs"
+            ],
+            [
+              "Enterprise",
+              "802.1X / EAP",
+              "Larger enterprises with per-user credentials and a RADIUS authentication server"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-007",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Pre-Shared Key",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "psk"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When PSK is used (without ISE), where must the key string be configured?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "On all wireless clients AND on all APs/WLCs (i.e., on the WLAN configuration). Every device using the WLAN must have an identical pre-shared key. The key itself is never transmitted over the air."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-008",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "PSK Handshake",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "psk",
+        "4-way-handshake"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "If the PSK is never sent over the air, how do the client and AP agree on encryption keys?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The PSK is used directly as the Pairwise Master Key (PMK). The client and AP then perform a four-way EAPOL handshake that uses the PMK to derive a Pairwise Transient Key (PTK) for unicast traffic and a Groupwise Transient Key (GTK) for broadcast/multicast traffic. The handshake material can be exchanged in the clear because it cannot be used without the PMK."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-009",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "WPA2 PSK Vulnerability",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa2",
+        "psk",
+        "security"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What attack is WPA/WPA2 Personal mode vulnerable to, and how does WPA3 Personal mitigate it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "WPA/WPA2 Personal is vulnerable to offline dictionary attacks: an attacker captures the 4-way handshake and brute-forces the PSK. With the key, they can decrypt traffic or join the network."
+        },
+        {
+          "type": "text",
+          "text": "WPA3 Personal replaces the PSK exchange with Simultaneous Authentication of Equals (SAE), which resists offline dictionary attacks and provides forward secrecy — captured traffic cannot be decrypted later, even if the password is compromised."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-010",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "WPA3 SAE",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa3",
+        "sae"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is SAE in WPA3-Personal?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Simultaneous Authentication of Equals — a key exchange method where the client and AP authenticate as peers (equally and even simultaneously), rather than the client authenticating against the AP. SAE is resistant to offline dictionary attacks and enables forward secrecy."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-011",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Forward Secrecy",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa3",
+        "forward-secrecy"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is forward secrecy, and which WPA mode provides it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Forward secrecy means that even if the password/key is later compromised, an attacker cannot decrypt previously captured wireless traffic. WPA3-Personal provides forward secrecy; WPA2-Personal does not."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-012",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Configuring WPA2 PSK",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa2",
+        "psk",
+        "ios-xe"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Outline the IOS XE WLC steps to configure a WLAN for WPA2-Personal (PSK) with AES."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Tags & Profiles > WLANs > Add",
+            "On General tab, set Profile Name and SSID",
+            "Security > Layer 2 tab: select WPA+WPA2",
+            "Uncheck WPA Policy; check WPA2 Policy and WPA2 Encryption AES (CCMP128)",
+            "Under Auth Key Mgmt, check only PSK",
+            "Enter the Pre-Shared Key string",
+            "Apply to Device, then map WLAN to a Policy profile via a Policy tag and apply to APs"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "In the WLAN list, Security should display [WPA2][PSK][AES]."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-013",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "PSK Drawbacks",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "psk",
+        "exam-tip"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Exam tip: what are the operational drawbacks of using PSK in a large environment?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Every device must be configured with the same key",
+            "Changing the key requires touching every device",
+            "Key disclosure to one user effectively compromises everyone",
+            "No per-user accountability or identity",
+            "Vulnerable to offline dictionary attacks (WPA2-PSK)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-014",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Hybrid WPA Modes",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa",
+        "wpa2",
+        "tkip",
+        "aes"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why should hybrid WPA modes (e.g., WPA+WPA2 with TKIP+AES) generally be avoided?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A WLAN is only as secure as its weakest enabled cipher. Mixing WPA/WPA2 with TKIP weakens overall security and has been deprecated. Hybrid modes can also cause client compatibility issues. Use WPA2 or WPA3 with AES/CCMP only."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-015",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "EAP",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "eap"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is EAP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Extensible Authentication Protocol — a flexible authentication framework (not a single method). EAP defines common functions used by specific authentication methods (PEAP, EAP-TLS, EAP-FAST, etc.) so that 802.11 itself doesn't need to implement each method natively."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-016",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "802.1X Roles",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "802.1x",
+        "supplicant",
+        "authenticator"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Name and describe the three 802.1X roles in a wireless deployment."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Role",
+            "Who Plays It",
+            "Function"
+          ],
+          "rows": [
+            [
+              "Supplicant",
+              "Wireless client device",
+              "Requests access; provides credentials"
+            ],
+            [
+              "Authenticator",
+              "WLC (with AP)",
+              "Controls port/network access; relays auth via EAPOL/RADIUS"
+            ],
+            [
+              "Authentication Server (AS)",
+              "RADIUS server (e.g., ISE)",
+              "Validates credentials against user database/policy and grants/denies access"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-017",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Authenticator Role",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "802.1x",
+        "wlc"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When a Cisco WLC is configured for 802.1X with an external RADIUS server, what role does the WLC play?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The authenticator. It sits between the supplicant (client) and the authentication server (RADIUS), relaying EAP messages over EAPOL toward the client and over RADIUS toward the server, and enforcing access based on the AS's decision."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-018",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Supplicant Location",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "supplicant"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In WPA2-Enterprise, where does the supplicant live?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "On the wireless client device. The supplicant is the software (built-in OS supplicant or third-party) that requests authentication and presents credentials to the authenticator."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-019",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "EAPOL",
+      "type": "definition",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "eapol"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is EAPOL, and where is it used?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "EAP over LAN — the encapsulation used to carry EAP messages over wired and wireless LANs between the supplicant and the authenticator. The authenticator then translates EAP into RADIUS for the authentication server."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-020",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Four-Way Handshake Purpose",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "eapol",
+        "4-way-handshake"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the purpose of the EAPOL four-way handshake?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "To exchange and derive dynamic encryption keys between the client and AP after authentication. It does NOT authenticate the user — it derives the PTK (unicast key) and distributes the GTK (broadcast/multicast key) so the wireless link can be encrypted."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-021",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Key Hierarchy",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "pmk",
+        "ptk",
+        "gtk"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Explain the key hierarchy used to secure WPA2/WPA3 wireless traffic."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "PMK (Pairwise Master Key) — derived from EAP auth (Enterprise) or directly from the PSK (Personal)",
+            "GMK (Groupwise Master Key) — generated on the AP for group key derivation",
+            "PTK (Pairwise Transient Key) — derived from PMK during the 4-way handshake; protects unicast traffic",
+            "GTK (Groupwise Transient Key) — derived from GMK; distributed via 4-way handshake; protects broadcast/multicast"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-022",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Four-Way Handshake Sequence",
+      "type": "sequence",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "4-way-handshake",
+        "sequence"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "List the high-level message exchange of the EAPOL four-way handshake."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Message 1: AP → Client — sends ANonce, allowing client to derive PTK",
+            "Message 2: Client → AP — sends SNonce + MIC; AP can now derive PTK",
+            "Message 3: AP → Client — sends GTK (encrypted with PTK) + MIC; instructs client to install keys",
+            "Message 4: Client → AP — acknowledgment that keys are installed"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "After all four messages succeed, 802.1X unblocks the port and encrypted traffic can flow."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-023",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "EAP Methods",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "eap-methods"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Where are specific EAP methods (PEAP, EAP-TLS, EAP-FAST, etc.) configured — on the WLC or somewhere else?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "They are configured on the RADIUS authentication server and must be matched on the client supplicant. The WLC only needs to know that 802.1X is in use; it does not need to know which specific EAP method is being negotiated, since it just relays EAP between client and server."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-024",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Common EAP Methods",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "eap-methods"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Name several common EAP methods supported in WPA Enterprise mode."
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "LEAP (legacy, Cisco proprietary, deprecated)",
+            "EAP-FAST",
+            "PEAP",
+            "EAP-TLS",
+            "EAP-TTLS",
+            "EAP-SIM"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-025",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Configuring RADIUS on WLC",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "radius",
+        "ios-xe"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On an IOS XE WLC, where do you define an external RADIUS server, and what minimum parameters are required?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Security > AAA > Servers/Groups",
+            "Click Add (or edit existing)",
+            "Specify server Name, IP address, shared Secret key",
+            "Confirm/adjust RADIUS port numbers (auth/acct)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-026",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "AAA Method List",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "aaa",
+        "dot1x"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "When configuring 802.1X for a WLAN on IOS XE, what AAA method-list Type do you select, and what server group?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Security > AAA > AAA Method List",
+            "Add a method list (or edit default)",
+            "Type: dot1x",
+            "Move radius from Available to Assigned Server Groups",
+            "Apply to Device, then reference this method list under the WLAN's Security > AAA tab as the Authentication List"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-027",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Configuring WPA2-Enterprise",
+      "type": "config-interpretation",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "wpa2",
+        "802.1x",
+        "ios-xe"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Outline the WLAN-side settings on an IOS XE WLC to enable WPA2-Enterprise with 802.1X."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Tags & Profiles > WLANs > Add",
+            "Security > Layer 2: select WPA+WPA2",
+            "Check WPA2 Policy; uncheck WPA Policy",
+            "Check WPA2 Encryption: AES (CCMP128)",
+            "Auth Key Mgmt: check 802.1x; uncheck PSK",
+            "Security > AAA: set Authentication List to your dot1x method list (e.g., myRadius)",
+            "Apply to Device"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Verify in the WLAN list: Security column should show [802.1X]."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-028",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Local EAP",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "local-eap"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is Local EAP on a Cisco WLC, and when would you use it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Local EAP allows the WLC itself to act as the authentication server, validating clients against a local user database. It's useful in small deployments or as a fallback when external RADIUS servers are unreachable. In larger networks, an external RADIUS server (e.g., Cisco ISE) is preferred."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-029",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "WebAuth",
+      "type": "definition",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "webauth"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is WebAuth, and how does it differ from PSK or EAP authentication?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Web Authentication presents the user with a web page (AUP, login form, splash page) before granting network access. Unlike PSK or EAP, WebAuth is interactive — it directly engages the end user via a browser. It's commonly added on top of Open Authentication for guest networks."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-030",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "WebAuth Use Case",
+      "type": "scenario",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "webauth",
+        "guest"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Guests must read and accept an Acceptable Use Policy before getting network access. Which authentication method natively supports this?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "WebAuth. It can present an AUP page in the user's browser; access is granted only after the user acknowledges/accepts. Open Authentication, WPA2/WPA3 PSK, and WPA Enterprise alone don't natively present user-facing content."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-031",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "LWA Modes",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "lwa",
+        "webauth"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "List the Local Web Authentication (LWA) modes available on a Cisco WLC."
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "LWA with internal database on the WLC",
+            "LWA with external database (RADIUS or LDAP)",
+            "LWA with external redirect after authentication",
+            "LWA with external splash page redirect, using internal DB on WLC",
+            "LWA with passthrough (user acknowledgment only)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-032",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "LWA vs CWA",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "lwa",
+        "cwa",
+        "ise"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare Local Web Authentication (LWA) and Central Web Authentication (CWA)."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "LWA",
+            "CWA"
+          ],
+          "rows": [
+            [
+              "Web portal location",
+              "Hosted on the WLC",
+              "Hosted on a central server (e.g., Cisco ISE)"
+            ],
+            [
+              "Best for",
+              "Smaller deployments / single WLC",
+              "Many WLCs with centralized policy and user DB"
+            ],
+            [
+              "User database",
+              "Local WLC or external RADIUS/LDAP",
+              "Centralized RADIUS (ISE)"
+            ],
+            [
+              "Scalability",
+              "Limited",
+              "High"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-033",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Configuring WebAuth",
+      "type": "config-interpretation",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "webauth",
+        "ios-xe"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Outline the IOS XE steps to enable WebAuth on a WLAN."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration > Security > WebAuth: create a parameter map (e.g., MyWebAuth) with banner/redirect/customization",
+            "Configuration > Security > AAA > AAA Method List: create a list of Type 'login' assigned to RADIUS server group (e.g., webauth)",
+            "Configuration > Tags & Profiles > WLANs: add WLAN; set SSID on General tab",
+            "Security > Layer 2: configure Layer 2 settings (often None for guest)",
+            "Security > Layer 3: enable WebAuth, select the parameter map and the login authentication list",
+            "Apply to Device, link WLAN profile to a Policy profile via a Policy tag, apply to APs"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "In the WLAN list, the Security column will show [Web_Auth]."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-034",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Method List Type for WebAuth",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "aaa",
+        "webauth",
+        "exam-tip"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Exam tip: which AAA method-list Type is used for 802.1X versus WebAuth?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Auth Method",
+            "AAA Method List Type"
+          ],
+          "rows": [
+            [
+              "802.1X / EAP (Enterprise)",
+              "dot1x"
+            ],
+            [
+              "WebAuth (Login portal)",
+              "login"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-035",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Combining WebAuth",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "webauth",
+        "layered-security"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Can WebAuth be combined with other authentication methods?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Yes. WebAuth is a Layer 3 mechanism and can be layered on top of Open Authentication, PSK, or EAP-based authentication. For example, a guest WLAN may use Open Authentication at Layer 2 plus WebAuth at Layer 3 to display an AUP and capture credentials."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-036",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Verifying WLAN Security",
+      "type": "cli-output",
+      "difficulty": "easy",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you verify which security method a WLAN is configured for in IOS XE WLC GUI, and what values appear?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Configuration > Tags & Profiles > WLANs lists all WLANs and a Security column. Typical values:"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Security Column",
+            "Meaning"
+          ],
+          "rows": [
+            [
+              "[open]",
+              "Open Authentication"
+            ],
+            [
+              "[WPA2][PSK][AES]",
+              "WPA2 Personal mode (PSK)"
+            ],
+            [
+              "[802.1X]",
+              "WPA Enterprise mode (EAP/802.1X)"
+            ],
+            [
+              "[Web_Auth]",
+              "WebAuth enabled at Layer 3"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-037",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Troubleshooting EAP",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "troubleshooting",
+        "radius"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Clients on a WPA2-Enterprise WLAN cannot authenticate. The WLC shows RADIUS timeouts. What are the most likely causes to check?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "RADIUS server reachability from the WLC management/source interface (ping/route)",
+            "RADIUS shared secret mismatch between WLC and server",
+            "Wrong RADIUS auth/acct port numbers",
+            "WLC's NAD/source IP not configured as a network device on RADIUS (e.g., ISE)",
+            "ACL or firewall blocking UDP 1812/1813 between WLC and RADIUS",
+            "Wrong AAA method list referenced under WLAN Security > AAA"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-038",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Troubleshooting PSK",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "psk",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A client repeatedly fails to associate with a WPA2-PSK WLAN and never reaches IP connectivity. What is the most common cause?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "PSK mismatch between client and WLAN configuration. The 4-way handshake fails because the PMK derived on each side doesn't match. Re-enter the PSK on the client and confirm it matches the WLAN configuration exactly (case-sensitive, no extra whitespace)."
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-039",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Choosing an Auth Method",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Recommend an authentication design for: (a) corporate employees, (b) IoT/embedded sensors, (c) guests."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "User Group",
+            "Recommended Auth"
+          ],
+          "rows": [
+            [
+              "Corporate employees",
+              "WPA2/WPA3 Enterprise (802.1X) with EAP-TLS or PEAP, RADIUS (ISE) for per-user identity"
+            ],
+            [
+              "IoT / embedded sensors",
+              "WPA2/WPA3 Personal (PSK), preferably PSK with ISE (iPSK) for unique per-device keys"
+            ],
+            [
+              "Guests",
+              "Open Authentication + WebAuth (LWA or CWA) with AUP and optional sponsor/credential login"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wireless-auth-040",
+      "blueprint": "general",
+      "domain": "Wireless",
+      "topic": "Wireless Authentication",
+      "subtopic": "Auth Method Summary",
+      "type": "exam-tip",
+      "difficulty": "medium",
+      "tags": [
+        "chapter-20",
+        "authenticating-wireless-clients",
+        "exam-tip",
+        "summary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Quick exam recall: summarize the four wireless authentication methods covered in Chapter 20."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Method",
+            "Credentials",
+            "Server",
+            "Typical Use"
+          ],
+          "rows": [
+            [
+              "Open Authentication",
+              "None",
+              "None",
+              "Public/guest WLANs, often combined with WebAuth"
+            ],
+            [
+              "PSK (Personal mode)",
+              "Shared key string",
+              "None (or ISE for iPSK)",
+              "Small offices, IoT"
+            ],
+            [
+              "EAP / 802.1X (Enterprise mode)",
+              "Per-user (cert/username/password)",
+              "RADIUS (e.g., ISE) or local EAP",
+              "Enterprise employee WLANs"
+            ],
+            [
+              "WebAuth",
+              "Web portal credentials / AUP accept",
+              "Local DB, RADIUS, or central (CWA/ISE)",
+              "Guest networks, AUP enforcement"
+            ]
+          ]
+        }
+      ]
     }
   ]
 }
