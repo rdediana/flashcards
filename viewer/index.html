@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Flashcards</title>
-    <link rel="stylesheet" href="./styles.css?v=landing-mobile-fill-fix">
+    <link rel="stylesheet" href="./styles.css?v=cr-011-controls-fix">
   </head>
   <body>
     <div class="app-shell">
@@ -162,6 +162,7 @@
                 <strong>Session Filters</strong>
               </span>
               <span class="filter-count" id="filterCount">0 cards</span>
+              <button class="secondary-button filter-mode-toggle" id="filterModeButton" type="button" aria-label="Show advanced filters" aria-expanded="false" title="Show advanced filters">+</button>
             </div>
 
             <label>
@@ -199,7 +200,7 @@
               <select id="tagFilter"></select>
             </label>
 
-            <label class="advanced-filter">
+            <label>
               Viewed
               <select id="viewedFilter">
                 <option value="">All</option>
@@ -215,7 +216,6 @@
             </div>
 
             <div class="filter-footer">
-              <button class="secondary-button" id="filterModeButton" type="button" aria-expanded="false">Show all filters</button>
               <button class="secondary-button" id="clearFiltersButton" type="button">Clear Filters</button>
               <button class="primary-button" id="collapseFiltersButton" type="button">Review Cards</button>
             </div>
@@ -364,6 +364,6 @@
       </div>
     </template>
 
-    <script src="./app.js?v=cr-011-viewer"></script>
+    <script src="./app.js?v=cr-011-controls-fix"></script>
   </body>
 </html>

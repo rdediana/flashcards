@@ -460,8 +460,9 @@ function renderCurrentCard() {
 
   els.cardTitle.textContent = `${card.blueprint} | ${card.subtopic || card.topic}`;
   els.cardBreadcrumb.textContent = `${card.domain} > ${card.topic}${card.subtopic ? ` > ${card.subtopic}` : ""}`;
+  const tags = card.tags || [];
   els.cardMeta.replaceChildren(
-    ...(card.tags || []).map((tag) => pill(`#${tag}`))
+    ...(tags.length ? tags.map((tag) => pill(`#${tag}`)) : [pill("No tags")])
   );
   els.cardMeta.hidden = !state.showTags;
   els.toggleTagsButton.setAttribute("aria-expanded", String(state.showTags));
@@ -1084,7 +1085,10 @@ function toggleFilterMode() {
 
 function renderFilterMode() {
   els.filterPanel.classList.toggle("show-all-filters", state.showAllFilters);
-  els.filterModeButton.textContent = state.showAllFilters ? "Show simple filters" : "Show all filters";
+  const label = state.showAllFilters ? "Hide advanced filters" : "Show advanced filters";
+  els.filterModeButton.textContent = state.showAllFilters ? "-" : "+";
+  els.filterModeButton.setAttribute("aria-label", label);
+  els.filterModeButton.title = label;
   els.filterModeButton.setAttribute("aria-expanded", String(state.showAllFilters));
 }
 
