@@ -11,6 +11,7 @@ const state = {
   currentIndex: 0,
   answerVisible: false,
   showTags: false,
+  showAllFilters: false,
   shuffle: false,
   mode: "all",
   activeView: "review",
@@ -49,6 +50,8 @@ const els = {
   cardPosition: document.querySelector("#cardPosition"),
   filterPanel: document.querySelector("#filterPanel"),
   filterCount: document.querySelector("#filterCount"),
+  filterModeButton: document.querySelector("#filterModeButton"),
+  clearFiltersButton: document.querySelector("#clearFiltersButton"),
   collapseFiltersButton: document.querySelector("#collapseFiltersButton"),
   focusModeButton: document.querySelector("#focusModeButton"),
   focusMainPanel: document.querySelector("#focusMainPanel"),
@@ -73,9 +76,8 @@ const els = {
   cardPanel: document.querySelector(".card-panel"),
   cardTitle: document.querySelector("#cardTitle"),
   cardBreadcrumb: document.querySelector("#cardBreadcrumb"),
-  difficultyMeta: document.querySelector("#difficultyMeta"),
-  typeMeta: document.querySelector("#typeMeta"),
   cardMeta: document.querySelector("#cardMeta"),
+  flagIndicator: document.querySelector("#flagIndicator"),
   frontContent: document.querySelector("#frontContent"),
   backContent: document.querySelector("#backContent"),
   questionFace: document.querySelector("#questionFace"),
@@ -169,6 +171,7 @@ function applyLoadedDeck(deckData, entry) {
   state.currentIndex = 0;
   state.answerVisible = false;
   state.showTags = false;
+  state.showAllFilters = false;
   state.mode = "all";
   state.activeSession = false;
   state.session = null;
@@ -180,6 +183,7 @@ function applyLoadedDeck(deckData, entry) {
   populateDeckPicker();
   populateFilters();
   resetFilterControls();
+  renderFilterMode();
 }
 
 async function fetchJson(path) {
@@ -291,9 +295,9 @@ function bindEvents() {
   els.answerFace.addEventListener("click", hideAnswer);
   els.answerFace.addEventListener("keydown", (event) => handleKeyboardAction(event, hideAnswer));
 
-  els.correctButton.addEventListener("click", () => scoreCurrentCard("correct"));
-  els.incorrectButton.addEventListener("click", () => scoreCurrentCard("incorrect"));
-  els.skipButton.addEventListener("click", () => scoreCurrentCard("skipped"));
+  els.correctButton.addEventListener("click", () => completeCardAction("correct"));
+  els.incorrectButton.addEventListener("click", () => completeCardAction("incorrect"));
+  els.skipButton.addEventListener("click", () => completeCardAction("skipped"));
   els.prevButton.addEventListener("click", () => moveCard(-1));
   els.nextButton.addEventListener("click", () => moveCard(1));
 
@@ -303,7 +307,7 @@ function bindEvents() {
     applyFilters();
   });
 
-  els.markButton.addEventListener("click", toggleMarked);
+  els.markButton.addEventListener("click", () => completeCardAction("flagged"));
   els.toggleTagsButton.addEventListener("click", toggleTags);
   els.startSessionButton.addEventListener("click", startSession);
   els.resumeSessionButton.addEventListener("click", resumeSession);
@@ -314,6 +318,8 @@ function bindEvents() {
   els.exportProgressButton.addEventListener("click", exportProgress);
   els.importProgressInput.addEventListener("change", importProgress);
   els.resetProgressButton.addEventListener("click", resetProgress);
+  els.filterModeButton.addEventListener("click", toggleFilterMode);
+  els.clearFiltersButton.addEventListener("click", resetFilters);
   els.collapseFiltersButton.addEventListener("click", () => {
     startReviewSet();
   });
@@ -437,7 +443,7 @@ function applyFilters() {
   }
 
   state.currentIndex = clamp(state.currentIndex, 0, Math.max(state.filteredCards.length - 1, 0));
-  state.answerVisible = false;
+  collapseCardDetails();
   els.filterCount.textContent = `${state.filteredCards.length} card${state.filteredCards.length === 1 ? "" : "s"}`;
   renderCurrentCard();
   renderStats();
@@ -454,17 +460,12 @@ function renderCurrentCard() {
 
   els.cardTitle.textContent = `${card.blueprint} | ${card.subtopic || card.topic}`;
   els.cardBreadcrumb.textContent = `${card.domain} > ${card.topic}${card.subtopic ? ` > ${card.subtopic}` : ""}`;
-  els.difficultyMeta.textContent = titleCase(card.difficulty);
-  els.typeMeta.textContent = titleCase(card.type || "card");
   els.cardMeta.replaceChildren(
-    pill(`${card.domain} > ${card.topic}${card.subtopic ? ` > ${card.subtopic}` : ""}`),
-    pill(titleCase(card.difficulty)),
-    pill(titleCase(card.type || "card")),
     ...(card.tags || []).map((tag) => pill(`#${tag}`))
   );
   els.cardMeta.hidden = !state.showTags;
-  els.toggleTagsButton.textContent = state.showTags ? "-" : "+";
   els.toggleTagsButton.setAttribute("aria-expanded", String(state.showTags));
+  els.toggleTagsButton.title = state.showTags ? "Hide more info" : "More info";
 
   renderBlocks(card.front, els.frontContent);
   renderBlocks(card.back, els.backContent);
@@ -474,8 +475,7 @@ function renderCurrentCard() {
 
   const progress = getCardProgress(card.id);
   els.markButton.classList.toggle("is-active", progress.markedForReview);
-  els.markButton.setAttribute("aria-pressed", String(progress.markedForReview));
-  els.markButton.textContent = progress.markedForReview ? "Flagged" : "Flag";
+  els.flagIndicator.hidden = !progress.markedForReview;
 
   els.cardPosition.textContent = cardPositionLabel();
   els.prevButton.disabled = state.filteredCards.length < 2;
@@ -489,10 +489,9 @@ function renderCurrentCard() {
 function renderEmptyState() {
   els.cardTitle.textContent = "No matching cards";
   els.cardBreadcrumb.textContent = "";
-  els.difficultyMeta.textContent = "-";
-  els.typeMeta.textContent = "-";
   els.cardMeta.replaceChildren();
   els.cardMeta.hidden = true;
+  els.flagIndicator.hidden = true;
   els.frontContent.replaceChildren(els.emptyStateTemplate.content.cloneNode(true));
   els.backContent.replaceChildren();
   els.answerFace.classList.add("is-hidden");
@@ -687,7 +686,7 @@ function renderWeakAreas(weakCards) {
   });
 }
 
-function scoreCurrentCard(result) {
+function completeCardAction(result) {
   const card = state.filteredCards[state.currentIndex];
   if (!card) return;
   ensureActiveSession();
@@ -695,21 +694,19 @@ function scoreCurrentCard(result) {
   const progress = getCardProgress(card.id);
   const now = new Date().toISOString();
 
-  if (result === "correct") {
+  if (result === "flagged") {
+    progress.markedForReview = true;
+  } else if (result === "correct") {
     progress.attempts += 1;
     progress.correct += 1;
     state.session.correct += 1;
     progress.confidence = Math.min(5, progress.confidence + 1);
-  }
-
-  if (result === "incorrect") {
+  } else if (result === "incorrect") {
     progress.attempts += 1;
     progress.incorrect += 1;
     state.session.incorrect += 1;
     progress.confidence = Math.max(1, progress.confidence - 1);
-  }
-
-  if (result === "skipped") {
+  } else if (result === "skipped") {
     progress.skipped += 1;
     state.session.skipped += 1;
   }
@@ -720,13 +717,16 @@ function scoreCurrentCard(result) {
   saveProgress();
   renderStats();
   recordReviewSetResult(card.id, result);
+  collapseCardDetails();
 
   if (isReviewSetComplete()) {
     completeReviewSet();
+    resetCardScroll();
     return;
   }
 
   moveToNextUnscored(1);
+  resetCardScroll();
 }
 
 function advanceQuestionFace() {
@@ -741,6 +741,7 @@ function advanceQuestionFace() {
 function revealAnswer() {
   if (!state.filteredCards[state.currentIndex] || state.answerVisible) return;
   state.answerVisible = true;
+  state.showTags = false;
   renderCurrentCard();
   els.answerFace.focus();
 }
@@ -758,19 +759,6 @@ function handleKeyboardAction(event, action) {
   action();
 }
 
-function toggleMarked() {
-  const card = state.filteredCards[state.currentIndex];
-  if (!card) return;
-  ensureActiveSession();
-
-  const progress = getCardProgress(card.id);
-  progress.markedForReview = !progress.markedForReview;
-  state.progress.cards[card.id] = progress;
-  saveProgress();
-  renderCurrentCard();
-  renderStats();
-}
-
 function toggleTags() {
   state.showTags = !state.showTags;
   renderCurrentCard();
@@ -779,7 +767,7 @@ function toggleTags() {
 function moveCard(direction) {
   if (!state.filteredCards.length) return;
   state.currentIndex = (state.currentIndex + direction + state.filteredCards.length) % state.filteredCards.length;
-  state.answerVisible = false;
+  collapseCardDetails();
   renderCurrentCard();
 }
 
@@ -799,7 +787,7 @@ function moveToNextUnscored(direction) {
     const nextCard = state.filteredCards[nextIndex];
     if (nextCard && !state.reviewSet.scoredIds.has(nextCard.id)) {
       state.currentIndex = nextIndex;
-      state.answerVisible = false;
+      collapseCardDetails();
       renderCurrentCard();
       return;
     }
@@ -878,7 +866,7 @@ function createSession() {
 function startReviewSet() {
   ensureActiveSession();
   state.currentIndex = clamp(state.currentIndex, 0, Math.max(state.filteredCards.length - 1, 0));
-  state.answerVisible = false;
+  collapseCardDetails();
   state.setSummary = null;
   state.reviewSet = {
     ids: state.filteredCards.map((card) => card.id),
@@ -886,12 +874,12 @@ function startReviewSet() {
     correct: 0,
     incorrect: 0,
     skipped: 0,
+    flagged: 0,
     startedAt: new Date().toISOString()
   };
 
   enterFocusMode();
   setActiveView("review");
-  els.filterPanel.open = false;
   renderSummary();
   renderCurrentCard();
   els.questionFace.focus();
@@ -923,10 +911,11 @@ function completeReviewSet() {
     correct: state.reviewSet.correct,
     incorrect: state.reviewSet.incorrect,
     skipped: state.reviewSet.skipped,
+    flagged: state.reviewSet.flagged,
     accuracy
   };
 
-  state.answerVisible = false;
+  collapseCardDetails();
   state.focusMode = true;
   setActiveView("main");
   renderCurrentCard();
@@ -947,7 +936,8 @@ function renderSummary() {
     summaryMetric("Accuracy", `${summary.accuracy}%`),
     summaryMetric("Correct", String(summary.correct)),
     summaryMetric("Incorrect", String(summary.incorrect)),
-    summaryMetric("Skipped", String(summary.skipped))
+    summaryMetric("Skipped", String(summary.skipped)),
+    summaryMetric("Flagged", String(summary.flagged))
   );
   els.sessionBox.replaceChildren(
     makeElement("h3", "Card Set Summary"),
@@ -989,13 +979,11 @@ function enterFocusMode(view = state.activeView) {
 function exitFocusMode() {
   state.focusMode = false;
   state.activeView = "review";
-  els.filterPanel.open = true;
   renderViewState();
 }
 
 function setActiveView(view) {
   state.activeView = view;
-  if (state.focusMode && view === "filters") els.filterPanel.open = true;
   renderViewState();
 }
 
@@ -1012,7 +1000,6 @@ function renderViewState() {
   document.querySelector(".overview-panel").hidden = state.focusMode;
   els.focusMainPanel.hidden = !showFocusMain;
   els.filterPanel.hidden = !showFilters;
-  els.filterPanel.open = state.focusMode ? state.activeView === "filters" : els.filterPanel.open;
   els.cardPanel.hidden = !showReview;
   els.resultPanel.hidden = !showProgress;
   els.summaryPanel.hidden = !showSummary;
@@ -1088,6 +1075,28 @@ function resetFilters() {
   state.currentIndex = 0;
   clearReviewSet();
   applyFilters();
+}
+
+function toggleFilterMode() {
+  state.showAllFilters = !state.showAllFilters;
+  renderFilterMode();
+}
+
+function renderFilterMode() {
+  els.filterPanel.classList.toggle("show-all-filters", state.showAllFilters);
+  els.filterModeButton.textContent = state.showAllFilters ? "Show simple filters" : "Show all filters";
+  els.filterModeButton.setAttribute("aria-expanded", String(state.showAllFilters));
+}
+
+function collapseCardDetails() {
+  state.answerVisible = false;
+  state.showTags = false;
+}
+
+function resetCardScroll() {
+  window.requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 }
 
 function loadProgress() {

@@ -155,14 +155,14 @@
             </div>
           </section>
 
-          <details class="panel filter-panel" id="filterPanel" open>
-            <summary class="filter-summary">
+          <section class="panel filter-panel" id="filterPanel">
+            <div class="filter-summary">
               <span>
                 <span class="panel-label">Review Source</span>
                 <strong>Session Filters</strong>
               </span>
               <span class="filter-count" id="filterCount">0 cards</span>
-            </summary>
+            </div>
 
             <label>
               Search
@@ -174,17 +174,17 @@
               <select id="domainFilter"></select>
             </label>
 
-            <label>
+            <label class="advanced-filter">
               Topic
               <select id="topicFilter"></select>
             </label>
 
-            <label>
+            <label class="advanced-filter">
               Subtopic
               <select id="subtopicFilter"></select>
             </label>
 
-            <label>
+            <label class="advanced-filter">
               Difficulty
               <select id="difficultyFilter"></select>
             </label>
@@ -194,12 +194,12 @@
               <select id="typeFilter"></select>
             </label>
 
-            <label>
+            <label class="advanced-filter">
               Tag
               <select id="tagFilter"></select>
             </label>
 
-            <label>
+            <label class="advanced-filter">
               Viewed
               <select id="viewedFilter">
                 <option value="">All</option>
@@ -208,16 +208,18 @@
               </select>
             </label>
 
-            <div class="segmented-control" role="group" aria-label="Session mode">
+            <div class="segmented-control advanced-filter" role="group" aria-label="Session mode">
               <button type="button" class="mode-button is-active" data-mode="all">All</button>
               <button type="button" class="mode-button" data-mode="weak">Weak</button>
               <button type="button" class="mode-button" data-mode="marked">Marked</button>
             </div>
 
             <div class="filter-footer">
+              <button class="secondary-button" id="filterModeButton" type="button" aria-expanded="false">Show all filters</button>
+              <button class="secondary-button" id="clearFiltersButton" type="button">Clear Filters</button>
               <button class="primary-button" id="collapseFiltersButton" type="button">Review Cards</button>
             </div>
-          </details>
+          </section>
 
           <section class="panel card-panel" aria-live="polite">
             <div class="panel-heading card-heading">
@@ -236,6 +238,7 @@
               <div class="card-face" id="questionFace" role="button" tabindex="0" aria-label="Reveal answer">
                 <div class="question-status-line">
                   <p class="face-label">Question</p>
+                  <span class="flag-indicator" id="flagIndicator" aria-label="Flagged for review" hidden>⚑</span>
                   <span id="cardPosition">0 / 0</span>
                 </div>
                 <div id="frontContent" class="block-stack"></div>
@@ -248,33 +251,31 @@
             </article>
 
             <div class="action-bar is-hidden" id="actionBar">
-              <button class="score-button incorrect" id="incorrectButton" type="button" aria-label="Mark incorrect" title="Incorrect">
-                <span class="button-icon icon-x" aria-hidden="true"></span>
-                <span class="visually-hidden">Incorrect</span>
+              <button class="score-button flag" id="markButton" type="button" aria-label="Flag card and advance" title="Flag for review">
+                <span class="unicode-icon" aria-hidden="true">⚑</span>
+                <span class="visually-hidden">Flag</span>
               </button>
               <button class="score-button skip" id="skipButton" type="button" aria-label="Skip card" title="Skip">
-                <span class="button-icon icon-skip" aria-hidden="true"></span>
+                <span class="unicode-icon" aria-hidden="true">–</span>
                 <span class="visually-hidden">Skip</span>
               </button>
+              <button class="score-button incorrect" id="incorrectButton" type="button" aria-label="Mark incorrect" title="Incorrect">
+                <span class="unicode-icon" aria-hidden="true">✕</span>
+                <span class="visually-hidden">Incorrect</span>
+              </button>
               <button class="score-button correct" id="correctButton" type="button" aria-label="Mark correct" title="Correct">
-                <span class="button-icon icon-check" aria-hidden="true"></span>
+                <span class="unicode-icon" aria-hidden="true">✓</span>
                 <span class="visually-hidden">Correct</span>
               </button>
             </div>
 
             <div class="nav-row">
-              <button class="secondary-button nav-button" id="prevButton" type="button" aria-label="Previous card" title="Previous">&lt;</button>
-              <button class="secondary-button nav-button flag-nav-button" id="markButton" type="button" aria-pressed="false" title="Mark for review">Flag</button>
-              <button class="secondary-button nav-button" id="nextButton" type="button" aria-label="Next card" title="Next">&gt;</button>
+              <button class="secondary-button nav-button" id="prevButton" type="button" aria-label="Previous card" title="Previous">‹</button>
+              <button class="secondary-button nav-button info-nav-button" id="toggleTagsButton" type="button" aria-label="More info" aria-expanded="false" title="More info">⋯</button>
+              <button class="secondary-button nav-button" id="nextButton" type="button" aria-label="Next card" title="Next">›</button>
             </div>
 
-            <div class="card-meta-compact">
-              <span id="difficultyMeta">Medium</span>
-              <span id="typeMeta">Concept</span>
-              <button class="meta-toggle-button" id="toggleTagsButton" type="button" aria-expanded="false" title="Show card tags">+</button>
-            </div>
-
-            <div class="card-meta-row" id="cardMeta" hidden></div>
+            <div class="card-meta-row" id="cardMeta" aria-label="Card tags" hidden></div>
           </section>
 
           <aside class="panel result-panel">
@@ -363,6 +364,6 @@
       </div>
     </template>
 
-    <script src="./app.js?v=title-cleanup"></script>
+    <script src="./app.js?v=cr-011-viewer"></script>
   </body>
 </html>

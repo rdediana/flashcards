@@ -271,10 +271,6 @@ label,
   overflow: hidden;
 }
 
-details.panel {
-  display: block;
-}
-
 .filter-summary {
   display: flex;
   justify-content: space-between;
@@ -283,36 +279,12 @@ details.panel {
   min-height: 74px;
   padding: 16px 20px;
   border-bottom: 1px solid rgba(59, 117, 144, 0.42);
-  cursor: pointer;
-  list-style: none;
-}
-
-.filter-summary::-webkit-details-marker {
-  display: none;
 }
 
 .filter-summary strong {
   display: block;
   margin-top: 6px;
   font-size: 1.25rem;
-}
-
-.filter-summary::after {
-  content: "+";
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 auto;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  color: var(--teal);
-  font-size: 1.35rem;
-  font-weight: 800;
-}
-
-.filter-panel[open] .filter-summary::after {
-  content: "-";
 }
 
 .filter-count {
@@ -344,6 +316,14 @@ details.panel {
 
 .filter-panel label:first-of-type {
   padding-top: 20px;
+}
+
+.filter-panel .advanced-filter {
+  display: none;
+}
+
+.filter-panel.show-all-filters .advanced-filter {
+  display: grid;
 }
 
 input,
@@ -424,10 +404,12 @@ select:focus {
 }
 
 .filter-footer {
+  display: grid;
+  gap: 8px;
   padding: 0 20px 20px;
 }
 
-.filter-footer .primary-button {
+.filter-footer button {
   width: 100%;
 }
 
@@ -527,6 +509,11 @@ select:focus {
   line-height: 1.35;
 }
 
+.card-heading h2,
+.card-breadcrumb {
+  display: none;
+}
+
 .question-status-line {
   display: flex;
   justify-content: space-between;
@@ -539,6 +526,12 @@ select:focus {
   font-size: 0.85rem;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.question-status-line .flag-indicator {
+  margin-left: auto;
+  color: var(--amber);
+  font-size: 1.15rem;
 }
 
 .pill {
@@ -661,7 +654,7 @@ tr:last-child td {
 
 .action-bar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 0 20px 18px;
 }
 
@@ -672,54 +665,11 @@ tr:last-child td {
   min-height: 48px;
 }
 
-.button-icon {
-  position: relative;
+.unicode-icon {
   display: block;
-  width: 24px;
-  height: 24px;
-}
-
-.icon-x::before,
-.icon-x::after {
-  content: "";
-  position: absolute;
-  top: 11px;
-  left: 3px;
-  width: 18px;
-  height: 3px;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.icon-x::before {
-  transform: rotate(45deg);
-}
-
-.icon-x::after {
-  transform: rotate(-45deg);
-}
-
-.icon-skip::before {
-  content: "";
-  position: absolute;
-  top: 11px;
-  left: 3px;
-  width: 18px;
-  height: 3px;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.icon-check::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 2px;
-  width: 10px;
-  height: 18px;
-  border-right: 3px solid currentColor;
-  border-bottom: 3px solid currentColor;
-  transform: rotate(42deg);
+  color: currentColor;
+  font-size: 1.65rem;
+  line-height: 1;
 }
 
 .visually-hidden {
@@ -737,14 +687,25 @@ tr:last-child td {
   background: rgba(85, 132, 68, 0.35);
 }
 
+.score-button.flag {
+  border-color: rgba(99, 212, 221, 0.82);
+  background: rgba(39, 143, 159, 0.18);
+}
+
+.score-button.flag.is-active {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
 .score-button.incorrect {
   border-color: rgba(240, 111, 120, 0.86);
   background: rgba(144, 58, 66, 0.35);
 }
 
 .score-button.skip {
-  border-color: rgba(242, 183, 102, 0.86);
-  background: rgba(140, 100, 43, 0.28);
+  border-color: rgba(99, 212, 221, 0.82);
+  background: rgba(39, 143, 159, 0.18);
+  color: var(--teal);
 }
 
 .nav-row {
@@ -757,14 +718,9 @@ tr:last-child td {
   font-size: 1.35rem;
 }
 
-.flag-nav-button {
-  min-width: 0;
-  font-size: 1rem;
-}
-
-.flag-nav-button.is-active {
-  border-color: var(--amber);
-  color: var(--amber);
+.info-nav-button[aria-expanded="true"] {
+  border-color: var(--teal);
+  color: var(--teal);
 }
 
 .card-meta-compact {
@@ -845,7 +801,7 @@ tr:last-child td {
 
 .summary-content {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   padding: 20px;
 }
@@ -961,12 +917,11 @@ body.is-focus-mode .focus-mobile-dock {
   display: grid;
 }
 
-body.is-focus-mode.is-answer-visible .nav-row {
+body.is-answer-visible .nav-row {
   display: none;
 }
 
 body.is-focus-mode .card-breadcrumb,
-body.is-focus-mode .card-meta-row,
 body.is-focus-mode .card-meta-compact {
   display: none;
 }
