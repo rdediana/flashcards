@@ -99814,6 +99814,818 @@
           "text": "If you only memorize one Chapter 29 artifact for the exam, make it this table."
         }
       ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-001",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST Region Membership",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What three configuration parameters MUST match for two switches to belong to the same MST region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST configuration name (region name)",
+            "MST configuration revision number",
+            "VLAN-to-instance mapping (every VLAN must map to the same MST instance on both switches)"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "If ANY of these three differ — even by a typo or one missing VLAN — the neighbor is treated as OUTSIDE the region, regardless of trunk status."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-002",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "IST vs CIST",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare the IST (MST0) and the CIST in MST."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "IST (MST0)",
+            "CIST"
+          ],
+          "rows": [
+            [
+              "Scope",
+              "Internal to a single MST region",
+              "Spans the entire bridged network across regions and STP domains"
+            ],
+            [
+              "Always exists?",
+              "Yes — MST0 is always present",
+              "Yes — every MST deployment has a CIST"
+            ],
+            [
+              "Role",
+              "Default instance; carries any VLAN not mapped elsewhere",
+              "Common spanning tree view used to interoperate with other regions and 802.1D/RSTP"
+            ],
+            [
+              "Visibility outside the region",
+              "Hidden — other regions see the whole MST region as a single virtual bridge via the CIST",
+              "Visible end-to-end across the network"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Outside the MST region, the entire region looks like one big switch on the CIST. MST instances 1+ are completely hidden from outside the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-003",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Root Placement Granularity",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "True or false: In MST, root bridge placement is configured per VLAN."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "False. Root placement in MST is PER INSTANCE, not per VLAN. You set a root for an MST instance (e.g., MST1, MST2), and every VLAN mapped to that instance inherits that root. To split traffic across two roots, you map VLANs into different instances and elect different roots per instance."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "spanning-tree mst 1 root primary\nspanning-tree mst 2 root primary"
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-004",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Verifying Region Inputs",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command proves a switch's MST region inputs (name, revision, VLAN-to-instance mapping)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "Switch# show spanning-tree mst configuration\n\nName      [CAMPUS]\nRevision  10     Instances configured 3\n\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------------\n0         1-9,20-99,300-4094\n1         10-19\n2         100-299"
+        },
+        {
+          "type": "text",
+          "text": "Compare this output side-by-side on neighbors. If Name, Revision, OR any mapped VLAN differs, the switches are in different MST regions and the link becomes a region boundary."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-005",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Verifying Roots and Port Roles",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows MST roots, VLAN mappings, and per-instance port roles, and how do you read it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "Switch# show spanning-tree mst\n\n##### MST0    vlans mapped:   1-9,20-99,300-4094\nBridge        address aaaa.bbbb.0001  priority      32768 (32768 sysid 0)\nRoot          address aaaa.bbbb.0001  priority      32768 (this bridge is root)\nInterface        Role     Sts  Cost      Prio.Nbr Type\n----------------- ----- ---  --------- -------- --------------------------------\nGi1/0/1           Desg     FWD  20000     128.1    P2p\n\n##### MST1    vlans mapped:   10-19\nBridge        address aaaa.bbbb.0001  priority      4097 (4096 sysid 1)\nRoot          this switch for MST1\n\n##### MST2    vlans mapped:   100-299\nBridge        address aaaa.bbbb.0001  priority      32770 (32768 sysid 2)\nRoot          address cccc.dddd.0002  priority      4098 (4096 sysid 2) cost 20000"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Confirms which switch is root for each MST instance",
+            "Shows which VLANs are mapped to each instance",
+            "Displays port roles (Root / Desg / Altn / Backup) PER INSTANCE",
+            "A port can be Root for MST1 but Designated/Alternate for MST2 — that's the whole point of per-instance load sharing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-006",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Per-Instance Root Placement",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you configure DSW1 to be primary root for MST1 and DSW2 to be primary root for MST2 (with mutual backups)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! On DSW1\nspanning-tree mst 1 root primary\nspanning-tree mst 2 root secondary\n\n! On DSW2\nspanning-tree mst 2 root primary\nspanning-tree mst 1 root secondary"
+        },
+        {
+          "type": "callout",
+          "text": "This gives you per-instance load sharing: VLANs mapped to MST1 send traffic toward DSW1, and VLANs mapped to MST2 send traffic toward DSW2. If either DSW fails, the other takes over both instances."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-007",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Configuring an MST Region",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show the configuration to place a switch into MST region 'CAMPUS', revision 10, with VLANs 10–19 in MST1 and 100–299 in MST2."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "spanning-tree mode mst\n!\nspanning-tree mst configuration\n name CAMPUS\n revision 10\n instance 1 vlan 10-19\n instance 2 vlan 100-299\n exit"
+        },
+        {
+          "type": "text",
+          "text": "Any VLAN NOT explicitly mapped to instance 1 or 2 lands in MST0 (the IST) by default. The 'name' and 'revision' values must match exactly across all switches in the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-008",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region Mismatch — Trunk Up but Boundary",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why can a trunk be 'up/up' and forwarding VLANs between two switches, yet MST treat the neighbor as being outside the region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Because trunk operational state and MST region membership are independent. The trunk only requires Layer 2 negotiation (DTP/802.1Q, matching native VLAN, allowed VLAN list). MST region membership requires matching NAME + REVISION + VLAN-to-instance MAPPING. If even one of those three differs, MST treats the link as a region boundary — the port becomes a CIST boundary port and only MST0/CIST BPDUs cross the link, even though the trunk is fully operational."
+        },
+        {
+          "type": "callout",
+          "text": "Symptom: Trunk forwards user VLANs fine, but 'show spanning-tree mst configuration' differs between sides, and 'show spanning-tree mst' shows the link as a boundary port (Bound (RSTP)/Bound (PVST))."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-009",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region Mismatch — Symptoms",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the operational symptoms of an MST region mismatch between two switches connected by a working trunk?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Trunk is up/up and forwards data VLANs as expected",
+            "'show spanning-tree mst' marks the port as a boundary (Bound (RSTP) / Bound (PVST))",
+            "Per-instance (MST1+) information does NOT cross the link — only CIST/MST0 BPDUs are exchanged",
+            "Roots intended to be shared per instance don't appear correctly on the neighbor",
+            "Load sharing per instance breaks because the neighbor doesn't see MST1/MST2 BPDUs",
+            "'show spanning-tree mst configuration' reveals different name, revision, or VLAN mapping"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-010",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region Mismatch — Resolution",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Two distribution switches show as boundary ports to each other in MST. What is the troubleshooting workflow to fix the region mismatch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Run 'show spanning-tree mst configuration' on BOTH switches",
+            "Compare the region name (case-sensitive) — must match exactly",
+            "Compare the revision number — must match exactly",
+            "Compare every instance-to-VLAN mapping line — even one missing VLAN breaks region membership",
+            "Correct the mismatch under 'spanning-tree mst configuration' and 'exit' to commit",
+            "Re-verify with 'show spanning-tree mst' that the port role is no longer 'Boundary'",
+            "Confirm per-instance roots and port roles look as designed"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Don't forget: changes inside 'spanning-tree mst configuration' aren't applied until you 'exit' the sub-mode. Until exit, you're in a pending region edit."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-011",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Per-Instance Root Ports on ASW",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An access switch (ASW) uplinks to DSW1 and DSW2. DSW1 is root for MST1 and DSW2 is root for MST2. Why might ASW's root port be different for MST1 vs MST2?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Because root port election is performed PER MST INSTANCE. For MST1, ASW elects the lowest-cost path toward DSW1 — usually the uplink directly to DSW1 — making the DSW1-facing port the Root Port for MST1 and the DSW2-facing port Alternate. For MST2, ASW elects the lowest-cost path toward DSW2 — making the DSW2-facing port the Root Port for MST2 and the DSW1-facing port Alternate. The result: VLANs mapped to MST1 leave ASW via DSW1, and VLANs mapped to MST2 leave via DSW2 — that's per-instance load sharing in action."
+        },
+        {
+          "type": "callout",
+          "text": "Verify with 'show spanning-tree mst' on the ASW — same physical port, different role per instance."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-012",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why Roots Look Wrong",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You configured DSW1 as primary root for MST1, but 'show spanning-tree mst 1' on the ASW shows a different switch as root. What are the most likely causes?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST region mismatch — ASW or an intermediate switch isn't in the same MST region as DSW1, so the DSW1 BPDUs for MST1 never propagate",
+            "VLAN-to-instance mapping difference — the VLANs you expect on MST1 are actually mapped to a different instance on ASW",
+            "Another switch has a lower priority for MST1 (someone else also ran 'spanning-tree mst 1 root primary' or set a manually low priority)",
+            "MST1 simply doesn't exist on ASW because no VLANs are mapped to instance 1 there — ASW silently treats those VLANs as MST0",
+            "Boundary port between DSW1 and ASW — only CIST/MST0 information crosses, so MST1 root info never arrives"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-013",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Trunk vs MST Membership",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare 'trunk operational state' vs 'MST region membership'."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "Trunk Operational State",
+            "MST Region Membership"
+          ],
+          "rows": [
+            [
+              "What it negotiates",
+              "Encapsulation (802.1Q), allowed VLAN list, native VLAN, DTP",
+              "MST name, revision, VLAN-to-instance mapping"
+            ],
+            [
+              "Verified with",
+              "show interfaces trunk",
+              "show spanning-tree mst configuration"
+            ],
+            [
+              "Symptom of failure",
+              "Trunk down or VLAN not allowed",
+              "Port becomes MST boundary; per-instance BPDUs don't cross"
+            ],
+            [
+              "Effect on data plane",
+              "Determines if frames pass at all",
+              "Frames still pass, but STP topology may not be what you expect"
+            ],
+            [
+              "Independent?",
+              "Yes — trunk can be perfectly fine",
+              "Yes — region can still be mismatched"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key takeaway: A green trunk does NOT prove MST region consistency. Always verify both."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-014",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST Boundary to PVST/RSTP",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What happens at an MST boundary port that connects to a PVST+ or RSTP neighbor (a different STP domain)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "The MST switch interoperates via the CIST",
+            "From the PVST+/RSTP side, the entire MST region appears as a single bridge",
+            "Only CIST BPDUs are exchanged across the boundary — internal MST instance information is NOT shared",
+            "PVST simulation handles per-VLAN BPDUs from the PVST+ neighbor on the boundary port",
+            "If PVST simulation detects an inconsistency (e.g., the PVST+ side claims a better root than the CIST), the port can be put into PVST_Peer_Inconsistent state, blocking the VLAN(s) to prevent loops"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-015",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST0 (IST) — Always There",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does MST0 always exist, and what VLANs live there?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "MST0 is the IST (Internal Spanning Tree) and is mandatory — every MST deployment has it. It carries every VLAN that is NOT explicitly mapped to another MST instance. MST0 is also the instance that interacts with the CIST at the region boundary, providing the single 'virtual bridge' view of the region to the outside world."
+        },
+        {
+          "type": "callout",
+          "text": "Common pitfall: Forgetting to map a VLAN to MST1 or MST2 means it silently lives in MST0 — and won't follow your intended per-instance root design."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-016",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region Mismatch — CLI Output",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Interpret this output. What's the problem and how do you fix it?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "DSW1# show spanning-tree mst configuration\nName      [CAMPUS]\nRevision  10     Instances configured 3\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------------\n0         1-9,20-99,300-4094\n1         10-19\n2         100-299\n\nDSW2# show spanning-tree mst configuration\nName      [Campus]\nRevision  10     Instances configured 3\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------------\n0         1-9,20-99,300-4094\n1         10-19\n2         100-299"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The region NAME is 'CAMPUS' on DSW1 but 'Campus' on DSW2. Region names are case-sensitive, so DSW1 and DSW2 are in DIFFERENT MST regions even though revision and VLAN mappings match. Their interconnect will be a boundary port and per-instance BPDUs won't cross."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "DSW2(config)# spanning-tree mst configuration\nDSW2(config-mst)# name CAMPUS\nDSW2(config-mst)# exit"
+        },
+        {
+          "type": "callout",
+          "text": "Always 'exit' the mst configuration sub-mode to commit changes — until then, the new region settings are pending and not active."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-017",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Missing VLAN in Mapping",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "DSW1 maps VLAN 10-19 to MST1. DSW2 maps VLAN 10-18 to MST1 (forgot 19). All other MST settings match. What happens, and what do you observe?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "DSW1 and DSW2 are in DIFFERENT MST regions because the VLAN-to-instance mapping is not identical",
+            "The trunk between them becomes an MST boundary port",
+            "Per-instance BPDUs (MST1, MST2) don't cross — only CIST/MST0 BPDUs do",
+            "Per-instance root design (DSW1 root for MST1, DSW2 root for MST2) silently breaks — neighbors don't see each other's per-instance bridge IDs",
+            "VLAN 19 traffic still flows because the trunk is up and 802.1Q tagging works fine — masking the STP problem"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Fix: 'instance 1 vlan 10-19' on DSW2, then 'exit' to commit. Re-verify with 'show spanning-tree mst' that the port is no longer a boundary."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-018",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "spanning-tree mst priority",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Besides 'root primary/secondary', how can you manually set MST instance priority, and what value rule must you follow?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "spanning-tree mst 1 priority 4096\nspanning-tree mst 2 priority 8192"
+        },
+        {
+          "type": "text",
+          "text": "Priority must be a multiple of 4096 (valid: 0, 4096, 8192, 12288, ..., 61440). The lower the priority, the more likely the switch wins root election for that instance. 'spanning-tree mst <id> root primary' is a macro that automatically picks a low value (typically 24576 or lower)."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-019",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Verifying Per-Instance Roles",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which targeted commands confirm that an ASW has different root ports for MST1 and MST2?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ASW# show spanning-tree mst 1\nASW# show spanning-tree mst 2\n\n! Or per-interface:\nASW# show spanning-tree mst interface GigabitEthernet1/0/1\nASW# show spanning-tree mst interface GigabitEthernet1/0/2"
+        },
+        {
+          "type": "text",
+          "text": "Look at the Role column (Root / Desg / Altn / Backup) per instance. The same physical port can be Root for MST1 and Alternate for MST2 (or vice versa) when DSW1 is root for MST1 and DSW2 is root for MST2 — this is the expected per-instance load-sharing pattern."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-020",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST Region Boundary CLI",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An ASW shows the following on its uplink. What does it tell you?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ASW# show spanning-tree mst 1\n\n##### MST1    vlans mapped:   10-19\nBridge        address bbbb.cccc.0001  priority      32769 (32768 sysid 1)\nRoot          address aaaa.bbbb.0001  priority      24577 (24576 sysid 1)\n              port    Gi1/0/1         cost          20000\n\nInterface        Role     Sts  Cost      Prio.Nbr Type\n----------------- ----- ---  --------- -------- --------------------------------\nGi1/0/1           Root     FWD  20000     128.1    P2p\nGi1/0/2           Desg     FWD  20000     128.2    P2p Bound(RSTP)"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "MST1 root is reachable via Gi1/0/1 (Root Port, cost 20000) — that side is in the same MST region",
+            "Gi1/0/2 is marked 'Bound(RSTP)' — it's a boundary port to a switch that is NOT in the same MST region (or is running RSTP/PVST+)",
+            "Per-instance MST BPDUs do NOT cross Gi1/0/2 — only CIST/MST0 information",
+            "Likely cause on Gi1/0/2 side: different MST name, revision, or VLAN-to-instance mapping",
+            "Fix: align region config on the neighbor of Gi1/0/2; re-check that the boundary marker disappears"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-root-ist-cist-021",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Outside the Region — CIST View",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "infrastructure",
+        "layer2",
+        "stp",
+        "mst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "From outside an MST region, how does the rest of the bridged network 'see' the region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The entire MST region appears as a single virtual bridge on the CIST. Switches outside the region (running RSTP, PVST+, or in a different MST region) cannot see MST instances 1+ or the internal topology. They only see one bridge ID — the CIST regional root's bridge ID — and the cost to reach the region. This is why MST is so scalable: internal complexity is hidden behind a single CIST view, regardless of how many switches and instances exist inside."
+        },
+        {
+          "type": "callout",
+          "text": "Implication: Per-instance load sharing is purely an internal optimization. From outside, none of it is visible."
+        }
+      ]
     }
   ]
 }
