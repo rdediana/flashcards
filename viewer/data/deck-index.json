@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-05-26",
+  "updated": "2026-05-28",
   "decks": [
     {
       "deckId": "ccnp-encor-350-401-v1.2",
@@ -65,6 +65,20 @@
         "organic",
         "chemistry",
         "intro"
+      ]
+    },
+    {
+      "deckId": "ccnp-encor-350-401-lab-learning",
+      "title": "CCNP ENCOR 350-401 Lab Learning",
+      "subject": "CCNP",
+      "description": "Used for flashcards generated after lab activity",
+      "path": "data/decks/ccnp-encor-350-401-lab-learning.json",
+      "tags": [
+        "ccnp",
+        "encor",
+        "350-401",
+        "lab",
+        "learning"
       ]
     }
   ]

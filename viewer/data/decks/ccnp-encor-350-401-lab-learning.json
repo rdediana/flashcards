@@ -1,0 +1,2368 @@
+{
+  "deck": {
+    "id": "ccnp-encor-350-401-lab-learning",
+    "title": "CCNP ENCOR 350-401 Lab Learning",
+    "version": "0.1",
+    "source": "Admin deck manager",
+    "description": "Used for flashcards generated after lab activity"
+  },
+  "cards": [
+    {
+      "id": "mst-region-001",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST region membership",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "region"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What three attributes must match exactly on neighboring switches for them to belong to the same MST region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration name (region name)",
+            "Revision number",
+            "VLAN-to-instance (MSTI) mapping table"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "If any one of these three values differs, the link becomes an MST boundary port and the neighbor is treated as being in a different region — even if the switches are otherwise correctly configured."
+        },
+        {
+          "type": "text",
+          "text": "Exam tip: A typo in the region name or a single mismapped VLAN is the most common cause of an unexpected MST region mismatch."
+        }
+      ]
+    },
+    {
+      "id": "mst-cist-002",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST0 / IST / CIST roles",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist",
+        "ist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare the roles of IST (MST0), CIST, and MSTIs in an MST deployment. Which one is visible to switches outside the region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Component",
+            "Scope",
+            "Purpose",
+            "Externally Visible?"
+          ],
+          "rows": [
+            [
+              "IST (MST0)",
+              "Internal to one MST region",
+              "Default instance; carries all VLANs not mapped elsewhere; represents the region to the outside world",
+              "Yes — projected as the region's spanning tree"
+            ],
+            [
+              "CIST",
+              "Spans the entire L2 domain (all regions + legacy STP/PVST switches)",
+              "Single common spanning tree that interconnects regions and non-MST switches",
+              "Yes — this is what other regions and PVST switches see"
+            ],
+            [
+              "MSTI (1–4094)",
+              "Internal to one MST region",
+              "Allows VLAN groups to use independent topologies for load balancing",
+              "No — MSTIs are hidden outside the region"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key insight: From outside a region, MST0/IST is what represents the entire region as if it were a single virtual switch. MSTI tuning is invisible externally, which is why MSTI root changes don't influence external PVST topology decisions."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvstsim-003",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "PVST simulation",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation",
+        "boundary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You see this output on an MST switch facing a PVST+ neighbor. What does it indicate, and is the link forwarding normally?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "SW1# show spanning-tree interface gi1/0/1 detail\n Port 1 (GigabitEthernet1/0/1) of MST0 is designated forwarding\n   Port info             port id 128.1   priority 128 cost 20000\n   Designated root       priority 24576 ...\n   Bound (PVST)\n   Number of transitions to forwarding state: 1"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The 'Bound(PVST)' marker means MST has detected a PVST+ (or RPVST+) neighbor on this port and is operating in PVST simulation mode. The port is a boundary port between the MST region and the legacy PVST domain."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST replicates IST/CIST BPDUs into a per-VLAN BPDU stream so the PVST neighbor can interoperate.",
+            "The port is forwarding normally — 'Bound(PVST)' alone is not an error condition.",
+            "If the simulation detects an inconsistency (e.g., a superior PVST BPDU on a non-VLAN-1 instance), the port will be moved to PVST_Inc and blocked to protect the topology."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Compare to PVST_Inc: 'Bound(PVST)' = healthy interop. 'PVST_Inc' or '%SPANTREE-2-PVSTSIM_FAIL' = simulation failure, port blocked."
+        }
+      ]
+    },
+    {
+      "id": "mst-virtual-switch-004",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST internal vs external topology",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist",
+        "topology"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does an MST region appear as a single virtual switch to external PVST switches, and what practical consequence does this have for MSTI root placement?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Externally, only the IST (MST0) participates in the CIST. All BPDUs leaving the region carry IST/CIST information; MSTI BPDUs are encapsulated inside MST BPDUs and never propagate outside the region. To an external PVST switch, the region therefore looks like one logical bridge — internal MSTI topologies are completely hidden."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "External path selection (e.g., which PVST switch picks which root port toward the region) is driven by MST0/CIST cost and the region's CIST root, not by MSTI roots.",
+            "Tuning an MSTI root only changes traffic paths inside the region for the VLANs mapped to that instance.",
+            "If you need to influence how external PVST switches reach the region, you must tune MST0/CIST priorities, not MSTI priorities.",
+            "This is also why a misplaced MST0 root can cause poor convergence even when MSTI roots are 'correct.'"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Operational interpretation rule: If a behavior is observed externally (PVST switch's root port choice, BPDUs crossing a boundary), reason about it using MST0/CIST. If it's internal to the region (load balancing, blocked links per VLAN group), reason about it using MSTIs."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvstsim-fail-005",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "PVST simulation inconsistency",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An MST boundary port toward a PVST+ neighbor suddenly goes into PVST_Inc state with this log. What triggered it, what is being protected, and how do you remediate?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "%SPANTREE-2-PVSTSIM_FAIL: Blocking root port GigabitEthernet1/0/24:\n   Inconsistent superior PVST BPDU received on VLAN 20, claiming root 4096:aaaa.bbbb.cccc"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Trigger: A PVST+ switch outside the MST region is advertising a superior BPDU for a non-default VLAN (VLAN 20) — meaning the PVST domain believes its root for that VLAN is better than the MST region's CIST root. Because MST collapses all non-IST VLANs into MST0 externally, MST cannot honor a per-VLAN root that disagrees with the CIST view."
+        },
+        {
+          "type": "text",
+          "text": "Protection: Allowing this would create split root ownership across the MST/PVST boundary — the PVST side would forward toward one root while the MST side enforces another, risking a loop. PVST simulation blocks the port (PVST_Inc) until the inconsistency clears."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Identify which PVST switch is advertising the superior BPDU: 'show spanning-tree vlan 20' on the PVST side.",
+            "Decide where the true CIST/VLAN root should live. Best practice: the MST region (typically a core/distribution switch in the region) should own the root for all VLANs that traverse the boundary.",
+            "Raise MST0/CIST priority on the intended MST root: 'spanning-tree mst 0 priority 0' (or 4096).",
+            "Lower the priority of the offending PVST switch, or align it so the MST region wins for VLAN 20: 'spanning-tree vlan 20 priority 8192' on the PVST side (higher numeric, less preferred).",
+            "Once BPDUs are consistent, the boundary port automatically recovers from PVST_Inc back to Bound(PVST) forwarding."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Exam tip: PVSTSIM_FAIL is almost always a root-placement problem at the MST/PVST boundary, not a region-membership problem. Region mismatches show up as boundary ports without the simulation-failure log."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-006",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST region membership verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command displays the MST region configuration (name, revision, VLAN-to-instance mapping) on a Cisco switch, and which command shows whether a neighbor is in the same region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Show local region configuration\nSW1# show spanning-tree mst configuration\nName      [CAMPUS]\nRevision  1     Instances configured 3\n\nInstance  Vlans mapped\n--------  ---------------------------------------------------------------------\n0         1-9,11-19,21-4094\n1         10\n2         20\n\n! Show neighbor region status (boundary vs internal)\nSW1# show spanning-tree mst interface gi1/0/1"
+        },
+        {
+          "type": "callout",
+          "text": "If 'show spanning-tree mst interface' lists the port as Boundary, the neighbor either runs PVST/RPVST or has a different region name/revision/VLAN mapping."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-vs-pvst-007",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI vs per-VLAN STP",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the fundamental difference between an MSTI and a per-VLAN spanning tree (PVST+/RPVST+)?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "MSTI (MST)",
+            "Per-VLAN STP (PVST+/RPVST+)"
+          ],
+          "rows": [
+            [
+              "Tree-to-VLAN ratio",
+              "Many VLANs map to one instance",
+              "One tree per VLAN"
+            ],
+            [
+              "BPDU overhead",
+              "One BPDU per instance, regardless of VLAN count",
+              "One BPDU per VLAN per link"
+            ],
+            [
+              "CPU/memory scale",
+              "Scales well — typically 2–16 instances",
+              "Scales poorly with hundreds/thousands of VLANs"
+            ],
+            [
+              "Load balancing",
+              "Per-instance (group of VLANs)",
+              "Per-VLAN (finer granularity)"
+            ],
+            [
+              "Standard",
+              "IEEE 802.1s",
+              "Cisco proprietary"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "This is why MST scales better: 1000 VLANs in 4 instances = 4 trees to compute. The same 1000 VLANs in PVST+ = 1000 trees."
+        }
+      ]
+    },
+    {
+      "id": "mst-root-best-008",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST root placement best practices",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "root",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the best practices for placing the root bridge in an MST design?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Place the MST0/CIST root on a core or distribution switch — it determines external topology and inter-region paths.",
+            "Place a secondary (backup) root with the next-best priority on a redundant core switch.",
+            "Distribute MSTI roots across distribution switches to load-balance VLAN groups (e.g., MSTI 1 root on Dist-A, MSTI 2 root on Dist-B).",
+            "Use explicit priorities (0, 4096, 8192, etc.) — never rely on MAC address tiebreakers.",
+            "Ensure the MST0 root is also the root (or near it) for the CIST seen by external PVST switches."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Primary root for MST0 and MSTI 1\nDist-A(config)# spanning-tree mst 0 priority 0\nDist-A(config)# spanning-tree mst 1 priority 0\n\n! Primary root for MSTI 2, secondary for everything else\nDist-B(config)# spanning-tree mst 2 priority 0\nDist-B(config)# spanning-tree mst 0,1 priority 4096"
+        }
+      ]
+    },
+    {
+      "id": "mst-boundary-009",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST boundary behavior",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "boundary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What conditions cause a port to be classified as an MST boundary port, and what BPDU behavior does the boundary exhibit?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "The neighbor is running a different MST region (different name, revision, or VLAN-to-instance mapping).",
+            "The neighbor is running PVST+ or RPVST+ (legacy per-VLAN STP).",
+            "The neighbor is running classic 802.1D STP."
+          ]
+        },
+        {
+          "type": "text",
+          "text": "On boundary ports, only IST/CIST information is exchanged externally. MSTI BPDUs are not sent across the boundary. If the neighbor is PVST/RPVST, MST activates PVST simulation and replicates CIST info into per-VLAN BPDUs."
+        },
+        {
+          "type": "callout",
+          "text": "Operational rule: 'Bound(PVST)' = boundary toward PVST neighbor with simulation active. Boundary toward another MST region = neighbor visible only via CIST."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvstsim-purpose-010",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "PVST simulation purpose",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does PVST simulation exist on MST switches, and what would happen at an MST/PVST boundary without it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "PVST simulation lets MST switches interoperate with legacy PVST+/RPVST+ neighbors by emulating per-VLAN BPDUs externally. Without it, the two domains could not agree on a consistent topology because PVST sends one BPDU per VLAN and MST sends one BPDU per instance."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST replicates its CIST/IST BPDU into per-VLAN BPDUs for each VLAN active on the boundary trunk.",
+            "PVST switches see what looks like normal per-VLAN BPDUs and converge accordingly.",
+            "Simulation also includes safety checks (PVSTSIM_FAIL) that block the port if the PVST side advertises a superior root for any non-IST VLAN — preventing split-root loops."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Simulation is both an interoperability mechanism AND a protection mechanism. The protective half is what generates PVST_Inc states."
+        }
+      ]
+    },
+    {
+      "id": "mst-traffic-eng-011",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI traffic engineering",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "load-balancing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You have two distribution switches (Dist-A, Dist-B) and four uplinks per access switch. VLANs 10–19 carry voice; VLANs 20–29 carry data. You want voice to use the Dist-A path and data the Dist-B path. How do you achieve this with MST?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Map voice VLANs to MSTI 1 and data VLANs to MSTI 2.",
+            "Make Dist-A the root for MSTI 1 (priority 0).",
+            "Make Dist-B the root for MSTI 2 (priority 0).",
+            "Configure secondary roots on the opposite distribution switch for redundancy.",
+            "Verify with 'show spanning-tree mst 1' and 'show spanning-tree mst 2' that root ports point to the intended distribution switch."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! On all switches in the region\nspanning-tree mst configuration\n name CAMPUS\n revision 1\n instance 1 vlan 10-19\n instance 2 vlan 20-29\n\n! Dist-A\nspanning-tree mst 1 priority 0\nspanning-tree mst 2 priority 4096\n\n! Dist-B\nspanning-tree mst 2 priority 0\nspanning-tree mst 1 priority 4096"
+        }
+      ]
+    },
+    {
+      "id": "mst-region-mismatch-012",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST region mismatch troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Two switches you believe are in the same MST region show each other as boundary ports. Internal MSTIs do not propagate between them. How do you diagnose and fix this?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Run 'show spanning-tree mst configuration' on both switches.",
+            "Compare exactly: region name (case-sensitive), revision number, and the VLAN-to-instance mapping table.",
+            "Even one VLAN mapped to a different instance — or unmapped on one side — causes a mismatch.",
+            "A 'configuration digest' mismatch in the output confirms the VLAN mapping differs.",
+            "Reapply identical region configuration on both sides; the boundary should clear and the link will become an internal MST link."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Common gotcha: someone added a new VLAN on one switch and mapped it to an MSTI but forgot to apply the same mapping on the peer. The whole region splits."
+        }
+      ]
+    },
+    {
+      "id": "mst-virtual-switch-013",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST region as virtual switch",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Explain why an entire MST region appears as a single virtual switch to the outside world, even though it may contain dozens of physical switches."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Externally, only IST/CIST BPDUs leave the region. MSTIs are confined to the region — their BPDUs are encapsulated within MST BPDUs and never sent across boundaries. The CIST treats the entire region as one node when computing the inter-region topology."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "The CIST regional root is the switch that represents the region externally.",
+            "Path cost from outside the region accounts for the entire region as a single hop in CIST terms (internal cost is added separately).",
+            "External STP convergence sees only entry/exit points of the region, not the internal mesh.",
+            "This abstraction is what allows MST to scale: external topology computation is independent of internal complexity."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Implication: changing internal MSTI roots has zero effect on how external switches reach the region. Only MST0/CIST tuning influences external behavior."
+        }
+      ]
+    },
+    {
+      "id": "mst-internal-external-014",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Internal vs external topology",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare MST's internal topology view and its external (CIST) topology view. Why must you reason about them separately when troubleshooting?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Property",
+            "Internal MST view",
+            "External CIST view"
+          ],
+          "rows": [
+            [
+              "Visible instances",
+              "IST + all MSTIs",
+              "Only CIST (driven by IST)"
+            ],
+            [
+              "Root selection",
+              "Per-MSTI root inside region",
+              "CIST regional root represents whole region"
+            ],
+            [
+              "Path cost",
+              "Internal MST link costs per instance",
+              "CIST cost between regions / boundary devices"
+            ],
+            [
+              "What drives forwarding decisions inside the region",
+              "MSTI topology for mapped VLANs",
+              "Irrelevant"
+            ],
+            [
+              "What drives forwarding decisions outside the region",
+              "Irrelevant",
+              "CIST/IST topology only"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Troubleshooting rule: ask 'Is the symptom inside one region or across a boundary?' If inside → look at MSTI. If across → look at MST0/CIST. Mixing the two is the most common conceptual error."
+        }
+      ]
+    },
+    {
+      "id": "mst-superior-bpdu-015",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Superior PVST BPDU received",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An MST boundary port receives a superior PVST BPDU on VLAN 50 from a legacy PVST+ switch. Walk through what MST does, why, and how to remediate."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST checks the incoming PVST BPDU against its CIST root information for that VLAN's instance (typically MST0 unless mapped elsewhere).",
+            "If the PVST BPDU advertises a better (lower) bridge ID than MST's CIST view, MST flags this as an inconsistency.",
+            "MST cannot honor a per-VLAN root that disagrees with the CIST root because externally the region speaks only CIST — accepting it would create split root ownership.",
+            "The boundary port is moved to PVST_Inc state and blocked. Log: %SPANTREE-2-PVSTSIM_FAIL.",
+            "Remediate by ensuring the MST region owns the CIST root (lower priority on the intended MST root than any PVST switch), or raise the offending PVST switch's priority for VLAN 50."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Verify the inconsistency\nSW1# show spanning-tree inconsistentports\nName                 Interface              Inconsistency\n-------------------- ---------------------- ------------------\nMST0                 GigabitEthernet1/0/24  PVST Peer Inconsistent\n\n! Fix: make MST region the CIST root\nMST-Core(config)# spanning-tree mst 0 priority 0"
+        },
+        {
+          "type": "callout",
+          "text": "Design rule: in a mixed MST/PVST environment, the MST region should always own the root for any VLAN that crosses the boundary."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-tuning-016",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why MSTI tuning doesn't affect external PVST",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An engineer tunes the MSTI 5 root to influence how an external PVST switch reaches VLAN 50 (which is mapped to MSTI 5). It has no effect. Why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "MSTI BPDUs never leave the MST region. The PVST switch sees only the region's CIST view (via PVST simulation, which replicates IST/CIST info as per-VLAN BPDUs). Therefore the PVST switch's path selection toward VLAN 50 is governed by MST0/CIST, not MSTI 5."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "PVST switch receives simulated per-VLAN BPDUs derived from MST0/CIST.",
+            "Its root port toward the region is chosen using CIST cost and CIST root bridge ID.",
+            "MSTI 5's internal root only changes which physical link inside the region carries VLAN 50 — not which boundary port the PVST switch chooses.",
+            "To change the external behavior, tune MST0/CIST priority or the boundary link cost."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Heuristic: if you can see the symptom from outside the region, MSTI tuning will not fix it."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-mismap-017",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VLAN mapped to wrong MSTI",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "VLAN 30 was supposed to be mapped to MSTI 2 (data path via Dist-B), but traffic is taking the MSTI 1 path through Dist-A. How do you confirm and correct this?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Run 'show spanning-tree mst configuration' — confirm which instance VLAN 30 is mapped to.",
+            "If VLAN 30 is in MST0 (default) or MSTI 1, the mapping is wrong.",
+            "Check ALL switches in the region — the mapping must match exactly or you create a region split.",
+            "Correct the mapping in MST configuration mode and exit to commit."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Correct the mapping (must be done identically on every switch in region)\nSW(config)# spanning-tree mst configuration\nSW(config-mst)# instance 2 vlan 30\nSW(config-mst)# show pending\nSW(config-mst)# exit\n\n! Verify\nSW# show spanning-tree mst 2"
+        },
+        {
+          "type": "callout",
+          "text": "Always use 'show pending' before exiting — exiting commits the change and any region inconsistency will immediately split the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-bound-pvst-interp-018",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret Bound(PVST) output",
+      "type": "config-interpretation",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "boundary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does 'Bound(PVST)' on an MST port mean operationally? Is it an error?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It indicates the port is a boundary port to a PVST+/RPVST+ neighbor and PVST simulation is actively running. The port is forwarding normally and traffic is flowing — this is not an error."
+        },
+        {
+          "type": "callout",
+          "text": "Bound(PVST) = healthy interop. PVST_Inc = simulation failure (port blocked). Don't confuse the two."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvst-inc-interp-019",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret PVST_Inc",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A boundary port shows 'PVST_Inc' state. What does this mean, what protection is being applied, and what is the typical root cause?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "PVST_Inc (PVST Peer Inconsistent) means PVST simulation detected that the PVST neighbor is advertising root information for a VLAN that disagrees with the MST CIST view. The port is blocked to prevent a split-root loop until the inconsistency clears."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Typical cause: a PVST switch outside the region is configured as the root (or has a better priority) for one or more VLANs.",
+            "Verify with 'show spanning-tree inconsistentports'.",
+            "Fix by aligning root placement — the MST region should own the CIST root for any VLAN that crosses the boundary.",
+            "Recovery is automatic once consistent BPDUs are received."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-mst0-root-change-020",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Predict topology effects of MST0 root change",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "The MST0 (CIST) root in your region is moved from Dist-A to Dist-B due to a misconfiguration. What topology effects should you expect both inside and outside the region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Inside the region: MST0 (and any VLANs mapped to MST0 — typically all unmapped VLANs) reconverge with Dist-B as root. Root ports on access switches may shift toward Dist-B's path.",
+            "MSTIs are NOT affected — their roots and topologies remain unchanged.",
+            "Outside the region: external PVST/MST neighbors see a new CIST regional root. PVST simulation re-emits BPDUs with new root info; PVST switches may reconverge their root port choice toward the region.",
+            "If MST0 root change causes the region's CIST root to become inferior to an external PVST switch, PVST_Inc may suddenly appear at boundary ports.",
+            "Brief traffic disruption (seconds) during reconvergence; longer if topology change notifications cascade."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key insight: MST0 changes have BOTH internal and external impact. MSTI changes have only internal impact."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-root-change-021",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Predict effects of moving MSTI root",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "load-balancing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You move the MSTI 1 root from Dist-A to Dist-B. What changes, and what does NOT change?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "Effect"
+          ],
+          "rows": [
+            [
+              "VLANs mapped to MSTI 1",
+              "Reconverge — traffic now follows path toward Dist-B"
+            ],
+            [
+              "Other MSTIs",
+              "Unchanged"
+            ],
+            [
+              "MST0/CIST topology",
+              "Unchanged"
+            ],
+            [
+              "External PVST switches",
+              "Unaffected — MSTI BPDUs do not leave the region"
+            ],
+            [
+              "Boundary ports (Bound(PVST))",
+              "Remain in current state"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "MSTI tuning is a precise, low-blast-radius tool for internal load balancing. MST0 tuning is a high-impact lever that affects everything."
+        }
+      ]
+    },
+    {
+      "id": "mst-internal-or-external-022",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Internal MST vs external PVST sim",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you decide whether an observed STP behavior is caused by internal MST topology or by external PVST simulation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Identify where the symptom is observed: on a port internal to the MST region, or on a boundary port toward PVST/another region?",
+            "If internal: use 'show spanning-tree mst <instance>' to inspect the MSTI for the affected VLAN.",
+            "If on a boundary port: check for Bound(PVST), PVST_Inc, or %SPANTREE-2-PVSTSIM_FAIL logs.",
+            "Use 'show spanning-tree mst interface <port>' to confirm boundary status.",
+            "If the issue is reachability across the region from an external switch: focus on MST0/CIST, not MSTIs.",
+            "If the issue is per-VLAN load distribution inside the region: focus on MSTI mapping and MSTI roots."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Quick test: temporarily change an MSTI root. If external behavior changes, your mental model is wrong — it shouldn't. If internal traffic for that MSTI's VLANs shifts, the MSTI is doing its job."
+        }
+      ]
+    },
+    {
+      "id": "mst-boundary-instability-023",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Boundary instability troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An MST/PVST boundary port keeps flapping between Bound(PVST) forwarding and PVST_Inc blocked. What are the likely causes and how do you stabilize it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Intermittent superior PVST BPDU: a PVST switch's priority is close to the MST CIST root and changes (e.g., a flapping link changes its bridge ID view). Fix: ensure MST region's CIST priority is decisively superior (e.g., 0 vs. PVST's 32768).",
+            "Inconsistent VLAN list on the trunk: if VLANs are added/removed dynamically (VTP), simulation BPDUs flap. Fix: prune carefully and use static trunk allowed lists.",
+            "Asymmetric region/PVST interop: one direction sees MST as root, the other doesn't. Fix: verify priorities for ALL VLANs traversing the boundary.",
+            "Hardware/link instability causing BPDU loss. Fix: check interface counters, errors, and physical layer.",
+            "Use 'debug spanning-tree pvst-sim' (carefully) to capture the exact trigger."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Operational tip: boundary instability almost always traces to inconsistent root priorities for at least one VLAN crossing the link. Audit every VLAN on the trunk."
+        }
+      ]
+    },
+    {
+      "id": "mst-unexpected-rp-024",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Unexpected root port selection",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On a PVST switch adjacent to an MST region, the root port for VLAN 100 is not the link you expected. What MST-side factors could be driving the choice?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "PVST chooses its root port based on the per-VLAN BPDU it receives — which is generated by MST PVST simulation from CIST/IST information.",
+            "Therefore the choice depends on MST0/CIST root bridge ID, MST0 path cost from each boundary switch back to the CIST root, and boundary port priorities — NOT on any MSTI mapping.",
+            "Check MST0 cost from each boundary device toward the CIST root: 'show spanning-tree mst 0'.",
+            "If two boundary paths have equal MST0 cost, sender bridge ID and port ID break ties — same as standard STP.",
+            "To force a different choice, adjust MST0 cost on the boundary trunk or change MST0 priority of the relevant boundary switch."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Mistake to avoid: trying to fix this with MSTI tuning. It will not work — PVST sees only CIST."
+        }
+      ]
+    },
+    {
+      "id": "mst-scale-025",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why MST scales better than PVST",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "scaling"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does MST scale significantly better than PVST+/RPVST+ in environments with many VLANs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST decouples spanning trees from VLANs — many VLANs share one instance.",
+            "BPDU count is per-instance, not per-VLAN. 1000 VLANs in 4 instances = 4 BPDUs per link per hello interval. PVST = 1000 BPDUs.",
+            "CPU and memory consumption scale with instance count, which is bounded (typically ≤ 16 instances).",
+            "Convergence computation is per-instance, so changes in unrelated VLANs don't trigger recalculation.",
+            "Standards-based (802.1s) — interoperable across vendors."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Practical sweet spot: 2–4 MSTIs for load balancing covers nearly all enterprise designs without sacrificing scale."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-026",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST region membership requirements",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "region"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What three configuration attributes must match for two switches to be members of the same MST region?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Configuration name (case-sensitive)",
+            "Revision number",
+            "VLAN-to-instance mapping table (encoded as the configuration digest)"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "All three are hashed into the MST configuration digest. If the digest doesn't match, the link becomes a boundary port — even if you can see only one obvious difference."
+        }
+      ]
+    },
+    {
+      "id": "mst-roles-027",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST0 / IST / CIST / MSTI",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist",
+        "ist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Distinguish MST0, IST, CIST, and MSTI. Which terms refer to the same thing?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Term",
+            "Meaning",
+            "Scope"
+          ],
+          "rows": [
+            [
+              "MST0",
+              "Instance number 0 — the default MST instance",
+              "Internal to the region"
+            ],
+            [
+              "IST",
+              "Internal Spanning Tree — another name for MST0 inside the region",
+              "Internal to the region"
+            ],
+            [
+              "CIST",
+              "Common and Internal Spanning Tree — the union of all IST instances and any external STP",
+              "Spans entire L2 domain (all regions + non-MST switches)"
+            ],
+            [
+              "MSTI",
+              "Multiple Spanning Tree Instance (1–4094) — additional internal trees",
+              "Internal to the region only"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Shorthand: MST0 = IST (same thing, different names). The CIST is what the IST 'looks like' from outside the region. MSTIs never leave the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-vs-rpvst-028",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST instance vs Rapid-PVST VLAN topology",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "rpvst"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Compare an MST instance topology with a Rapid-PVST per-VLAN topology. Why does this difference matter at an MST/RPVST boundary?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "MST Instance",
+            "Rapid-PVST VLAN"
+          ],
+          "rows": [
+            [
+              "Tree granularity",
+              "One tree per instance (groups VLANs)",
+              "One tree per VLAN"
+            ],
+            [
+              "BPDU per link",
+              "One per instance",
+              "One per VLAN"
+            ],
+            [
+              "Root selection",
+              "Per instance",
+              "Per VLAN"
+            ],
+            [
+              "External visibility",
+              "Hidden — MSTIs don't cross boundaries",
+              "Each VLAN BPDU is visible end to end"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "At the boundary, MST must collapse all per-VLAN RPVST views into a single CIST view. PVST simulation re-emits CIST info as per-VLAN BPDUs to keep the RPVST side happy — but it cannot honor a different root per VLAN."
+        }
+      ]
+    },
+    {
+      "id": "mst-virtual-switch-029",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region as virtual switch",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does an MST region appear as a single virtual switch to devices outside the region, and what does this imply for path selection?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Only IST/CIST BPDUs leave the region — MSTI BPDUs are confined inside.",
+            "External CIST treats the entire region as one node when computing the inter-region tree.",
+            "Internal MST cost is added separately to CIST cost only at the regional boundary.",
+            "External neighbors see one consistent root bridge ID for the region (the CIST regional root), regardless of how many switches are inside."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Implication: external path selection toward the region is determined by MST0/CIST attributes (root bridge ID, CIST cost). MSTI tuning is invisible externally and cannot influence which boundary port an outside switch picks."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-vs-pvst-root-030",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI root vs external PVST root selection",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why doesn't placing an MSTI root necessarily control which path a Rapid-PVST switch chooses for a VLAN mapped to that MSTI?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Rapid-PVST switches outside the region never see MSTI BPDUs. They receive only PVST-simulated BPDUs derived from MST0/CIST. So their root port choice for VLAN 200 (mapped to MSTI 2) is driven by CIST attributes, not by MSTI 2's root."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Inside region: MSTI 2's root determines which internal links forward VLAN 200.",
+            "At boundary: PVST simulation emits a per-VLAN BPDU using CIST info, not MSTI 2 info.",
+            "Outside region: RPVST switch picks root port using CIST root bridge ID and CIST cost.",
+            "To influence external behavior, tune MST0/CIST priority or boundary link CIST cost."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "If the symptom is visible from outside the region, fix it with MST0/CIST. MSTI tuning is internal-only."
+        }
+      ]
+    },
+    {
+      "id": "mst-show-config-031",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret show spanning-tree mst configuration",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Interpret this output. What three pieces of information confirm region membership, and what does the digest line tell you?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "SW1# show spanning-tree mst configuration\nName      [CAMPUS]\nRevision  5     Instances configured 3\n\nInstance  Vlans mapped\n--------  ------------------------------------------\n0         1-99,201-4094\n1         100\n2         200\n-------------------------------------------------------"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Name = CAMPUS — must match exactly on every region member.",
+            "Revision = 5 — must match exactly.",
+            "VLAN-to-instance mapping — must match exactly (VLAN 100 → MSTI 1, VLAN 200 → MSTI 2, all others → MST0)."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Some platforms also display a 'Configuration digest' line — that hash encodes the VLAN mapping. Mismatched digests = different regions, even if name and revision agree."
+        }
+      ]
+    },
+    {
+      "id": "mst-show-detail-032",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret show spanning-tree mst detail",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What key fields should you read from 'show spanning-tree mst detail' to understand both internal and external root information?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "SW1# show spanning-tree mst 0 detail\n##### MST0    vlans mapped: 1-99,201-4094\nBridge        address aaaa.bbbb.cccc  priority 32768 (32768 sysid 0)\nRoot          this switch for the CIST\nRegional Root this switch\nOperational   hello time 2, forward delay 15, max age 20, txholdcount 6\nConfigured    hello time 2, forward delay 15, max age 20, max hops 20"
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "'Root' line — identifies the CIST root (visible to outside world).",
+            "'Regional Root' — the switch that represents this region externally for CIST.",
+            "'Bridge' — local bridge ID and priority for this instance.",
+            "'vlans mapped' — confirms which VLANs use this instance.",
+            "Per-port section (further down) shows port role, state, cost, and whether the port is Boundary."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "If 'Root' and 'Regional Root' both say 'this switch' for MST0, you own the CIST root and represent the region externally."
+        }
+      ]
+    },
+    {
+      "id": "mst-show-int-detail-033",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret show spanning-tree mst interface detail",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "boundary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does this output tell you about the link's boundary status and PVST simulation state?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "SW1# show spanning-tree mst interface gi1/0/24 detail\nGigabitEthernet1/0/24 of MST0 is designated forwarding\nEdge port: no            (default)        port guard : none        (default)\nLink type: point-to-point (auto)          bpdu filter: disable     (default)\nBoundary : Bound(PVST)                   bpdu guard : disable     (default)\nBpdus sent 4521, received 4498"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Boundary: Bound(PVST) — the neighbor is running PVST+/RPVST+ and PVST simulation is active.",
+            "Port role 'designated forwarding' — link is forwarding normally; not an error.",
+            "Link type point-to-point — needed for rapid transitions.",
+            "BPDU counters increasing — healthy bidirectional BPDU exchange."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Other Boundary values: 'Boundary' alone (without PVST) = neighbor is in a different MST region or running classic 802.1D. 'Bound(STP)' = legacy 802.1D neighbor."
+        }
+      ]
+    },
+    {
+      "id": "mst-inconsistent-034",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret show spanning-tree inconsistentports",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does each entry in this output mean, and what action does each require?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "SW1# show spanning-tree inconsistentports\nName                 Interface              Inconsistency\n-------------------- ---------------------- ------------------\nMST0                 GigabitEthernet1/0/24  PVST Peer Inconsistent\nVLAN0010             GigabitEthernet1/0/12  Root Inconsistent\nVLAN0020             GigabitEthernet1/0/15  Loop Inconsistent"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Inconsistency",
+            "Cause",
+            "Action"
+          ],
+          "rows": [
+            [
+              "PVST Peer Inconsistent",
+              "PVST simulation detected superior PVST BPDU disagreeing with CIST root",
+              "Align root placement; MST region should own CIST root for boundary VLANs"
+            ],
+            [
+              "Root Inconsistent",
+              "Root guard triggered — superior BPDU received on a port where root guard is enabled",
+              "Investigate the offending neighbor; rogue or misconfigured root bridge"
+            ],
+            [
+              "Loop Inconsistent",
+              "Loop guard triggered — BPDUs stopped arriving on a non-designated port",
+              "Check unidirectional link or BPDU loss on the upstream path"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "All three states block the port until the inconsistency clears — recovery is automatic when valid BPDUs return."
+        }
+      ]
+    },
+    {
+      "id": "mst-show-stp-vlan-035",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Interpret show spanning-tree vlan on RPVST",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "rpvst",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "On a Rapid-PVST switch adjacent to an MST region, you run 'show spanning-tree vlan 100'. The Root ID shows the MST region's CIST root MAC. What does this confirm about how RPVST sees the region?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "RPVST-SW# show spanning-tree vlan 100\nVLAN0100\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24576\n             Address     aaaa.bbbb.cccc        ! <-- MST region's CIST root\n             Cost        20000\n             Port        24 (GigabitEthernet0/24)\n  Bridge ID  Priority    32868  (priority 32768 sys-id-ext 100)\n             Address     1111.2222.3333"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "RPVST sees the MST region as if it were a single bridge whose ID = the CIST root's bridge ID.",
+            "The Root ID for VLAN 100 is the same as it would be for VLAN 1, VLAN 200, etc. — because PVST simulation derives every per-VLAN BPDU from CIST.",
+            "Cost shown is the RPVST switch's accumulated path cost to the CIST root.",
+            "Root port choice is driven by CIST cost from each boundary, NOT by any MSTI mapping."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Quick check: if all VLANs on the RPVST switch report the same Root MAC pointing into the MST region, PVST simulation is working correctly."
+        }
+      ]
+    },
+    {
+      "id": "mst-bound-pvst-diag-036",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Diagnose Bound(PVST)",
+      "type": "troubleshooting",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "boundary"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A port shows Boundary: Bound(PVST). Is action required? How do you confirm normal operation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "No action required — Bound(PVST) is the expected state when an MST switch faces a PVST+/RPVST+ neighbor.",
+            "Confirm forwarding state with 'show spanning-tree mst interface <id> detail' — port should be designated/root forwarding.",
+            "Confirm BPDU counters are incrementing in both directions.",
+            "Optionally verify on the PVST side with 'show spanning-tree vlan X' that Root ID matches the MST region's CIST root."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Bound(PVST) ≠ error. PVST_Inc = error."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvst-inc-diag-037",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Diagnose PVST_Inc",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A boundary port is in PVST_Inc state. Walk through the diagnostic process."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Confirm with 'show spanning-tree inconsistentports' — entry should read 'PVST Peer Inconsistent'.",
+            "Identify which VLAN's BPDU caused it via syslog: '%SPANTREE-2-PVSTSIM_FAIL: ... claiming root <bridge-id>'.",
+            "On the PVST/RPVST neighbor, run 'show spanning-tree vlan <X>' for the offending VLAN. Compare its Root ID to the MST region's CIST root.",
+            "If PVST root has a lower bridge ID than CIST root → PVST is winning, which MST cannot tolerate.",
+            "Fix: either lower MST CIST priority below the PVST switch's, or raise the PVST switch's priority for that VLAN.",
+            "Port automatically recovers from PVST_Inc once consistent BPDUs are received."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Design rule: MST region must own the root for every VLAN that traverses an MST/PVST boundary."
+        }
+      ]
+    },
+    {
+      "id": "mst-pvstsim-fail-diag-038",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Diagnose %SPANTREE-2-PVSTSIM_FAIL",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You see this log. What exactly went wrong, what is the protective action, and how do you remediate?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "%SPANTREE-2-PVSTSIM_FAIL: Blocking root port GigabitEthernet1/0/24:\n   Inconsistent superior PVST BPDU received on VLAN 200, claiming root 4096:abcd.ef01.2345"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Cause: a PVST/RPVST switch outside the MST region advertised a superior root for VLAN 200 (priority 4096) that beats the MST region's CIST root. PVST simulation cannot replicate per-VLAN root differences externally — MST speaks only one CIST view."
+        },
+        {
+          "type": "text",
+          "text": "Protective action: the boundary port is blocked (PVST_Inc) to prevent split root ownership, where one side forwards toward one root and the other side forwards toward a different root — a classic loop trigger."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Identify the PVST switch advertising the superior BPDU (the bridge ID in the log).",
+            "Decide where the root belongs — best practice: inside the MST region.",
+            "Lower MST CIST priority on the intended MST root: 'spanning-tree mst 0 priority 0'.",
+            "Or, raise priority for VLAN 200 on the offending PVST switch: 'spanning-tree vlan 200 priority 32768'.",
+            "Port recovers automatically once consistent."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-region-vs-boundary-039",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region mismatch vs MST/PVST boundary",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A port reports as a boundary port. How do you tell whether it's because the neighbor is in a different MST region versus because the neighbor is running PVST/RPVST?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Indicator",
+            "Different MST region",
+            "PVST/RPVST neighbor"
+          ],
+          "rows": [
+            [
+              "Boundary label",
+              "'Boundary' (no PVST tag)",
+              "'Bound(PVST)'"
+            ],
+            [
+              "BPDU type seen",
+              "MST BPDUs with different config digest",
+              "PVST/RPVST per-VLAN BPDUs"
+            ],
+            [
+              "MSTI BPDUs cross link",
+              "No",
+              "No"
+            ],
+            [
+              "Show spanning-tree mst configuration on neighbor",
+              "Different name/revision/digest",
+              "Command not applicable (no MST config)"
+            ],
+            [
+              "PVST simulation active",
+              "No",
+              "Yes"
+            ],
+            [
+              "Possible PVSTSIM_FAIL log",
+              "No",
+              "Yes (if root inconsistency)"
+            ]
+          ]
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Run 'show spanning-tree mst interface <id> detail' — read the Boundary field.",
+            "Run 'show cdp neighbors detail' or log into the neighbor — check whether it runs MST at all.",
+            "If MST: compare 'show spanning-tree mst configuration' digests.",
+            "If not MST: it's a PVST/RPVST boundary; confirm Bound(PVST)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mst-internal-vs-pvstsim-040",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Internal MSTI vs external PVST simulation",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you determine whether a root-port outcome was driven by internal MSTI logic or external PVST simulation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Identify the switch making the choice. Is it inside the MST region or outside it?",
+            "If inside the region: the choice is MSTI-driven. Verify with 'show spanning-tree mst <instance>' for the VLAN's mapped instance.",
+            "If outside the region (PVST/RPVST): the choice is CIST-driven via PVST simulation. Verify with 'show spanning-tree vlan <X>' — the Root ID will match the MST region's CIST root.",
+            "Sanity test: temporarily change the MSTI root inside the region. If the external switch's root port changes, your assumption is wrong (it shouldn't change). If only internal forwarding shifts for the mapped VLANs, MSTI logic is in control internally.",
+            "If you need to influence the external switch's choice, tune MST0/CIST priority or boundary CIST cost."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Rule of thumb: outside the region → CIST. Inside the region → MSTI."
+        }
+      ]
+    },
+    {
+      "id": "mst-asw2-rp-041",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "ASW2 unexpected root port",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "scenario"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "ASW2 is a Rapid-PVST switch dual-homed to the MST region (DSW1 and DSW2). For VLAN 200 (mapped to MSTI 2 inside the region with DSW2 as MSTI 2 root), ASW2 selects the link to DSW1 as its root port. Why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "ASW2 is outside the region — it sees only PVST-simulated BPDUs derived from CIST/MST0.",
+            "ASW2 does not see MSTI 2 BPDUs and therefore has no awareness that DSW2 is MSTI 2 root.",
+            "ASW2 chooses its root port based on CIST root bridge ID and CIST cost.",
+            "If DSW1 has lower CIST cost back to the MST0 root (or DSW1 is itself the MST0/CIST root), ASW2 will pick the link to DSW1 — regardless of MSTI 2.",
+            "Conclusion: the outcome is driven by external PVST simulation reflecting CIST, not by MSTI 2."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "To force ASW2 toward DSW2 for VLAN 200, change MST0/CIST attributes — e.g., make DSW2 the MST0 root, or lower the CIST cost of the DSW2-ASW2 link."
+        }
+      ]
+    },
+    {
+      "id": "mst-dsw2-msti-root-042",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI root vs RPVST path proof",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "scenario",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "DSW2 is configured as MSTI 2 root, but ASW2 (RPVST) still points toward DSW1 for VLAN 200. Which command output proves the reason, and what does it show?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ASW2# show spanning-tree vlan 200\nVLAN0200\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24576\n             Address     dddd.1111.1111     ! <-- MST0/CIST root, NOT DSW2's MSTI 2 bridge ID\n             Cost        20000\n             Port        1 (Gi1/0/1 toward DSW1)"
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "The Root ID's MAC address is the MST region's CIST/MST0 root — not DSW2.",
+            "This proves ASW2 is making its decision based on CIST (via PVST simulation), not on MSTI 2.",
+            "Cost 20000 is ASW2's CIST cost to the CIST root through DSW1.",
+            "MSTI 2 root configuration on DSW2 is invisible to ASW2 by design — MSTI BPDUs never leave the region."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "The smoking gun is the Root ID address: it matches MST0/CIST root, confirming external PVST simulation is in control."
+        }
+      ]
+    },
+    {
+      "id": "mst-asw2-root-block-043",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Boundary blocks after PVST root attempt",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "scenario",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An admin sets ASW2 (RPVST) as root for VLAN 200 with priority 0. The boundary port between ASW2 and the MST region immediately moves to PVST_Inc. Explain the protective logic."
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "ASW2 starts advertising a superior PVST BPDU for VLAN 200 (priority 0, lower than MST CIST root).",
+            "MST boundary switch receives this BPDU and runs PVST simulation consistency check.",
+            "Check: 'For every VLAN traversing the boundary, the MST CIST root must be at least equal-or-better than any PVST root for that VLAN.' This fails for VLAN 200.",
+            "MST cannot honor a different root for one VLAN — externally MST advertises a single CIST view to all VLANs. Honoring ASW2's claim would split root ownership and create a loop.",
+            "Protective action: block the boundary port (PVST_Inc) and log %SPANTREE-2-PVSTSIM_FAIL.",
+            "Recovery: restore ASW2 to a non-superior priority for VLAN 200, or make the MST region's CIST priority decisively superior."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "The block isn't a bug — it's exactly the inconsistency protection PVST simulation was designed to provide. The alternative (silent split-root) would cause an L2 loop."
+        }
+      ]
+    },
+    {
+      "id": "mst-cost-tune-internal-044",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI cost tuning vs ASW2 root ID",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "scenario"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Inside the MST region, VLAN 200 traffic shifts to a different internal path after MSTI 2 cost tuning on DSW1's uplink. But on ASW2 (RPVST), 'show spanning-tree vlan 200' shows the Root ID is unchanged. Why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MSTI 2 cost changes only affect MSTI 2's internal topology — they don't alter MST0/CIST.",
+            "Externally, ASW2 sees only PVST-simulated BPDUs derived from CIST. Since CIST root and CIST cost did not change, ASW2's Root ID is unchanged.",
+            "Internal traffic for VLAN 200 follows MSTI 2's revised topology, but the MST region still represents itself externally with the same CIST root bridge ID.",
+            "This confirms the separation: MSTI tuning has zero external visibility."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Mental model: MSTI = internal traffic engineering. MST0/CIST = external interface to the rest of the L2 world. They don't bleed into each other."
+        }
+      ]
+    },
+    {
+      "id": "mst-config-digest-045",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST configuration digest",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "region"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the MST configuration digest, where does it come from, and why is it the authoritative test for region membership?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "The digest is an MD5 hash of the VLAN-to-instance mapping table.",
+            "It is exchanged in MST BPDUs alongside region name and revision number.",
+            "Because it covers all 4094 VLAN-to-instance mappings, it catches even a single mismapped VLAN.",
+            "Two switches with identical name and revision but different digests are NOT in the same region.",
+            "This is why simply matching 'name' and 'revision' visually is insufficient — always verify the digest is identical."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "On many platforms, 'show spanning-tree mst configuration digest' or 'show spanning-tree mst' will display the hex digest. Compare both sides character-for-character."
+        }
+      ]
+    },
+    {
+      "id": "mst-ist-msti-bpdu-046",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "How MSTIs ride MST BPDUs",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "bpdu"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How are MSTI BPDUs transported inside an MST region, and why does this design enable scaling?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "MST sends a single BPDU per link that contains the IST/CIST information plus encapsulated M-records — one M-record per active MSTI.",
+            "Up to 64 MSTIs can ride inside one BPDU (Cisco supports up to 16 instances by default).",
+            "This is why BPDU overhead is per-instance and not per-VLAN — 1000 VLANs in 4 instances = 1 BPDU containing 4 M-records, not 1000 separate BPDUs.",
+            "At a boundary port, M-records are stripped — only IST/CIST info crosses out, which is why MSTIs are invisible externally."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "This packaging is the technical reason MST scales and the reason MSTIs are confined to the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-cist-regional-root-047",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "CIST root vs CIST regional root",
+      "type": "compare",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Distinguish CIST root from CIST regional root. When are they the same switch and when are they different?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Term",
+            "Definition",
+            "Scope"
+          ],
+          "rows": [
+            [
+              "CIST root",
+              "The single bridge with the lowest bridge ID across the entire CIST (all regions + non-MST switches)",
+              "Global"
+            ],
+            [
+              "CIST regional root",
+              "The bridge inside a region with the best path to the CIST root — represents the region externally",
+              "Per region"
+            ]
+          ]
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "If the CIST root lives inside region A, then in region A the CIST root and the CIST regional root are the same switch.",
+            "In every other region, the CIST regional root is the boundary-adjacent bridge with the lowest CIST cost to the CIST root.",
+            "The CIST regional root is what other regions and PVST switches treat as 'the bridge representing this region.'"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Use 'show spanning-tree mst 0 detail' — the 'Root' line is the CIST root, the 'Regional Root' line is the CIST regional root."
+        }
+      ]
+    },
+    {
+      "id": "mst-design-cist-pri-048",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why MST CIST priority must dominate",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In a mixed MST/PVST design, why should the MST region's CIST priority always be configured to be superior to any PVST switch's per-VLAN priority?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "PVST simulation requires that for every VLAN crossing the boundary, the MST CIST view is at least as good as any PVST root claim for that VLAN.",
+            "If a PVST switch wins root for even one VLAN, simulation triggers PVST_Inc and blocks the boundary port — outage.",
+            "PVST switches commonly default to priority 32768 per VLAN; MST should be 0 or 4096 on the CIST root.",
+            "This guarantees MST always advertises a superior root and the simulation consistency check always passes.",
+            "It also gives the network engineer a single, predictable root location instead of per-VLAN scattered roots."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Best practice: 'spanning-tree mst 0 priority 0' on the primary CIST root, 'priority 4096' on the secondary."
+        }
+      ]
+    },
+    {
+      "id": "mst-msti-traffic-eng-049",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MSTI as traffic engineering tool",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "load-balancing"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How is an MSTI used for traffic engineering, and what is the practical limit on how many MSTIs make sense in an enterprise design?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Map groups of VLANs to different MSTIs to give each group a distinct internal topology.",
+            "Place each MSTI's root on a different distribution switch to load-balance uplinks.",
+            "Typical enterprise sweet spot: 2–4 MSTIs (e.g., voice, data, management).",
+            "Cisco supports up to 16 instances; standard allows up to 64. Beyond ~4 the operational complexity rarely justifies the marginal load-balancing benefit.",
+            "All MSTIs must be configured identically across every switch in the region or the region splits."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Design tip: keep MSTI mapping simple and document it. Inconsistent mappings are the #1 operational pain point in MST."
+        }
+      ]
+    },
+    {
+      "id": "mst-revision-gotcha-050",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "MST revision number gotcha",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "region"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A new switch is added to an existing MST region. The name and VLAN mapping match perfectly, but the link to the existing region shows as a boundary port. What is most often missed?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "The revision number — it must match exactly. Revision is NOT auto-incremented and NOT auto-synced.",
+            "Engineers commonly increment the revision when they change VLAN mappings on existing switches but forget to set it on the newly added switch.",
+            "Verify with 'show spanning-tree mst configuration' and compare the 'Revision' line on both sides.",
+            "Fix: 'spanning-tree mst configuration' → 'revision <number>' to match the rest of the region."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Operational discipline: treat revision number like a change-control version. Increment it deliberately and document it; mismatches will silently split the region."
+        }
+      ]
+    },
+    {
+      "id": "mst-region-split-impact-051",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Region split impact",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the operational impact when a single MST region accidentally splits into two regions due to a config mismatch on one switch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "All inter-region links become boundary ports — only IST/CIST is exchanged, MSTIs no longer span the link.",
+            "VLANs mapped to MSTIs (other than MST0) lose their internal load-balancing — they now follow CIST topology across the boundary instead of their MSTI's tuned topology.",
+            "Convergence behavior changes: changes inside one sub-region no longer trigger MSTI events in the other.",
+            "Root placement may shift if the misconfigured switch happens to win CIST root in its smaller sub-region.",
+            "Possible PVST-style symptoms even without any PVST switch present — because boundaries behave like region edges."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Detection: 'show spanning-tree mst interface' suddenly shows 'Boundary' on what should be internal links. Compare configuration digests across the suspected boundary."
+        }
+      ]
+    },
+    {
+      "id": "mst-debug-pvstsim-052",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Debugging PVST simulation",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "debug"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What commands and logs are useful when debugging an intermittent PVST simulation issue at an MST/PVST boundary?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Verification (always run first)\nshow spanning-tree inconsistentports\nshow spanning-tree mst interface gi1/0/24 detail\nshow spanning-tree mst 0 detail\n\n! On RPVST neighbor\nshow spanning-tree vlan <X>\n\n! Logs (look for these in syslog)\n%SPANTREE-2-PVSTSIM_FAIL\n%SPANTREE-2-RECV_PVST_PEER_INC\n%SPANTREE-2-RECV_PVST_PEER_INC_OK    ! recovery message\n\n! Debug (use with caution in production)\ndebug spanning-tree pvst-sim\ndebug spanning-tree events"
+        },
+        {
+          "type": "callout",
+          "text": "Always start with 'show spanning-tree inconsistentports' and the syslog history. Debugs are last resort because they can flood the console on busy boundary ports."
+        }
+      ]
+    },
+    {
+      "id": "mst-deep-region-virtual-053",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why region appears as virtual switch (deep)",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "From a protocol perspective, what specific BPDU mechanics make an MST region look like a single virtual switch externally?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Boundary ports advertise only IST/CIST information — M-records are not propagated across boundaries.",
+            "All boundary switches in a region advertise the same CIST root bridge ID externally (the region's CIST regional root).",
+            "External CIST cost calculations treat the region's internal path as a single increment added at the entry point — not as multiple per-link costs.",
+            "BPDUs leaving the region carry the regional root's bridge ID in the root field, so external switches can't distinguish 'switch A inside region' from 'switch B inside region.'",
+            "This is functionally equivalent to having one big virtual bridge with multiple external ports."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "This abstraction is what allows two regions to be designed and tuned independently — they only need to agree on CIST."
+        }
+      ]
+    },
+    {
+      "id": "mst-deep-protective-054",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why simulation checks are protective",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "pvst-simulation"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why are PVST simulation consistency checks designed to block the port (fail-closed) rather than allow traffic to flow with whichever root each side prefers?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Allowing each side to honor its own per-VLAN root would create split root ownership: PVST forwards toward root A while MST region forwards toward root B for the same VLAN.",
+            "Split root ownership produces an L2 forwarding loop — frames circulate because no consistent topology exists.",
+            "L2 loops cause broadcast storms within seconds, taking down VLANs region-wide.",
+            "Spanning-tree's primary purpose is loop prevention; safety must dominate over connectivity.",
+            "Fail-closed (block the port) sacrifices a single link to preserve the rest of the L2 domain — a worthwhile tradeoff."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Design lesson: never disable PVST simulation to 'fix' a PVST_Inc state. The block is correct; the underlying root design is wrong."
+        }
+      ]
+    },
+    {
+      "id": "mst-mst0-matters-055",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Why MST0 matters externally",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "mst",
+        "cist"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is MST0 the only instance that matters when reasoning about external behavior, even if 90% of your VLANs are mapped to other MSTIs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Only IST/CIST BPDUs cross region boundaries — MST0 IS the IST.",
+            "External switches (other regions, PVST, classic STP) interact exclusively with the CIST.",
+            "PVST simulation builds every per-VLAN BPDU it emits from CIST/MST0 information — regardless of which MSTI a VLAN is mapped to internally.",
+            "Therefore the external root, external path cost, and boundary forwarding decisions all depend on MST0 priority and MST0 link costs.",
+            "Even VLANs mapped to MSTI 7 are 'represented' externally by MST0's view."
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Key implication: when integrating MST with legacy networks, get MST0 right first. MSTIs are an internal optimization layered on top."
+        }
+      ]
+    }
+  ]
+}
