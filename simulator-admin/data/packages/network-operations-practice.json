@@ -1,0 +1,176 @@
+{
+  "package": {
+    "id": "network-operations-practice",
+    "title": "Network Operations Practice Simulator",
+    "version": "0.1",
+    "source": "Simulator admin starter fixture",
+    "description": "Scenario-based practice package for triage, CLI interpretation, and configuration review.",
+    "history": [
+      {
+        "version": "0.1",
+        "date": "2026-06-02",
+        "notes": "Initial standalone simulator-admin fixture."
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "ops-triage-001",
+      "blueprint": "OPS.1",
+      "domain": "Operations",
+      "topic": "Incident Triage",
+      "subtopic": "Interface outage",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "triage",
+        "interface",
+        "outage"
+      ],
+      "front": [
+        {
+          "type": "heading",
+          "text": "Branch connectivity alert"
+        },
+        {
+          "type": "text",
+          "text": "Users at a branch report complete loss of WAN connectivity. Which command should you run first to confirm whether the WAN interface is operational?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show ip interface brief"
+        },
+        {
+          "type": "callout",
+          "text": "Confirm administrative and protocol state before moving deeper into routing or provider escalation."
+        }
+      ]
+    },
+    {
+      "id": "ops-cli-001",
+      "blueprint": "OPS.2",
+      "domain": "Operations",
+      "topic": "CLI Interpretation",
+      "subtopic": "Interface counters",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "cli",
+        "errors",
+        "duplex"
+      ],
+      "front": [
+        {
+          "type": "cli-output",
+          "text": "GigabitEthernet1/0/18 is up, line protocol is up\n  5 minute input rate 220000 bits/sec\n  5 minute output rate 180000 bits/sec\n  1843 input errors, 1810 CRC, 0 frame, 0 overrun\n  0 output errors, 0 collisions"
+        },
+        {
+          "type": "text",
+          "text": "What should the operator investigate first?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Investigate the physical path first: cabling, optics, patching, and link negotiation. A high CRC count points to Layer 1 corruption rather than a routing issue."
+        }
+      ]
+    },
+    {
+      "id": "ops-config-001",
+      "blueprint": "OPS.3",
+      "domain": "Configuration",
+      "topic": "Change Review",
+      "subtopic": "Access port validation",
+      "type": "config-interpretation",
+      "difficulty": "medium",
+      "tags": [
+        "configuration",
+        "switchport",
+        "review"
+      ],
+      "front": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "interface GigabitEthernet1/0/24\n description Printer\n switchport mode access\n switchport access vlan 310\n spanning-tree portfast"
+        },
+        {
+          "type": "text",
+          "text": "What should be verified before approving this change?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "VLAN 310 exists and is the intended printer VLAN.",
+            "The endpoint is not another switch or shared infrastructure device.",
+            "PortFast is permitted by the access-layer standard for this endpoint class."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ops-routing-001",
+      "blueprint": "OPS.4",
+      "domain": "Routing",
+      "topic": "Reachability",
+      "subtopic": "Default route verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "routing",
+        "default-route",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command quickly verifies whether an IPv4 default route is present in the routing table?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show ip route 0.0.0.0"
+        }
+      ]
+    },
+    {
+      "id": "ops-process-001",
+      "blueprint": "OPS.5",
+      "domain": "Operations",
+      "topic": "Escalation",
+      "subtopic": "Evidence collection",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "escalation",
+        "evidence",
+        "process"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A provider ticket is required for intermittent packet loss. What evidence should be attached before escalation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Affected circuit and timestamps with timezone.",
+            "Interface status and error counters.",
+            "Representative ping or path-test results.",
+            "Any local changes already ruled out."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2363,6 +2363,1018 @@
           "text": "Key implication: when integrating MST with legacy networks, get MST0 right first. MSTIs are an internal optimization layered on top."
         }
       ]
+    },
+    {
+      "id": "dtp-vtp-001",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP modes",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the operational difference between DTP 'dynamic auto' and 'dynamic desirable'?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Dynamic auto is passive: it forms a trunk only if the neighbor actively asks. Dynamic desirable is active: it actively attempts to negotiate a trunk."
+        },
+        {
+          "type": "callout",
+          "text": "Auto = passive, Desirable = active."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-002",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP mode matrix",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the resulting link state for each DTP mode combination?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Local",
+            "Neighbor",
+            "Result"
+          ],
+          "rows": [
+            [
+              "Auto",
+              "Auto",
+              "Access"
+            ],
+            [
+              "Auto",
+              "Desirable",
+              "Trunk"
+            ],
+            [
+              "Auto",
+              "Trunk",
+              "Trunk"
+            ],
+            [
+              "Desirable",
+              "Desirable",
+              "Trunk"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Auto + Auto never trunks because neither side initiates."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-003",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP vs trunking",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Does DTP create trunks, or negotiate them? Why does the distinction matter?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DTP negotiates trunks; it does not create them. A trunk can exist without DTP via static configuration (e.g., 'switchport mode trunk' with 'switchport nonegotiate')."
+        },
+        {
+          "type": "callout",
+          "text": "Trunking does not require DTP."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-004",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Nonegotiate behavior",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does 'switchport nonegotiate' actually prevent?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It prevents DTP negotiation messages from being sent — not trunking itself. A statically configured trunk with nonegotiate still functions normally."
+        },
+        {
+          "type": "callout",
+          "text": "Nonegotiate means no DTP, not no trunk."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-005",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Production trunk config",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What commands create a deterministic static trunk that does not rely on DTP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "switchport mode trunk\nswitchport nonegotiate"
+        },
+        {
+          "type": "text",
+          "text": "Preferred in production because dynamic negotiation creates non-deterministic behavior."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-006",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP domain dependency",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "vtp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How can a VTP domain mismatch affect DTP trunk negotiation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "DTP negotiation can fail when the VTP/DTP domain names do not match between neighbors, leaving the link in operational access mode even when modes appear compatible."
+        },
+        {
+          "type": "callout",
+          "text": "Domain mismatch is a common hidden cause of failed dynamic trunking."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-007",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Switchport mode states",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why might Administrative Mode and Operational Mode differ on a switchport?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Administrative Mode is the configured intent (e.g., dynamic desirable). Operational Mode is the negotiated result. If negotiation fails, a port set to dynamic can operate as 'static access'."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show interfaces g0/6 switchport"
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-008",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows DTP negotiation state and counters on an interface?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show dtp interface g0/6"
+        },
+        {
+          "type": "text",
+          "text": "Used to inspect operational/administrative/neighbor DTP states and failure counters."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-009",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP state fields",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In 'show dtp interface', what do TOS, TAS, and TNS represent?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "TOS = Trunk Operational Status (negotiated result)",
+            "TAS = Trunk Administrative Status (configured intent)",
+            "TNS = Trunk Negotiation Status (neighbor-driven state)"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "These map to Operational, Administrative, and Neighbor relationships."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-010",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP encapsulation fields",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "In DTP output, what do TOT, TAT, and TNT describe?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "TOT = Trunk Operational Type (encapsulation in use)",
+            "TAT = Trunk Administrative Type (configured encapsulation)",
+            "TNT = Trunk Negotiation Type (negotiated encapsulation)"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Mismatches here (bad TAT/TOT) indicate encapsulation negotiation failures."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-011",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Trunk validation",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "trunking",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command confirms a trunk is operational and shows allowed/active VLANs?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show interfaces trunk"
+        },
+        {
+          "type": "callout",
+          "text": "An interface appearing here means the trunk is operational — not merely configured."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-012",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Trunk troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You configured 'dynamic desirable' on one side and 'dynamic auto' on the other, but the port shows Operational Mode: static access. What should you check?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Verify switchport state with 'show interfaces switchport'",
+            "Check trunk status with 'show interfaces trunk'",
+            "Inspect DTP state with 'show dtp interface'",
+            "Look for DTP domain mismatch or disabled negotiation",
+            "Confirm VTP domain names match"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Desirable + Auto trunks only if DTP negotiation succeeds."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-013",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Static trunk vs dynamic",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A static trunk with 'switchport nonegotiate' connects to a port set to 'dynamic auto'. What is the result?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The nonegotiate side sends no DTP frames. The dynamic auto side is passive and never initiates, so it stays in access mode — a unilateral trunk/access mismatch results."
+        },
+        {
+          "type": "callout",
+          "text": "Passive (auto) needs an active DTP request; nonegotiate provides none."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-014",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "DTP failure indicators",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which counters or indicators in 'show dtp interface' point to a negotiation failure?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "domain mismatch",
+            "bad TAS",
+            "bad TAT",
+            "bad TOT",
+            "nonegotiate set"
+          ]
+        },
+        {
+          "type": "text",
+          "text": "These help distinguish a true DTP failure from a configuration choice."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-015",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTPv3 server vs primary",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "vlan"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between a VTPv3 Server and a VTPv3 Primary Server?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A VTPv3 Server can hold and forward the VLAN database, but cannot modify it. Only a Primary Server can make VLAN database changes."
+        },
+        {
+          "type": "callout",
+          "text": "Server ≠ Primary Server in VTPv3."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-016",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTPv3 primary requirement",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "vlan"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A switch in VTPv3 server mode cannot create VLANs. Why, and how do you fix it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VTPv3 server mode alone cannot modify the VLAN database. You must promote the switch to Primary Server."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "vtp primary vlan"
+        },
+        {
+          "type": "callout",
+          "text": "Without a Primary Server, VLAN database edits are blocked."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-017",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTP domain purpose",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "vlan"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the purpose of the VTP domain name?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It defines the administrative boundary for VLAN propagation. Switches only exchange and accept VTP/VLAN information when their domain names match."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-018",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTP revision number",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "vlan"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the role of the VTP configuration revision number?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It tracks the most recent VLAN database version. Switches accept updates with a higher revision number, which is why an unverified switch with a higher revision can overwrite a domain's VLAN database."
+        },
+        {
+          "type": "callout",
+          "text": "Always reset the revision before adding a switch to a VTP domain."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-019",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTP status verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which command shows VTP mode, domain, revision, and primary server status?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show vtp status"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Configuration Revision",
+            "Primary Server",
+            "Operating Mode",
+            "Domain Name"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-020",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VLAN existence vs transport",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vlan",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why does a VLAN existing in the database not guarantee that traffic for that VLAN crosses a link?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VLAN existence (VTP) is separate from VLAN transport (trunk) and forwarding (STP/MST). A VLAN can exist locally but not be transported if no trunk carries it, or be transported but blocked by STP."
+        },
+        {
+          "type": "callout",
+          "text": "Existence, transport, and forwarding are independent states."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-021",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Layer 2 plane separation",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "dtp",
+        "stp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the four independent Layer 2 functions and what does each one do?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Function",
+            "Responsibility"
+          ],
+          "rows": [
+            [
+              "VTP",
+              "Manages VLAN database/information"
+            ],
+            [
+              "DTP",
+              "Negotiates trunk formation"
+            ],
+            [
+              "Trunk",
+              "Transports VLANs"
+            ],
+            [
+              "STP/MST",
+              "Decides forwarding"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Layer 2 is not one thing — validate each independently."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-022",
+      "blueprint": "3.1.c",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VLAN transport vs STP",
+      "type": "scenario",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "stp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "VLAN 20 exists, the trunk is operational and carrying VLAN 20, yet hosts still can't communicate across the link. What is a likely cause?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "STP/MST may be blocking the port for that VLAN/instance. The trunk transports the VLAN, but the spanning tree forwarding decision determines whether frames actually pass."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show spanning-tree interface g0/6"
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-023",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Layer 2 troubleshooting workflow",
+      "type": "sequence",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the correct ordered sequence for troubleshooting Layer 2 connectivity issues?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Does the VLAN exist?",
+            "Is the VLAN allowed on the trunk?",
+            "Is the trunk operational?",
+            "Is STP/MST forwarding?"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "Do not treat Layer 2 as a single protocol."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-024",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Trunk configured vs operational",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "trunking",
+        "verification"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "How do you distinguish 'trunk parameters configured' from 'trunk operational'?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Configured parameters appear in 'show interfaces switchport' (Administrative Mode), but only an interface listed in 'show interfaces trunk' is actually operational as a trunk."
+        },
+        {
+          "type": "callout",
+          "text": "Config intent ≠ negotiated/operational result."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-025",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Auto + Auto scenario",
+      "type": "scenario",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "trunking"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Both ends of a link are set to 'dynamic auto'. What happens and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The link stays in access mode. Both sides are passive, so neither initiates DTP negotiation and no trunk forms."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-026",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "VTP domain mismatch diagnosis",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ccnp",
+        "encor",
+        "vtp",
+        "dtp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Trunking won't form and VLANs aren't propagating between two switches. How do you diagnose a VTP domain mismatch?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show vtp status"
+        },
+        {
+          "type": "text",
+          "text": "Compare the Domain Name on both switches. A mismatch blocks VLAN propagation and can also cause DTP negotiation to fail, leaving ports in access mode."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-027",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Control vs data plane",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "vtp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which Layer 2 functions are control-plane vs data-plane in trunking?"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "Control plane: DTP (negotiate trunks), VTP (propagate VLAN info), MST (build topology)",
+            "Data plane: actual VLAN transport, frame tagging, frame forwarding"
+          ]
+        },
+        {
+          "type": "callout",
+          "text": "A VLAN in the database (control plane) does not guarantee data-plane forwarding."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-028",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Management plane verification",
+      "type": "command",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "verification",
+        "troubleshooting"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Which show commands form the management-plane evidence set for Layer 2 trunk/VLAN troubleshooting?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "show dtp interface\nshow interfaces switchport\nshow interfaces trunk\nshow vtp status\nshow vlan brief\nshow cdp neighbors"
+        },
+        {
+          "type": "text",
+          "text": "Gather operational evidence rather than relying on assumptions."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-029",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Dynamic vs deterministic design",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "design"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why do production environments often avoid dynamic DTP negotiation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Dynamic protocols create non-deterministic behavior — the trunk state depends on negotiation outcomes. Static trunks with nonegotiate produce predictable, secure, and consistent results."
+        }
+      ]
+    },
+    {
+      "id": "dtp-vtp-030",
+      "blueprint": "3.1.a",
+      "domain": "Infrastructure",
+      "topic": "Layer 2",
+      "subtopic": "Mental model summary",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ccnp",
+        "encor",
+        "dtp",
+        "vtp",
+        "stp"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Exam tip: What is the one-sentence mental model that ties VTP, DTP, trunks, and STP together?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "VTP manages VLAN information, DTP negotiates trunks, trunks transport VLANs, and STP/MST decides forwarding — each must be validated independently."
+        },
+        {
+          "type": "callout",
+          "text": "On exam scenarios, isolate which of the four functions has failed before assuming a single cause."
+        }
+      ]
     }
   ]
 }

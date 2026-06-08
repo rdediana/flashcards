@@ -78,6 +78,31 @@ Current admin areas include:
 - Validate
 - Settings
 
+## Test Simulator admin tool
+
+A standalone Test Simulator admin tool is included beside the flashcard tool.
+It follows the same visual language and workflows while using Package and Item
+terminology. It is intentionally separate from the lightweight test simulator
+viewer: it has its own local service, styles, and writable data directory.
+
+Run the simulator admin service:
+
+```bash
+node simulator-admin/server.js
+```
+
+Open the simulator admin UI at:
+
+```text
+http://localhost:8888
+```
+
+The simulator admin service reads and writes package data under:
+
+```text
+simulator-admin/data/
+```
+
 ## Deck data
 
 Deck metadata is stored in:

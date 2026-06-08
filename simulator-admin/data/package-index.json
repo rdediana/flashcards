@@ -1,0 +1,18 @@
+{
+  "updated": "2026-06-02",
+  "packages": [
+    {
+      "packageId": "network-operations-practice",
+      "title": "Network Operations Practice Simulator",
+      "subject": "Network Operations",
+      "description": "Scenario-based practice package for triage, CLI interpretation, and configuration review.",
+      "path": "data/packages/network-operations-practice.json",
+      "tags": [
+        "networking",
+        "operations",
+        "troubleshooting",
+        "cli"
+      ]
+    }
+  ]
+}

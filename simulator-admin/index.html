@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Simulator Admin</title>
+    <link rel="stylesheet" href="./base.css">
+    <link rel="stylesheet" href="./admin.css">
+  </head>
+  <body>
+    <div class="app-shell admin-shell">
+      <header class="topbar admin-topbar">
+        <div>
+          <p class="eyebrow">Test Simulator Admin</p>
+          <h1>Admin Tools</h1>
+          <p class="package-meta" id="currentPackageLine">Current Bank: Loading...</p>
+        </div>
+      </header>
+
+      <div class="mobile-tool-picker">
+        <label for="mobileToolSelect">Menu</label>
+        <select id="mobileToolSelect" aria-label="Admin tool menu">
+          <option value="dashboard">Dashboard</option>
+          <option value="packages">Banks</option>
+          <option value="item-editor">Item Editor</option>
+          <option value="import-export">Import / Export</option>
+          <option value="item-validator">Item Validator</option>
+          <option value="settings">Settings</option>
+        </select>
+      </div>
+
+      <main class="admin-layout">
+        <aside class="admin-nav-panel" aria-label="Admin tools">
+          <div class="admin-nav-heading">
+            <strong>Test Simulator Admin</strong>
+            <span id="navPackageName">Current Bank</span>
+          </div>
+          <nav class="admin-tool-nav">
+            <button type="button" data-tool="dashboard" class="admin-nav-button is-active">Dashboard</button>
+            <button type="button" data-tool="packages" class="admin-nav-button">Banks</button>
+            <button type="button" data-tool="item-editor" class="admin-nav-button">Item Editor</button>
+            <button type="button" data-tool="import-export" class="admin-nav-button">Import / Export</button>
+            <button type="button" data-tool="item-validator" class="admin-nav-button">Item Validator</button>
+            <button type="button" data-tool="settings" class="admin-nav-button">Settings</button>
+          </nav>
+        </aside>
+
+        <section class="active-tool-area">
+          <section class="tool-view is-active" data-tool-view="dashboard">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Dashboard</p>
+                <h2>Package Overview</h2>
+              </div>
+            </div>
+
+            <div class="dashboard-grid">
+              <article class="metric-card">
+                <span>Current bank</span>
+                <strong id="dashboardPackageName">Loading</strong>
+              </article>
+              <article class="metric-card">
+                <span>Total items</span>
+                <strong id="totalItemsMetric">0</strong>
+              </article>
+              <article class="metric-card">
+                <span>Export readiness</span>
+                <strong id="readinessMetric">Checking</strong>
+              </article>
+            </div>
+
+            <div class="admin-section-grid">
+              <article class="panel admin-tool-item">
+                <h3>Item Types</h3>
+                <div id="itemTypesList" class="stat-list"></div>
+              </article>
+              <article class="panel admin-tool-item">
+                <h3>Difficulty Breakdown</h3>
+                <div id="difficultyList" class="stat-list"></div>
+              </article>
+              <article class="panel admin-tool-item">
+                <h3>Tags</h3>
+                <div id="tagsList" class="tag-cloud"></div>
+              </article>
+              <article class="panel admin-tool-item">
+                <h3>Missing Fields</h3>
+                <div id="missingFieldsList" class="issue-list"></div>
+              </article>
+              <article class="panel admin-tool-item">
+                <h3>Duplicate IDs</h3>
+                <div id="duplicateIdsList" class="issue-list"></div>
+              </article>
+              <article class="panel admin-tool-item">
+                <h3>Admin Readiness</h3>
+                <p id="readinessDetail">Loading package checks.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="packages">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Banks</p>
+                <h2>Bank Management</h2>
+              </div>
+              <div class="editor-actions">
+                <button class="secondary-button" id="showPackageIndexButton" type="button">View Index JSON</button>
+                <button class="primary-button" id="createPackageButton" type="button">New Bank</button>
+              </div>
+            </div>
+
+            <div class="package-manager-grid">
+              <section class="panel admin-tool-item package-index-item">
+                <div class="section-heading-row">
+                  <h3>Bank Index</h3>
+                  <span id="packageIndexSyncStatus" class="status-pill">Checking</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Bank Title</th>
+                        <th>Bank ID</th>
+                        <th>Subject</th>
+                        <th>Version</th>
+                        <th>Item Count</th>
+                        <th>Tags</th>
+                        <th>Path</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="packageIndexTableBody"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="panel admin-tool-item">
+                <h3 id="packageFormHeading">Bank Metadata</h3>
+                <form id="packageDetailsForm" class="package-details-form">
+                  <label>
+                    Bank ID
+                    <input id="packageManagerId" type="text">
+                  </label>
+                  <label>
+                    Title
+                    <input id="packageManagerTitle" type="text">
+                  </label>
+                  <label>
+                    Version
+                    <input id="packageManagerVersion" type="text">
+                  </label>
+                  <label>
+                    Subject
+                    <input id="packageManagerSubject" type="text">
+                  </label>
+                  <label>
+                    Source
+                    <input id="packageManagerSource" type="text">
+                  </label>
+                  <label>
+                    Tags
+                    <input id="packageManagerTags" type="text" placeholder="operations, troubleshooting">
+                  </label>
+                  <label class="span-two">
+                    Description
+                    <textarea id="packageManagerDescription" rows="4"></textarea>
+                  </label>
+                  <div class="editor-actions span-two">
+                    <button class="primary-button" id="savePackageDetailsButton" type="submit">Save Bank Metadata</button>
+                    <button class="secondary-button" id="resetPackageDetailsButton" type="button">Cancel</button>
+                  </div>
+                </form>
+                <p id="packageDetailsStatus" class="editor-status" aria-live="polite"></p>
+              </section>
+
+              <section class="panel admin-tool-item">
+                <h3>Bank Actions</h3>
+                <div class="package-action-grid">
+                  <button class="secondary-button" id="validatePackageButton" type="button">Validate Bank</button>
+                  <button class="secondary-button" id="exportPackageButton" type="button">Export Bank</button>
+                  <button class="secondary-button" id="clonePackageButton" type="button">Clone Bank</button>
+                  <button class="danger-button" id="deletePackageButton" type="button">Delete Bank</button>
+                </div>
+                <label class="json-label compact-json-label">
+                  Import full bank JSON
+                  <textarea id="packageImportJson" class="json-input compact-json-input" spellcheck="false" placeholder='{"package":{"id":"...","title":"..."},"items":[]}'></textarea>
+                </label>
+                <label class="check-row">
+                  <input id="replacePackageImport" type="checkbox">
+                  Replace existing bank with matching ID
+                </label>
+                <button class="primary-button" id="importPackageButton" type="button">Import Bank</button>
+                <p id="packageActionStatus" class="editor-status" aria-live="polite"></p>
+              </section>
+
+              <div class="package-right-rail">
+                <section class="panel admin-tool-item">
+                  <h3>Bank Statistics</h3>
+                  <div class="stat-summary-grid">
+                    <article>
+                      <h4>Total Items</h4>
+                      <strong id="packageStatsTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Blueprints</h4>
+                      <strong id="packageStatsBlueprintTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Domains</h4>
+                      <strong id="packageStatsDomainTotal">0</strong>
+                    </article>
+                    <article>
+                      <h4>Topics</h4>
+                      <strong id="packageStatsTopicTotal">0</strong>
+                    </article>
+                  </div>
+                  <div class="stat-explorer-controls">
+                    <label>
+                      Statistic
+                      <select id="packageStatsDimension">
+                        <option value="blueprints">Blueprint</option>
+                        <option value="domains">Domain</option>
+                        <option value="topics">Topic</option>
+                        <option value="subtopics">Subtopic</option>
+                        <option value="tags">Tags</option>
+                        <option value="itemTypes">Type</option>
+                        <option value="difficulties">Difficulty</option>
+                      </select>
+                    </label>
+                    <label>
+                      Search
+                      <input id="packageStatsSearch" type="search" placeholder="Filter subtopics, tags, topics">
+                    </label>
+                  </div>
+                  <p id="packageStatsResultCount" class="empty-admin-text"></p>
+                  <div id="packageStatsList" class="stat-list stat-explorer-list"></div>
+                </section>
+
+                <section class="panel admin-tool-item">
+                  <h3>Validation / Health Summary</h3>
+                  <div id="packageHealthStatus" class="status-pill">Checking</div>
+                  <div id="packageHealthList" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-item">
+                  <h3>Coverage Warnings</h3>
+                  <div id="packageCoverageWarnings" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-item">
+                  <h3>Bank Index Sync Check</h3>
+                  <div id="packageIndexSyncList" class="issue-list"></div>
+                </section>
+
+                <section class="panel admin-tool-item">
+                  <h3>Bank Version Notes</h3>
+                  <div id="packageVersionNotes" class="issue-list"></div>
+                </section>
+              </div>
+            </div>
+
+            <dialog id="packageModal" class="admin-dialog">
+              <form method="dialog" class="admin-tool-item">
+                <h3 id="packageModalTitle">Clone Bank</h3>
+                <label>
+                  Bank title
+                  <input id="modalPackageTitle" type="text" placeholder="Network Operations Practice">
+                </label>
+                <label>
+                  Bank ID
+                  <input id="modalPackageId" type="text" placeholder="network-operations-practice">
+                </label>
+                <label>
+                  Version
+                  <input id="modalPackageVersion" type="text" value="0.1">
+                </label>
+                <label>
+                  Subject
+                  <input id="modalPackageSubject" type="text" placeholder="Network Operations">
+                </label>
+                <label>
+                  Source
+                  <input id="modalPackageSource" type="text" placeholder="Admin package manager">
+                </label>
+                <label>
+                  Tags
+                  <input id="modalPackageTags" type="text" placeholder="operations, troubleshooting">
+                </label>
+                <label>
+                  Description
+                  <textarea id="modalPackageDescription" rows="4"></textarea>
+                </label>
+                <div class="editor-actions">
+                  <button class="secondary-button" id="cancelPackageModalButton" type="button">Cancel</button>
+                  <button class="primary-button" id="submitPackageModalButton" type="button">Clone Bank</button>
+                </div>
+              </form>
+            </dialog>
+
+            <dialog id="packageIndexDialog" class="admin-dialog wide-dialog">
+              <form method="dialog" class="admin-tool-item">
+                <div class="section-heading-row">
+                  <h3>Formatted package-index.json</h3>
+                  <button class="secondary-button" type="submit">Close</button>
+                </div>
+                <pre id="packageIndexJsonView" class="json-preview"></pre>
+              </form>
+            </dialog>
+          </section>
+
+          <section class="tool-view" data-tool-view="item-editor">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Items</p>
+                <h2>Item Editor</h2>
+              </div>
+              <div class="editor-actions">
+                <button class="secondary-button" id="copySelectedItemJsonButton" type="button">Copy Selected Item JSON</button>
+                <button class="secondary-button" id="exportSelectedItemJsonButton" type="button">Export Selected Item JSON</button>
+                <button class="secondary-button" id="editItemButton" type="button">Edit</button>
+                <button class="secondary-button" id="cancelEditButton" type="button" hidden>Cancel</button>
+                <button class="primary-button" id="saveItemButton" type="button" hidden>Save Changes</button>
+              </div>
+            </div>
+
+            <div class="item-editor-shell">
+              <aside class="panel item-list-panel">
+                <label class="item-search-label">
+                  Search items
+                  <input id="itemSearchInput" type="search" placeholder="Search id, topic, prompt, response">
+                </label>
+                <div id="itemList" class="item-list"></div>
+                <section class="bulk-tags-panel">
+                  <h3>Tags for Search Results</h3>
+                  <label>
+                    Tags
+                    <input id="bulkTagsInput" type="text" placeholder="triage, routing">
+                  </label>
+                  <div class="editor-actions">
+                    <button class="secondary-button small-button" id="addTagsToResultsButton" type="button">Add</button>
+                    <button class="secondary-button small-button" id="removeTagsFromResultsButton" type="button">Remove</button>
+                    <button class="secondary-button small-button" id="replaceTagsForResultsButton" type="button">Replace</button>
+                  </div>
+                </section>
+              </aside>
+
+              <article class="panel item-editor-panel">
+                <section class="selected-item-metadata" id="selectedItemMetadata" aria-live="polite">
+                  <p class="metadata-path" id="selectedItemPath">Select an item to view metadata.</p>
+                  <div class="metadata-grid">
+                    <label>
+                      <strong>Item ID</strong>
+                      <input id="editorItemId" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Blueprint</strong>
+                      <input id="editorItemBlueprint" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Domain</strong>
+                      <input id="editorItemDomain" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Topic</strong>
+                      <input id="editorItemTopic" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Subtopic</strong>
+                      <input id="editorItemSubtopic" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Type</strong>
+                      <input id="editorItemType" type="text" disabled>
+                    </label>
+                    <label>
+                      <strong>Difficulty</strong>
+                      <input id="editorItemDifficulty" type="text" disabled>
+                    </label>
+                  </div>
+                  <label>
+                    <strong>Tags</strong>
+                    <input id="editorItemTags" type="text" disabled placeholder="tag1, tag2">
+                  </label>
+                </section>
+                <label class="editor-textarea-label">
+                  Front content
+                  <textarea id="editorFront" rows="8" disabled></textarea>
+                </label>
+                <label class="editor-textarea-label">
+                  Back content
+                  <textarea id="editorBack" rows="8" disabled></textarea>
+                </label>
+                <div class="editor-preview">
+                  <h3>Preview</h3>
+                  <div id="editorPreview">Select an item to preview it.</div>
+                </div>
+                <div class="editor-status" id="editorStatus" aria-live="polite"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="import-export">
+            <div class="import-export-grid">
+              <section class="panel admin-panel">
+                <div class="panel-heading admin-heading">
+                  <div>
+                    <p class="panel-label">Target</p>
+                    <h2>Choose Bank</h2>
+                  </div>
+                </div>
+
+                <div class="admin-form-stack">
+                  <div id="existingPackageFields">
+                    <label>
+                      Bank
+                      <select id="packageSelect"></select>
+                    </label>
+                    <label class="check-row">
+                      <input id="replaceDuplicates" type="checkbox">
+                      Replace items with matching IDs
+                    </label>
+                    <section class="import-package-details" aria-live="polite">
+                      <h3>Bank Details</h3>
+                      <dl>
+                        <div>
+                          <dt>Bank Title</dt>
+                          <dd id="importPackageTitle">Select a package</dd>
+                        </div>
+                        <div>
+                          <dt>Bank ID</dt>
+                          <dd id="importPackageId">-</dd>
+                        </div>
+                        <div>
+                          <dt>Subject</dt>
+                          <dd id="importPackageSubject">-</dd>
+                        </div>
+                        <div>
+                          <dt>Version</dt>
+                          <dd id="importPackageVersion">-</dd>
+                        </div>
+                        <div>
+                          <dt>Item Count</dt>
+                          <dd id="importPackageItemCount">-</dd>
+                        </div>
+                        <div>
+                          <dt>Description</dt>
+                          <dd id="importPackageDescription">-</dd>
+                        </div>
+                      </dl>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel admin-panel import-panel">
+                <div class="panel-heading admin-heading">
+                  <div>
+                    <p class="panel-label">Import</p>
+                    <h2>Paste Item JSON</h2>
+                  </div>
+                  <div class="editor-actions">
+                    <button class="secondary-button" id="clearImportJsonButton" type="button">Clear</button>
+                    <button class="primary-button" id="importButton" type="button">Import Items</button>
+                  </div>
+                </div>
+
+                <label class="json-label">
+                  JSON
+                  <span class="check-row inline-check-row">
+                    <input id="clearJsonAfterImport" type="checkbox">
+                    Clear JSON text after successful import
+                  </span>
+                  <textarea id="itemsJson" class="json-input" spellcheck="false" placeholder='{"items":[...]}'></textarea>
+                </label>
+
+                <div class="import-summary" id="importSummary" aria-live="polite">
+                  <p>Waiting for JSON.</p>
+                </div>
+                <div class="editor-actions import-extra-actions">
+                  <button class="secondary-button" id="exportSkippedItemsButton" type="button" hidden>Export Skipped Items</button>
+                </div>
+              </section>
+            </div>
+
+            <div class="placeholder-panel import-plan">
+              <h3>Import and export workflow</h3>
+              <ul>
+                <li>Import items</li>
+                <li>Replace matching item IDs when needed</li>
+                <li>Use Bank Management for bank creation, full bank import, and bank JSON export</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="item-validator">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Item Validator</p>
+                <h2>Validate Item JSON</h2>
+              </div>
+              <div class="editor-actions">
+                <button class="secondary-button" id="clearValidatorJsonButton" type="button">Clear</button>
+                <button class="primary-button" id="validateItemsButton" type="button">Validate Items</button>
+              </div>
+            </div>
+
+            <div class="admin-section-grid validator-grid">
+              <section class="panel admin-tool-item">
+                <h3>Paste Items Data</h3>
+                <label class="check-row">
+                  <input id="validatorReplaceDuplicates" type="checkbox">
+                  Treat matching item IDs as replacements
+                </label>
+                <label class="check-row">
+                  <input id="validatorClearJsonAfterImport" type="checkbox">
+                  Clear JSON text after successful import
+                </label>
+                <label class="json-label">
+                  JSON
+                  <textarea id="validatorItemsJson" class="json-input validator-json-input" spellcheck="false" placeholder='{"items":[...]}'></textarea>
+                </label>
+                <button class="primary-button" id="validatorImportButton" type="button">Import Valid Items</button>
+              </section>
+
+              <section class="panel admin-tool-item">
+                <h3>Validation Results</h3>
+                <div class="dashboard-grid compact-dashboard-grid">
+                  <article class="metric-card">
+                    <span>Total</span>
+                    <strong id="validatorTotalItems">0</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span>Valid</span>
+                    <strong id="validatorValidItems">0</strong>
+                  </article>
+                  <article class="metric-card">
+                    <span>Needs Fix</span>
+                    <strong id="validatorInvalidItems">0</strong>
+                  </article>
+                </div>
+                <div id="validatorResults" class="issue-list">
+                  <p>Paste item JSON and click Validate Items.</p>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="tool-view" data-tool-view="settings">
+            <div class="panel-heading admin-heading">
+              <div>
+                <p class="panel-label">Settings</p>
+                <h2>Admin Settings</h2>
+              </div>
+            </div>
+            <div class="placeholder-panel">
+              <h3>Settings area</h3>
+              <p>Future preferences for package paths, validation behavior, export targets, and admin defaults will live here.</p>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>
