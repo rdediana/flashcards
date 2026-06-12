@@ -3375,6 +3375,1562 @@
           "text": "On exam scenarios, isolate which of the four functions has failed before assuming a single cause."
         }
       ]
+    },
+    {
+      "id": "ntp-001",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "NTP transport",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "udp",
+        "port-123",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What transport protocol and port does NTP use, and why does it matter for troubleshooting?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Protocol: UDP\nPort: 123"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Time synchronization",
+            "ACL troubleshooting",
+            "Firewall rule verification",
+            "Packet capture filtering"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Because NTP rides UDP/123, IP reachability (ICMP ping) does not prove NTP will work."
+        }
+      ]
+    },
+    {
+      "id": "ntp-002",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Stratum",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "stratum",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does NTP stratum represent?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Stratum represents the number of hops from an authoritative reference time source. Each synchronization hop increases stratum by one."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Stratum 0  = Reference clock (GPS/Atomic)\nStratum 1  = Directly attached to ref clock\nStratum 2  = Learned from Stratum 1\nStratum 3  = Learned from Stratum 2\n...\nStratum 16 = Unsynchronized"
+        }
+      ]
+    },
+    {
+      "id": "ntp-003",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Stratum 16",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "stratum-16",
+        "unsynchronized",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does Stratum 16 indicate in NTP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Stratum 16 = Unsynchronized"
+        },
+        {
+          "type": "text",
+          "text": "The device does not currently trust any time source and must not be used as a valid synchronization source for downstream clients."
+        }
+      ]
+    },
+    {
+      "id": "ntp-004",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "show ntp status",
+      "type": "cli-output",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "show-ntp-status",
+        "interpretation",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the most important line in this output, and what does it tell you?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Clock is unsynchronized, stratum 16"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It immediately indicates the device is NOT synchronized to a valid NTP source."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Always check synchronization state first — before changing any NTP configuration."
+        }
+      ]
+    },
+    {
+      "id": "ntp-005",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Reachability register",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "reach",
+        "register",
+        "octal",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does the reach value in show ntp associations represent?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The reach register tracks the last 8 NTP polls as a sliding window of successful replies. It is displayed in octal."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "0   = No successful replies received\n377 = Maximum reachability (all 8 recent polls succeeded)"
+        }
+      ]
+    },
+    {
+      "id": "ntp-006",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "reach 0",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "reach-0",
+        "troubleshooting",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A configured NTP server shows reach 0. What does this indicate and what are the likely causes?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "reach 0"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The device has not received a single successful NTP reply from that server."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Server unreachable",
+            "UDP 123 blocked",
+            "ACL filtering",
+            "Authentication mismatch",
+            "NTP service not running on server",
+            "Wrong source IP expected by server"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-007",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": ".INIT. state",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "init",
+        "ref-clock",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does .INIT. mean in show ntp associations?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "ref clock .INIT."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The association has never successfully exchanged valid NTP information — the peer remains in initialization state. No bidirectional NTP exchange has completed yet."
+        }
+      ]
+    },
+    {
+      "id": "ntp-008",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Packet counters",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "packet-counters",
+        "interpretation",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Interpret this output. Where do you focus troubleshooting?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "assoc out packets 51\nassoc in packets 0"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The device is transmitting NTP requests but receiving zero replies — a one-way communication problem."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Server reachability",
+            "ACLs blocking UDP 123 return traffic",
+            "Authentication mismatch",
+            "Firewall filtering NTP replies"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-009",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "NTP vs ping",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "ping",
+        "icmp",
+        "reachability",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why can a ping succeed while NTP synchronization fails?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Ping = ICMP\nNTP  = UDP 123"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "ACL blocking UDP 123",
+            "Authentication mismatch",
+            "NTP service disabled on server",
+            "Server itself unsynchronized (stratum 16)"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "IP reachability does NOT guarantee application reachability. This is a classic ENCOR trap."
+        }
+      ]
+    },
+    {
+      "id": "ntp-010",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "ntp source",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "ntp-source",
+        "loopback",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is the ntp source command commonly used?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It forces NTP packets to use a predictable, stable source address regardless of egress interface."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ntp source Loopback0"
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "When ACLs filter by source IP",
+            "When firewalls expect a fixed source",
+            "When the server permits only specific source IPs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-011",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "NTP authentication",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "authentication",
+        "security",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What problem does NTP authentication solve?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "It establishes trust in the time source by validating the server's identity via a shared key."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "Prevents unauthorized NTP servers",
+            "Prevents spoofed time updates",
+            "Mitigates time-poisoning attacks"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-012",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Authentication config",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "authentication",
+        "trusted-key",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Show the commands to configure authenticated NTP between a client and server."
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Both devices\nntp authenticate\nntp authentication-key 1 md5 MySecretKey\nntp trusted-key 1\n!\n! Client points to server with key\nntp server 10.1.1.1 key 1"
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "All three pieces are required: authenticate, authentication-key, and trusted-key. A missing trusted-key is a common silent failure."
+        }
+      ]
+    },
+    {
+      "id": "ntp-013",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Access-group trap",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "access-group",
+        "acl",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why might an NTP server stop synchronizing to its upstream source after an NTP access-group is applied?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "NTP access-groups filter incoming NTP traffic. If the upstream server's IP isn't permitted by the ACL, its replies are rejected."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Result:\nStratum 16\nReach 0\nUnsynchronized"
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Remember to permit the upstream source in the access-group — restricting clients can accidentally break your own sync."
+        }
+      ]
+    },
+    {
+      "id": "ntp-014",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "NTP hierarchy",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "stratum",
+        "hierarchy",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Given this topology, what strata would LABGW1 and DSW1 likely become?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Internet Source = Stratum 2\nLABGW1 = NTP Server\nDSW1 = NTP Client"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Internet Source = Stratum 2\nLABGW1 = Stratum 3\nDSW1 = Stratum 4"
+        },
+        {
+          "type": "text",
+          "text": "Each synchronization hop increases stratum by exactly one."
+        }
+      ]
+    },
+    {
+      "id": "ntp-015",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "ntp master",
+      "type": "command",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "ntp-master",
+        "stratum",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does this command do?"
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ntp master 3"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The router advertises itself as Stratum 3 when no better external time source exists. It uses its own internal clock as the reference."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "ntp master does NOT synchronize to an external source — it is a fallback authoritative clock."
+        }
+      ]
+    },
+    {
+      "id": "ntp-016",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "First-conclusion troubleshooting",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "troubleshooting",
+        "methodology",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You observe the following. What should be your first conclusion and order of investigation?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "Clock unsynchronized\nStratum 16\nReach 0\n.INIT."
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The device has never received a valid NTP response."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Reachability to server",
+            "UDP 123 open end-to-end",
+            "ACLs / access-groups",
+            "Authentication keys",
+            "Upstream server sync status"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Do NOT begin by changing NTP configuration syntax. Confirm communication first."
+        }
+      ]
+    },
+    {
+      "id": "ntp-017",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "server vs peer",
+      "type": "compare",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "server",
+        "peer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between ntp server and ntp peer?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Mode",
+            "Relationship",
+            "Use case"
+          ],
+          "rows": [
+            [
+              "ntp server",
+              "Client/server — local device only learns time",
+              "Point to an upstream authoritative source"
+            ],
+            [
+              "ntp peer",
+              "Symmetric — devices can sync each other",
+              "Redundant peers at the same stratum level"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-018",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Sync flag in associations",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "show-ntp-associations",
+        "sync-flag",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What do the leading symbols (* and +) mean in show ntp associations?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "*~10.1.1.1   .GPS.   1  ...\n+~10.1.1.2   .GPS.   1  ..."
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Symbol",
+            "Meaning"
+          ],
+          "rows": [
+            [
+              "* (master/sys.peer)",
+              "Currently selected synchronization source"
+            ],
+            [
+              "+ (candidate)",
+              "Valid alternate, eligible for selection"
+            ],
+            [
+              "(blank)",
+              "Reachable but not selected"
+            ],
+            [
+              "x / - / #",
+              "Rejected or falseticker / outlier"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-019",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "reach 377",
+      "type": "cli-output",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "reach-377",
+        "octal",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A peer shows reach 377. What does this confirm?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "reach 377"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "All 8 of the most recent NTP polls succeeded (377 octal = 11111111 binary). This indicates fully healthy, consistent communication with the peer."
+        }
+      ]
+    },
+    {
+      "id": "ntp-020",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Partial reach values",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "reach",
+        "octal",
+        "intermittent",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does an intermittent reach value like 357 or 177 suggest?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Partial reachability — some recent polls succeeded and some failed. The octal value is a sliding 8-bit window; gaps indicate dropped replies."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "377 = 11111111 (all 8 good)\n357 = 11101111 (one recent miss)\n177 = 01111111 (oldest poll missed)"
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Intermittent reach points to packet loss, congestion, or flapping UDP/123 path — not total failure."
+        }
+      ]
+    },
+    {
+      "id": "ntp-021",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Offset and jitter",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "offset",
+        "jitter",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What do offset and jitter (disp) tell you in show ntp associations detail?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "offset 0.512  jitter 0.004"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Meaning"
+          ],
+          "rows": [
+            [
+              "offset",
+              "Time difference (ms) between local clock and the source"
+            ],
+            [
+              "jitter/dispersion",
+              "Variation/uncertainty in measured offset"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "Large or growing offset means the clock is drifting from the source. Low jitter means measurements are stable and trustworthy."
+        }
+      ]
+    },
+    {
+      "id": "ntp-022",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Clock vs calendar",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "hardware-clock",
+        "calendar",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between the software clock and the hardware calendar, and how do you sync them?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The software clock runs in RAM and is set by NTP. The hardware calendar (battery-backed) persists across reboots. NTP updates the software clock; you periodically sync it to hardware."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ntp update-calendar          ! Periodically sync HW from NTP\nclock calendar-valid         ! Mark HW clock as authoritative"
+        }
+      ]
+    },
+    {
+      "id": "ntp-023",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Timezone and time accuracy",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "timezone",
+        "clock",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "NTP shows synchronized and stratum is valid, but log timestamps look hours off. What is the likely cause?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Timezone/DST configuration, not NTP itself. NTP synchronizes to UTC; the displayed local time depends on clock timezone settings."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "clock timezone EST -5 0\nclock summer-time EDT recurring"
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Synchronized + wrong displayed time = timezone issue, not a sync issue."
+        }
+      ]
+    },
+    {
+      "id": "ntp-024",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Logging timestamps",
+      "type": "concept",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "logging",
+        "timestamps",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Why is NTP critical for logging and security correlation?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Accurate, synchronized timestamps let you correlate events across multiple devices (syslog, SNMP, security logs). Without consistent time, root-cause analysis and forensic timelines are unreliable."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "service timestamps log datetime msec localtime"
+        }
+      ]
+    },
+    {
+      "id": "ntp-025",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Stratum selection logic",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "stratum",
+        "selection",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "If a client has two reachable servers — one at stratum 2 and one at stratum 4 — which does it prefer, and what else influences selection?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Generally the lower stratum (stratum 2) is preferred as closer to the reference. However, NTP also weighs reachability, offset, jitter/dispersion, and root distance — a flapping stratum-2 source can lose to a stable stratum-4."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Lower stratum is preferred, but stability and accuracy can override raw stratum."
+        }
+      ]
+    },
+    {
+      "id": "ntp-026",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Falseticker",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "falseticker",
+        "selection",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a falseticker in NTP, and why does deploying multiple servers help?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "A falseticker is a source whose time disagrees significantly with the majority. NTP uses an intersection/selection algorithm across multiple sources to detect and discard outliers."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Best practice: configure at least 3-4 servers so NTP can vote out a falseticker. With only 2, it can't decide which is wrong."
+        }
+      ]
+    },
+    {
+      "id": "ntp-027",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Authentication mismatch symptom",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "authentication",
+        "mismatch",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Server is reachable on UDP 123 and packets are exchanged, but the client never synchronizes. Authentication is configured. What is the likely cause?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Authentication key mismatch — wrong key number, wrong key string, or trusted-key not configured. Packets exchange but fail validation, so the source is rejected for synchronization."
+        },
+        {
+          "type": "ordered-list",
+          "items": [
+            "Verify key number matches on both sides",
+            "Verify key string is identical (case-sensitive)",
+            "Confirm ntp trusted-key is configured",
+            "Confirm the server statement references key N"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-028",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "show ntp associations detail",
+      "type": "cli-output",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "show-ntp-associations-detail",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What useful states does show ntp associations detail reveal beyond the summary view?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": "configured, authenticated, sane, valid, stratum 2"
+        }
+      ],
+      "back": [
+        {
+          "type": "unordered-list",
+          "items": [
+            "authenticated / not authenticated — auth status of the peer",
+            "sane / insane — passed sanity checks",
+            "valid / invalid — usable as time source",
+            "configured vs dynamic — how the association was created"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "'authenticated' but 'invalid' often points to stratum or reachability, not the key itself."
+        }
+      ]
+    },
+    {
+      "id": "ntp-029",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "ACL direction reasoning",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "acl",
+        "direction",
+        "udp-123",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "An interface ACL permits outbound UDP 123 but the client still shows reach 0. What is being overlooked?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The return traffic. NTP requires both the outbound request AND the inbound reply on UDP 123. An ACL that only permits one direction blocks synchronization."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! Permit both directions for the NTP server\npermit udp host 10.1.1.1 eq 123 any\npermit udp any eq 123 host 10.1.1.1"
+        }
+      ]
+    },
+    {
+      "id": "ntp-030",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Polling interval",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "poll-interval",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What does the poll interval represent, and how does it change over time?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "The poll interval is how often the client queries the server (in seconds, often shown as a power of 2). NTP starts polling frequently (e.g., 64s) and backs off to longer intervals (up to 1024s) once the clock is stable."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "A poll interval stuck low can indicate the source is never stabilizing."
+        }
+      ]
+    },
+    {
+      "id": "ntp-031",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "ntp master without external source",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "ntp-master",
+        "design",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A lab has no Internet/GPS source. How do you provide consistent time to all devices?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Designate one router as an internal authoritative clock using ntp master, then point all clients to it. Time will be internally consistent even if not externally accurate."
+        },
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "! On the master\nntp master 3\n!\n! On clients\nntp server 10.0.0.1"
+        }
+      ]
+    },
+    {
+      "id": "ntp-032",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Insane time / sanity check",
+      "type": "troubleshooting",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "insane",
+        "sanity",
+        "panic",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "A device refuses to sync to a server whose time is off by several years. Why, and what's happening?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "NTP sanity checks reject sources with an implausibly large offset (the 'panic threshold', ~1000s by default). The source is marked insane/invalid to prevent a wildly wrong clock from being adopted."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "If the local clock is wildly wrong (e.g., default boot time), manually set it close with clock set before expecting NTP to converge."
+        }
+      ]
+    },
+    {
+      "id": "ntp-033",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "VRF-aware NTP",
+      "type": "command",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "vrf",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "The NTP server is reachable only inside a VRF. How do you configure NTP to use it?"
+        }
+      ],
+      "back": [
+        {
+          "type": "code",
+          "language": "cisco",
+          "text": "ntp server vrf MGMT 10.1.1.1\nntp source vrf MGMT GigabitEthernet0/0"
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Forgetting the vrf keyword means NTP tries the global table and shows reach 0 even though the server is reachable in the VRF."
+        }
+      ]
+    },
+    {
+      "id": "ntp-034",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "NTP vs SNTP",
+      "type": "compare",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "sntp",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is the difference between NTP and SNTP?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Aspect",
+            "NTP",
+            "SNTP"
+          ],
+          "rows": [
+            [
+              "Algorithm",
+              "Full clock-discipline algorithm",
+              "Simplified, no filtering/selection"
+            ],
+            [
+              "Accuracy",
+              "Higher",
+              "Lower"
+            ],
+            [
+              "Use case",
+              "Routers/switches, servers",
+              "Low-end devices with limited resources"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "SNTP cannot act as a high-quality server and shouldn't be used as an authoritative source for others."
+        }
+      ]
+    },
+    {
+      "id": "ntp-035",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Access-group types",
+      "type": "concept",
+      "difficulty": "hard",
+      "tags": [
+        "ntp",
+        "access-group",
+        "serve",
+        "peer",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the NTP access-group options and what does each restrict?"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Option",
+            "Restricts"
+          ],
+          "rows": [
+            [
+              "peer",
+              "Full access — time sync + control queries, both directions"
+            ],
+            [
+              "serve",
+              "Time sync + control queries (no peering)"
+            ],
+            [
+              "serve-only",
+              "Time requests only"
+            ],
+            [
+              "query-only",
+              "Control queries only, no time sync"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Use serve-only to let clients sync from you without allowing them to alter your config or peer with you."
+        }
+      ]
+    },
+    {
+      "id": "ntp-036",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Multiple servers redundancy",
+      "type": "scenario",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "redundancy",
+        "design",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "Design recommendation: how many NTP servers should a client be configured with and why?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "At least 3-4 reachable servers. This lets NTP's selection algorithm detect a falseticker and maintain sync if one source fails."
+        },
+        {
+          "type": "unordered-list",
+          "items": [
+            "1 server = single point of failure, no validation",
+            "2 servers = redundancy but no tiebreaker",
+            "3-4 servers = can vote out an outlier and survive a failure"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-037",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Sync time / convergence",
+      "type": "troubleshooting",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "convergence",
+        "patience",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "You just configured NTP correctly but the device still shows stratum 16. Is the config wrong?"
+        }
+      ],
+      "back": [
+        {
+          "type": "text",
+          "text": "Not necessarily. NTP convergence takes time — several poll cycles (often minutes) are needed before reach climbs and the clock synchronizes. Verify reach is incrementing (1, 3, 7, 17...) rather than stuck at 0."
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "Climbing reach = communication working, just converging. Stuck reach 0 = real connectivity/auth problem."
+        }
+      ]
+    },
+    {
+      "id": "ntp-038",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Reference clock identifier",
+      "type": "cli-output",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "ref-clock",
+        "identifier",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What do these ref clock identifiers tell you?"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "text": ".GPS.   .INIT.   .LOCL.   127.127.1.1"
+        }
+      ],
+      "back": [
+        {
+          "type": "table",
+          "headers": [
+            "Identifier",
+            "Meaning"
+          ],
+          "rows": [
+            [
+              ".GPS.",
+              "Source is GPS-disciplined (stratum 1)"
+            ],
+            [
+              ".INIT.",
+              "Association initializing, no valid exchange yet"
+            ],
+            [
+              ".LOCL. / 127.127.1.1",
+              "Local undisciplined clock (ntp master fallback)"
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": ".LOCL. means the device is its own source — fine for a lab master, but a red flag if you expected external sync."
+        }
+      ]
+    },
+    {
+      "id": "ntp-039",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "Layered troubleshooting model",
+      "type": "concept",
+      "difficulty": "medium",
+      "tags": [
+        "ntp",
+        "troubleshooting",
+        "methodology",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What is a clean layered order for troubleshooting NTP failures?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Layer 3 reachability — can you reach the server IP?",
+            "UDP 123 — is the port open both directions (ACL/firewall)?",
+            "Source address — does ntp source match what the server expects?",
+            "Authentication — keys and trusted-key correct?",
+            "Server health — is the upstream itself synchronized (not stratum 16)?",
+            "Time/timezone — synced but displayed wrong = timezone, not sync"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp-040",
+      "blueprint": "4.2",
+      "domain": "Infrastructure",
+      "topic": "Network Services",
+      "subtopic": "High-value summary",
+      "type": "exam-tip",
+      "difficulty": "easy",
+      "tags": [
+        "ntp",
+        "summary",
+        "exam-cram",
+        "ccnp",
+        "encor"
+      ],
+      "front": [
+        {
+          "type": "text",
+          "text": "What are the five highest-value NTP interpretation skills for ENCOR?"
+        }
+      ],
+      "back": [
+        {
+          "type": "ordered-list",
+          "items": [
+            "Stratum 16 = unsynchronized",
+            "reach 0 = no successful replies received",
+            ".INIT. = association never completed a valid exchange",
+            "out packets X / in packets 0 = sending but not receiving (ACL/auth/UDP 123)",
+            "Ping works but NTP fails = IP reachability ≠ application reachability"
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "exam-tip",
+          "text": "ENCOR tests interpretation over syntax. Read the state (sync, stratum, reach, ref clock) before touching config."
+        }
+      ]
     }
   ]
 }
